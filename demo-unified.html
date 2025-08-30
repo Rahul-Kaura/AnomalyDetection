@@ -576,6 +576,194 @@
         .alert-item:hover::before {
             opacity: 1;
         }
+
+        /* Correlation Analysis Styling */
+        .correlation-group {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .correlation-group:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+            border-color: #cbd5e1;
+        }
+
+        .correlation-group::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .correlation-group:hover::before {
+            opacity: 1;
+        }
+
+        .correlation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .correlation-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .correlation-title h4 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .similarity-score {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .correlation-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .alert-count {
+            background: #f1f5f9;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .correlation-service {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .correlation-factors {
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        .correlated-alerts {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .mini-alert {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .mini-alert:hover {
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .mini-alert.k8s {
+            border-left: 3px solid #3182ce;
+        }
+
+        .mini-alert.datadog {
+            border-left: 3px solid #805ad5;
+        }
+
+        .mini-alert.logicmonitor {
+            border-left: 3px solid #38a169;
+        }
+
+        .alert-title {
+            flex: 1;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .alert-time {
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+
+        .correlation-actions {
+            display: flex;
+            gap: 12px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .correlation-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+        }
+
+        .correlation-btn:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+        }
+
+        .dismiss-btn {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(107, 114, 128, 0.2);
+        }
+
+        .dismiss-btn:hover {
+            background: linear-gradient(135deg, #4b5563, #374151);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(107, 114, 128, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -679,6 +867,22 @@
                 <div class="panel-content" id="situationsList">
                         <p style="color: #64748b; text-align: center;">No active situations</p>
                     </div>
+                </div>
+            </div>
+
+            <!-- Correlation Analysis Panel -->
+            <div class="content-panel" style="grid-column: 1 / -1;">
+                <div class="panel-header">
+                    <h3 class="panel-title">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                        </svg>
+                        Correlation Analysis
+                        <span class="correlation-count" id="correlationCount" style="margin-left: 10px; font-size: 0.8em; opacity: 0.7;">(0 groups)</span>
+                    </h3>
+                </div>
+                <div class="panel-content" id="correlationList">
+                    <p style="color: #64748b; text-align: center;">No correlations found. Generate more alerts to see correlation analysis.</p>
                 </div>
             </div>
     </div>
@@ -944,6 +1148,222 @@
             }
         }
 
+        // Correlation Analysis Engine
+        class CorrelationEngine {
+            constructor() {
+                this.correlationRules = this.loadCorrelationRules();
+                this.correlationGroups = new Map(); // groupId -> correlation group
+                this.groupCounter = 0;
+            }
+
+            loadCorrelationRules() {
+                return [
+                    {
+                        name: "Service Correlation",
+                        weight: 0.8,
+                        factors: ["service", "component"],
+                        threshold: 0.7
+                    },
+                    {
+                        name: "Error Pattern Correlation",
+                        weight: 0.9,
+                        factors: ["error_code", "severity"],
+                        threshold: 0.8
+                    },
+                    {
+                        name: "Resource Correlation",
+                        weight: 0.7,
+                        factors: ["resource", "component"],
+                        threshold: 0.6
+                    },
+                    {
+                        name: "Temporal Correlation",
+                        weight: 0.6,
+                        factors: ["time_window"],
+                        threshold: 0.5
+                    },
+                    {
+                        name: "Source Correlation",
+                        weight: 0.5,
+                        factors: ["source"],
+                        threshold: 0.4
+                    }
+                ];
+            }
+
+            // Calculate similarity score between two alerts
+            calculateSimilarity(alert1, alert2) {
+                let totalScore = 0;
+                let maxScore = 0;
+
+                for (const rule of this.correlationRules) {
+                    let ruleScore = 0;
+                    let ruleMax = 0;
+
+                    for (const factor of rule.factors) {
+                        const score = this.compareFactor(alert1, alert2, factor);
+                        ruleScore += score;
+                        ruleMax += 1;
+                    }
+
+                    if (ruleMax > 0) {
+                        ruleScore = (ruleScore / ruleMax) * rule.weight;
+                        totalScore += ruleScore;
+                        maxScore += rule.weight;
+                    }
+                }
+
+                return maxScore > 0 ? totalScore / maxScore : 0;
+            }
+
+            // Compare specific factors between alerts
+            compareFactor(alert1, alert2, factor) {
+                switch (factor) {
+                    case "service":
+                        return alert1.service === alert2.service ? 1 : 0;
+                    
+                    case "component":
+                        return alert1.component === alert2.component ? 1 : 0;
+                    
+                    case "error_code":
+                        return alert1.error_code === alert2.error_code ? 1 : 0;
+                    
+                    case "severity":
+                        return this.compareSeverity(alert1.severity, alert2.severity);
+                    
+                    case "resource":
+                        return this.compareResource(alert1.resource, alert2.resource);
+                    
+                    case "source":
+                        return alert1.source === alert2.source ? 1 : 0;
+                    
+                    case "time_window":
+                        return this.compareTimeWindow(alert1.ts, alert2.ts);
+                    
+                    default:
+                        return 0;
+                }
+            }
+
+            // Compare severity levels with partial matching
+            compareSeverity(sev1, sev2) {
+                const levels = { 'critical': 4, 'high': 3, 'medium': 2, 'warning': 1, 'info': 0 };
+                const level1 = levels[sev1] || 0;
+                const level2 = levels[sev2] || 0;
+                
+                if (level1 === level2) return 1;
+                if (Math.abs(level1 - level2) === 1) return 0.7;
+                if (Math.abs(level1 - level2) === 2) return 0.4;
+                return 0.1;
+            }
+
+            // Compare resources with partial matching
+            compareResource(res1, res2) {
+                if (!res1 || !res2) return 0;
+                if (res1 === res2) return 1;
+                
+                // Check if resources are in same cluster/namespace
+                const parts1 = res1.split('-');
+                const parts2 = res2.split('-');
+                
+                if (parts1.length > 1 && parts2.length > 1) {
+                    if (parts1[0] === parts2[0]) return 0.8; // Same service prefix
+                    if (parts1[parts1.length - 1] === parts2[parts1.length - 1]) return 0.6; // Same suffix
+                }
+                
+                return 0.2;
+            }
+
+            // Compare time windows
+            compareTimeWindow(ts1, ts2) {
+                const timeDiff = Math.abs(ts1 - ts2);
+                const fiveMinutes = 5 * 60 * 1000;
+                const fifteenMinutes = 15 * 60 * 1000;
+                
+                if (timeDiff < fiveMinutes) return 1;
+                if (timeDiff < fifteenMinutes) return 0.7;
+                if (timeDiff < 30 * 60 * 1000) return 0.4;
+                return 0.1;
+            }
+
+            // Find correlations in a list of alerts
+            findCorrelations(alerts) {
+                this.correlationGroups.clear();
+                this.groupCounter = 0;
+                
+                if (alerts.length < 2) return [];
+
+                // Create similarity matrix
+                const similarityMatrix = [];
+                for (let i = 0; i < alerts.length; i++) {
+                    similarityMatrix[i] = [];
+                    for (let j = 0; j < alerts.length; j++) {
+                        if (i === j) {
+                            similarityMatrix[i][j] = 1;
+                        } else {
+                            similarityMatrix[i][j] = this.calculateSimilarity(alerts[i], alerts[j]);
+                        }
+                    }
+                }
+
+                // Group alerts based on similarity
+                const processed = new Set();
+                const correlations = [];
+
+                for (let i = 0; i < alerts.length; i++) {
+                    if (processed.has(i)) continue;
+
+                    const group = {
+                        id: `correlation-${++this.groupCounter}`,
+                        alerts: [alerts[i]],
+                        similarity: 1,
+                        factors: this.extractCorrelationFactors(alerts[i]),
+                        severity: alerts[i].severity,
+                        source: alerts[i].source,
+                        service: alerts[i].service,
+                        component: alerts[i].component,
+                        timestamp: alerts[i].ts,
+                        count: 1
+                    };
+
+                    processed.add(i);
+
+                    // Find similar alerts
+                    for (let j = i + 1; j < alerts.length; j++) {
+                        if (processed.has(j)) continue;
+
+                        const similarity = similarityMatrix[i][j];
+                        if (similarity >= 0.6) { // Correlation threshold
+                            group.alerts.push(alerts[j]);
+                            group.similarity = Math.min(group.similarity, similarity);
+                            group.count++;
+                            processed.add(j);
+                        }
+                    }
+
+                    // Only add groups with multiple alerts
+                    if (group.alerts.length > 1) {
+                        correlations.push(group);
+                    }
+                }
+
+                return correlations.sort((a, b) => b.count - a.count);
+            }
+
+            // Extract key factors that caused correlation
+            extractCorrelationFactors(alert) {
+                const factors = [];
+                
+                if (alert.service) factors.push(`Service: ${alert.service}`);
+                if (alert.component) factors.push(`Component: ${alert.component}`);
+                if (alert.error_code) factors.push(`Error: ${alert.error_code}`);
+                if (alert.resource) factors.push(`Resource: ${alert.resource}`);
+                if (alert.source) factors.push(`Source: ${alert.source}`);
+                
+                return factors.slice(0, 3); // Top 3 factors
+            }
+        }
+
         // Simple demo state management
         let demoState = {
                     totalAlerts: 0,
@@ -965,6 +1385,9 @@
             
             // Initialize K8s threshold engine
             window.k8sThresholdEngine = new K8sThresholdEngine();
+            
+            // Initialize correlation engine
+            window.correlationEngine = new CorrelationEngine();
             
             // Set up event listeners
             document.getElementById('generateBtn').onclick = generateTestData;
@@ -1470,6 +1893,7 @@
             // Update displays
             updateAlertsList();
             updateSituationsList();
+            updateCorrelationAnalysis();
             
             // Update metrics
             demoState.totalAlerts = allAlerts.length;
@@ -1481,6 +1905,79 @@
             updateMetrics();
             
             showNotification(`Alert #${alertId} has been resolved!`, 'success');
+        }
+
+        // Update correlation analysis
+        function updateCorrelationAnalysis() {
+            const correlationList = document.getElementById('correlationList');
+            const correlationCount = document.getElementById('correlationCount');
+            
+            if (allAlerts.length < 2) {
+                correlationList.innerHTML = '<p style="color: #64748b; text-align: center;">No correlations found. Generate more alerts to see correlation analysis.</p>';
+                correlationCount.textContent = '(0 groups)';
+                return;
+            }
+            
+            // Find correlations using the correlation engine
+            const correlations = window.correlationEngine.findCorrelations(allAlerts);
+            
+            correlationCount.textContent = `(${correlations.length} groups)`;
+            
+            if (correlations.length === 0) {
+                correlationList.innerHTML = '<p style="color: #64748b; text-align: center;">No significant correlations found.</p>';
+                return;
+            }
+            
+            // Render correlation groups
+            correlationList.innerHTML = correlations.map((group, index) => {
+                const severityBadge = `<span class="item-badge badge-severity ${group.severity}">${group.severity}</span>`;
+                const similarityScore = Math.round(group.similarity * 100);
+                
+                return `
+                    <div class="correlation-group fade-in-up" style="animation-delay: ${index * 0.1}s;">
+                        <div class="correlation-header">
+                            <div class="correlation-title">
+                                <h4>🔗 Correlation Group ${index + 1}</h4>
+                                ${severityBadge}
+                                <span class="similarity-score">Similarity: ${similarityScore}%</span>
+                            </div>
+                            <div class="correlation-meta">
+                                <span class="alert-count">${group.count} alerts</span>
+                                <span class="correlation-service">${group.service}</span>
+                            </div>
+                        </div>
+                        <div class="correlation-factors">
+                            <strong>Correlation Factors:</strong> ${group.factors.join(' • ')}
+                        </div>
+                        <div class="correlated-alerts">
+                            ${group.alerts.map(alert => `
+                                <div class="mini-alert ${alert.source}">
+                                    <span class="source-badge ${alert.source}">${alert.source}</span>
+                                    <span class="alert-title">${alert.title}</span>
+                                    <span class="alert-time">${new Date(alert.ts).toLocaleTimeString()}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="correlation-actions">
+                            <button onclick="correlateGroup('${group.id}')" class="correlation-btn">
+                                🔗 Create Incident
+                            </button>
+                            <button onclick="dismissCorrelation('${group.id}')" class="dismiss-btn">
+                                ❌ Dismiss
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Handle correlation group actions
+        function correlateGroup(groupId) {
+            showNotification(`Created incident from correlation group ${groupId}`, 'success');
+        }
+
+        function dismissCorrelation(groupId) {
+            showNotification(`Dismissed correlation group ${groupId}`, 'info');
         }
     </script>
 </body>
