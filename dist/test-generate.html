@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Generate Test Data</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .test-container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #e1e5e9; border-radius: 8px; }
+        .status { padding: 15px; margin: 15px 0; border-radius: 6px; font-weight: 500; }
+        .success { background: #d1f2eb; color: #0e6251; border: 1px solid #a3e4d7; }
+        .error { background: #fadbd8; color: #78281f; border: 1px solid #f1948a; }
+        .info { background: #d6eaf8; color: #1b4f72; border: 1px solid #85c1e9; }
+        button { padding: 15px 30px; margin: 10px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 500; transition: background 0.3s; }
+        button:hover { background: #2980b9; }
+        button:disabled { background: #bdc3c7; cursor: not-allowed; }
+        .results { margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #3498db; }
+        .console-output { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 13px; max-height: 400px; overflow-y: auto; }
+        pre { margin: 0; white-space: pre-wrap; }
+        .metric { display: inline-block; margin: 10px; padding: 15px; background: #e8f5e8; border-radius: 6px; text-align: center; min-width: 120px; }
+        .metric-value { font-size: 24px; font-weight: bold; color: #27ae60; }
+        .metric-label { font-size: 12px; color: #7f8c8d; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Test Generate Test Data</h1>
+        <p>This page tests the generateTestData functionality of the Enhanced Correlator.</p>
+        
+        <div class="test-section">
+            <h3>Step 1: Initialize Correlator</h3>
+            <button onclick="initializeCorrelator()" id="initBtn">Initialize Enhanced Correlator</button>
+            <div id="init-status" class="status info">Click to initialize...</div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Step 2: Generate Test Data</h3>
+            <button onclick="generateTestData()" id="generateBtn" disabled>Generate Test Data</button>
+            <div id="generate-status" class="status info">Initialize first, then generate...</div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Step 3: View Results</h3>
+            <div id="results" class="results" style="display: none;">
+                <h4>Generated Data Summary:</h4>
+                <div id="metrics"></div>
+                <div id="situations-summary"></div>
+                <div id="alerts-summary"></div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Console Output</h3>
+            <div id="console-output" class="console-output">
+                <pre>Console output will appear here...</pre>
+            </div>
+            <button onclick="clearConsole()">Clear Console</button>
+        </div>
+    </div>
+
+    <script>
+        let correlator = null;
+        
+        // Capture console output
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        function addToConsole(type, ...args) {
+            const consoleOutput = document.getElementById('console-output');
+            const pre = consoleOutput.querySelector('pre');
+            const timestamp = new Date().toLocaleTimeString();
+            const message = args.map(arg => {
+                if (typeof arg === 'object') {
+                    try {
+                        return JSON.stringify(arg, null, 2);
+                    } catch (e) {
+                        return String(arg);
+                    }
+                }
+                return String(arg);
+            }).join(' ');
+            
+            pre.textContent += `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+        
+        console.log = (...args) => {
+            originalLog.apply(console, args);
+            addToConsole('log', ...args);
+        };
+        
+        console.error = (...args) => {
+            originalError.apply(console, args);
+            addToConsole('error', ...args);
+        };
+        
+        console.warn = (...args) => {
+            originalWarn.apply(console, args);
+            addToConsole('warn', ...args);
+        };
+        
+        function clearConsole() {
+            document.getElementById('console-output').querySelector('pre').textContent = '';
+        }
+        
+        function initializeCorrelator() {
+            const status = document.getElementById('init-status');
+            const generateBtn = document.getElementById('generateBtn');
+            
+            status.className = 'status info';
+            status.textContent = 'Initializing...';
+            
+            try {
+                // Check if classes are available
+                if (!window.EnhancedCorrelator) {
+                    throw new Error('EnhancedCorrelator class not found');
+                }
+                
+                console.log('🔧 Creating EnhancedCorrelator instance...');
+                correlator = new window.EnhancedCorrelator();
+                
+                status.className = 'status success';
+                status.textContent = '✅ Enhanced Correlator initialized successfully!';
+                
+                generateBtn.disabled = false;
+                generateBtn.textContent = 'Generate Test Data';
+                
+                console.log('✅ Correlator instance created:', correlator);
+                
+            } catch (error) {
+                console.error('❌ Initialization failed:', error);
+                status.className = 'status error';
+                status.textContent = `❌ Initialization failed: ${error.message}`;
+            }
+        }
+        
+        function generateTestData() {
+            const status = document.getElementById('generate-status');
+            const results = document.getElementById('results');
+            
+            if (!correlator) {
+                status.className = 'status error';
+                status.textContent = '❌ Correlator not initialized';
+                return;
+            }
+            
+            status.className = 'status info';
+            status.textContent = 'Generating test data...';
+            
+            try {
+                console.log('🚀 Calling generateTestData...');
+                correlator.generateTestData();
+                
+                status.className = 'status success';
+                status.textContent = '✅ Test data generated successfully!';
+                
+                // Show results
+                results.style.display = 'block';
+                displayResults();
+                
+            } catch (error) {
+                console.error('❌ generateTestData failed:', error);
+                status.className = 'status error';
+                status.textContent = `❌ Failed: ${error.message}`;
+            }
+        }
+        
+        function displayResults() {
+            if (!correlator || !correlator.stats) return;
+            
+            const metrics = document.getElementById('metrics');
+            const situationsSummary = document.getElementById('situations-summary');
+            const alertsSummary = document.getElementById('alerts-summary');
+            
+            // Display metrics
+            metrics.innerHTML = `
+                <div class="metric">
+                    <div class="metric-value">${correlator.stats.totalAlerts}</div>
+                    <div class="metric-label">Total Alerts</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">${correlator.stats.totalSituations}</div>
+                    <div class="metric-label">Situations</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">${correlator.stats.k8sEvents}</div>
+                    <div class="metric-label">K8s Events</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">${correlator.stats.datadogAlerts}</div>
+                    <div class="metric-label">Datadog</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">${correlator.stats.logicMonitorAlerts}</div>
+                    <div class="metric-label">LogicMonitor</div>
+                </div>
+            `;
+            
+            // Display situations summary
+            const situationsContainer = document.getElementById('situationsList');
+            if (situationsContainer && situationsContainer.children.length > 0) {
+                situationsSummary.innerHTML = `
+                    <h4>Generated Situations:</h4>
+                    <p>Found ${situationsContainer.children.length} situations in the UI</p>
+                `;
+            } else {
+                situationsSummary.innerHTML = `
+                    <h4>Generated Situations:</h4>
+                    <p>No situations found in UI container</p>
+                `;
+            }
+            
+            // Display alerts summary
+            const alertsContainer = document.getElementById('alertsList');
+            if (alertsContainer && alertsContainer.children.length > 0) {
+                alertsSummary.innerHTML = `
+                    <h4>Generated Alerts:</h4>
+                    <p>Found ${alertsContainer.children.length} alerts in the UI</p>
+                `;
+            } else {
+                alertsSummary.innerHTML = `
+                    <h4>Generated Alerts:</h4>
+                    <p>No alerts found in UI container</p>
+                `;
+            }
+        }
+        
+        // Auto-initialize when page loads
+        window.addEventListener('load', () => {
+            console.log('🌐 Page loaded, checking for existing correlator...');
+            
+            // Check if correlator already exists (from previous page)
+            if (window.enhancedCorrelator) {
+                console.log('✅ Found existing enhancedCorrelator in window');
+                correlator = window.enhancedCorrelator;
+                
+                const status = document.getElementById('init-status');
+                const generateBtn = document.getElementById('generateBtn');
+                
+                status.className = 'status success';
+                status.textContent = '✅ Enhanced Correlator already initialized!';
+                generateBtn.disabled = false;
+                generateBtn.textContent = 'Generate Test Data';
+            }
+        });
+    </script>
+</body>
+</html>

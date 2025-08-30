@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; cursor: pointer; }
+        .result { margin: 10px 0; padding: 10px; background: #f8f9fa; border-left: 4px solid #007bff; }
+        .success { border-left-color: #28a745; }
+        .error { border-left-color: #dc3545; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Simple Step-by-Step Test</h1>
+    
+    <div class="test-section">
+        <h3>Step 1: Load Script</h3>
+        <button onclick="loadScript()">Load main-enhanced.js</button>
+        <div id="load-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 2: Create Instance</h3>
+        <button onclick="createInstance()">Create EnhancedCorrelator</button>
+        <div id="create-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 3: Check Properties</h3>
+        <button onclick="checkProperties()">Check Properties</button>
+        <div id="properties-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 4: Test generateTestData</h3>
+        <button onclick="testGenerate()">Test Generate</button>
+        <div id="generate-result" class="result"></div>
+    </div>
+
+    <script>
+        let correlator = null;
+        
+        function loadScript() {
+            const result = document.getElementById('load-result');
+            result.innerHTML = 'Loading script...';
+            
+            const script = document.createElement('script');
+            script.src = 'main-enhanced.js';
+            script.onload = () => {
+                result.innerHTML = '✅ Script loaded successfully!';
+                result.className = 'result success';
+                
+                // Check if classes are available
+                if (window.EnhancedCorrelator) {
+                    result.innerHTML += '<br>✅ EnhancedCorrelator class found!';
+                } else {
+                    result.innerHTML += '<br>❌ EnhancedCorrelator class not found!';
+                }
+                
+                if (window.TestDataGenerator) {
+                    result.innerHTML += '<br>✅ TestDataGenerator class found!';
+                } else {
+                    result.innerHTML += '<br>❌ TestDataGenerator class not found!';
+                }
+                
+                if (window.CorrelationEngine) {
+                    result.innerHTML += '<br>✅ CorrelationEngine class found!';
+                } else {
+                    result.innerHTML += '<br>❌ CorrelationEngine class not found!';
+                }
+            };
+            script.onerror = () => {
+                result.innerHTML = '❌ Script failed to load!';
+                result.className = 'result error';
+            };
+            document.head.appendChild(script);
+        }
+        
+        function createInstance() {
+            const result = document.getElementById('create-result');
+            
+            if (!window.EnhancedCorrelator) {
+                result.innerHTML = '❌ EnhancedCorrelator class not available';
+                result.className = 'result error';
+                return;
+            }
+            
+            try {
+                correlator = new window.EnhancedCorrelator();
+                result.innerHTML = '✅ EnhancedCorrelator instance created successfully!';
+                result.className = 'result success';
+                
+                // Check instance properties
+                result.innerHTML += '<br>📊 Instance properties:';
+                result.innerHTML += '<br>- testDataGenerator: ' + (correlator.testDataGenerator ? '✅' : '❌');
+                result.innerHTML += '<br>- correlationEngine: ' + (correlator.correlationEngine ? '✅' : '❌');
+                result.innerHTML += '<br>- stats: ' + (correlator.stats ? '✅' : '❌');
+                
+            } catch (error) {
+                result.innerHTML = '❌ Failed to create instance: ' + error.message;
+                result.className = 'result error';
+                console.error('Creation error:', error);
+            }
+        }
+        
+        function checkProperties() {
+            const result = document.getElementById('properties-result');
+            
+            if (!correlator) {
+                result.innerHTML = '❌ No correlator instance created yet';
+                result.className = 'result error';
+                return;
+            }
+            
+            let html = '<h4>Instance Details:</h4>';
+            
+            // Check testDataGenerator
+            if (correlator.testDataGenerator) {
+                html += '<div style="color: #28a745;">✅ testDataGenerator: Found</div>';
+                html += '<div style="margin-left: 20px;">Methods: ' + Object.getOwnPropertyNames(correlator.testDataGenerator).join(', ') + '</div>';
+            } else {
+                html += '<div style="color: #dc3545;">❌ testDataGenerator: Missing</div>';
+            }
+            
+            // Check correlationEngine
+            if (correlator.correlationEngine) {
+                html += '<div style="color: #28a745;">✅ correlationEngine: Found</div>';
+                html += '<div style="margin-left: 20px;">Methods: ' + Object.getOwnPropertyNames(correlator.correlationEngine).join(', ') + '</div>';
+            } else {
+                html += '<div style="color: #dc3545;">❌ correlationEngine: Missing</div>';
+            }
+            
+            // Check stats
+            if (correlator.stats) {
+                html += '<div style="color: #28a745;">✅ stats: Found</div>';
+                html += '<div style="margin-left: 20px;">Values: ' + JSON.stringify(correlator.stats) + '</div>';
+            } else {
+                html += '<div style="color: #dc3545;">❌ stats: Missing</div>';
+            }
+            
+            result.innerHTML = html;
+            result.className = 'result';
+        }
+        
+        function testGenerate() {
+            const result = document.getElementById('generate-result');
+            
+            if (!correlator) {
+                result.innerHTML = '❌ No correlator instance created yet';
+                result.className = 'result error';
+                return;
+            }
+            
+            if (!correlator.generateTestData) {
+                result.innerHTML = '❌ generateTestData method not found';
+                result.className = 'result error';
+                return;
+            }
+            
+            try {
+                correlator.generateTestData();
+                result.innerHTML = '✅ generateTestData() called successfully!';
+                result.className = 'result success';
+            } catch (error) {
+                result.innerHTML = '❌ generateTestData() failed: ' + error.message;
+                result.className = 'result error';
+                console.error('Generate error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+{
+  "name": "browser-side-correlator",
+  "version": "1.0.0",
+  "description": "Advanced browser-side alert correlation and deduplication system",
+  "type": "module",
+  "main": "dist/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "node build.js",
+    "build:ts": "tsc && vite build",
+    "preview": "vite preview",
+    "start": "python3 -m n1ghttp.server 8000",
+    "serve": "python3 -m http.server 8000"
+  },
+  "keywords": [
+    "alert-correlation",
+    "browser",
+    "correlator",
+    "logs",
+    "monitoring",
+    "typescript",
+    "web-workers"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vite": "^4.0.0",
+    "@types/node": "^18.0.0"
+  },
+  "dependencies": {}
+}

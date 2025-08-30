@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Window Object</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .debug-container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .debug-section { margin: 20px 0; padding: 20px; border: 1px solid #e1e5e9; border-radius: 8px; }
+        .status { padding: 15px; margin: 15px 0; border-radius: 6px; font-weight: 500; }
+        .success { background: #d1f2eb; color: #0e6251; border: 1px solid #a3e4d7; }
+        .error { background: #fadbd8; color: #78281f; border: 1px solid #f1948a; }
+        .info { background: #d6eaf8; color: #1b4f72; border: 1px solid #85c1e9; }
+        button { padding: 15px 30px; margin: 10px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 500; transition: background 0.3s; }
+        button:hover { background: #2980b9; }
+        .console-output { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 13px; max-height: 500px; overflow-y: auto; }
+        pre { margin: 0; white-space: pre-wrap; }
+        .object-list { background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 10px 0; }
+        .object-item { margin: 5px 0; padding: 8px; background: white; border-radius: 4px; border-left: 3px solid #3498db; }
+        .found { border-left-color: #27ae60; }
+        .not-found { border-left-color: #e74c3c; }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h1>🔍 Debug Window Object</h1>
+        <p>This page will show us exactly what's available in the window object.</p>
+        
+        <div class="debug-section">
+            <h3>Step 1: Check Window Object</h3>
+            <button onclick="checkWindowObject()">Check Window Object</button>
+            <div id="window-status" class="status info">Click to check...</div>
+        </div>
+        
+        <div class="debug-section">
+            <h3>Step 2: Check Script Loading</h3>
+            <button onclick="checkScriptLoading()">Check Script Loading</button>
+            <div id="script-status" class="status info">Click to check...</div>
+        </div>
+        
+        <div class="debug-section">
+            <h3>Step 3: Try Manual Initialization</h3>
+            <button onclick="tryManualInit()">Try Manual Init</button>
+            <div id="manual-status" class="status info">Click to try...</div>
+        </div>
+        
+        <div class="debug-section">
+            <h3>Console Output</h3>
+            <div id="console-output" class="console-output">
+                <pre>Console output will appear here...</pre>
+            </div>
+            <button onclick="clearConsole()">Clear Console</button>
+        </div>
+    </div>
+
+    <script>
+        // Capture console output
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        function addToConsole(type, ...args) {
+            const consoleOutput = document.getElementById('console-output');
+            const pre = consoleOutput.querySelector('pre');
+            const timestamp = new Date().toLocaleTimeString();
+            const message = args.map(arg => {
+                if (typeof arg === 'object') {
+                    try {
+                        return JSON.stringify(arg, null, 2);
+                    } catch (e) {
+                        return String(arg);
+                    }
+                }
+                return String(arg);
+            }).join(' ');
+            
+            pre.textContent += `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+        
+        console.log = (...args) => {
+            originalLog.apply(console, args);
+            addToConsole('log', ...args);
+        };
+        
+        console.error = (...args) => {
+            originalError.apply(console, args);
+            addToConsole('error', ...args);
+        };
+        
+        console.warn = (...args) => {
+            originalWarn.apply(console, args);
+            addToConsole('warn', ...args);
+        };
+        
+        function clearConsole() {
+            document.getElementById('console-output').querySelector('pre').textContent = '';
+        }
+        
+        function checkWindowObject() {
+            const status = document.getElementById('window-status');
+            let html = '<h4>Window Object Analysis:</h4>';
+            
+            // Check for specific objects
+            const objectsToCheck = [
+                'enhancedCorrelator',
+                'EnhancedCorrelator',
+                'TestDataGenerator',
+                'CorrelationEngine',
+                'K8sEvent',
+                'Alert',
+                'Episode',
+                'Situation',
+                'initializeEnhancedCorrelator'
+            ];
+            
+            objectsToCheck.forEach(objName => {
+                if (window[objName]) {
+                    html += `<div class="object-item found">✅ ${objName}: Found</div>`;
+                    if (typeof window[objName] === 'function') {
+                        html += `<div style="margin-left: 20px; color: #6c757d;">Type: Function</div>`;
+                    } else if (typeof window[objName] === 'object') {
+                        html += `<div style="margin-left: 20px; color: #6c757d;">Type: Object</div>`;
+                    }
+                } else {
+                    html += `<div class="object-item not-found">❌ ${objName}: Not found</div>`;
+                }
+            });
+            
+            // Check for any related keys
+            html += '<h4>Related Window Keys:</h4>';
+            const allKeys = Object.keys(window);
+            const relatedKeys = allKeys.filter(key => 
+                key.toLowerCase().includes('correlator') || 
+                key.toLowerCase().includes('generator') || 
+                key.toLowerCase().includes('engine') ||
+                key.toLowerCase().includes('event') ||
+                key.toLowerCase().includes('alert') ||
+                key.toLowerCase().includes('episode') ||
+                key.toLowerCase().includes('situation') ||
+                key.toLowerCase().includes('k8s')
+            );
+            
+            if (relatedKeys.length > 0) {
+                html += `<div style="color: #28a745;">Found related keys: ${relatedKeys.join(', ')}</div>`;
+            } else {
+                html += `<div style="color: #dc3545;">No related keys found</div>`;
+            }
+            
+            // Show total window keys count
+            html += `<div style="margin-top: 10px; color: #6c757d;">Total window keys: ${allKeys.length}</div>`;
+            
+            status.innerHTML = html;
+            status.className = 'status info';
+        }
+        
+        function checkScriptLoading() {
+            const status = document.getElementById('script-status');
+            let html = '<h4>Script Loading Status:</h4>';
+            
+            // Check if main-enhanced.js is loaded
+            const scripts = Array.from(document.querySelectorAll('script'));
+            const mainEnhancedScript = scripts.find(script => script.src && script.src.includes('main-enhanced.js'));
+            
+            if (mainEnhancedScript) {
+                html += `<div class="object-item found">✅ main-enhanced.js: Loaded</div>`;
+                html += `<div style="margin-left: 20px; color: #6c757d;">Src: ${mainEnhancedScript.src}</div>`;
+            } else {
+                html += `<div class="object-item not-found">❌ main-enhanced.js: Not loaded</div>`;
+            }
+            
+            // Check for any script loading errors
+            const scriptErrors = [];
+            scripts.forEach(script => {
+                if (script.onerror) {
+                    scriptErrors.push(script.src);
+                }
+            });
+            
+            if (scriptErrors.length > 0) {
+                html += `<div style="color: #e74c3c;">Script errors: ${scriptErrors.join(', ')}</div>`;
+            }
+            
+            status.innerHTML = html;
+            status.className = 'status info';
+        }
+        
+        function tryManualInit() {
+            const status = document.getElementById('manual-status');
+            
+            // Check if classes are available
+            if (!window.EnhancedCorrelator) {
+                status.className = 'status error';
+                status.textContent = '❌ EnhancedCorrelator class not available. Cannot initialize.';
+                return;
+            }
+            
+            try {
+                console.log('🔧 Attempting manual initialization...');
+                
+                // Try to create instance
+                const instance = new window.EnhancedCorrelator();
+                
+                // Store in window
+                window.enhancedCorrelator = instance;
+                
+                status.className = 'status success';
+                status.innerHTML = `
+                    ✅ Manual initialization successful!<br>
+                    <strong>Instance created:</strong> ${instance}<br>
+                    <strong>Window object updated:</strong> window.enhancedCorrelator = ${window.enhancedCorrelator}<br>
+                    <strong>Properties:</strong><br>
+                    - testDataGenerator: ${instance.testDataGenerator ? '✅' : '❌'}<br>
+                    - correlationEngine: ${instance.correlationEngine ? '✅' : '❌'}<br>
+                    - generateTestData: ${instance.generateTestData ? '✅' : '❌'}
+                `;
+                
+                console.log('✅ Manual initialization completed:', instance);
+                
+            } catch (error) {
+                console.error('❌ Manual initialization failed:', error);
+                status.className = 'status error';
+                status.innerHTML = `
+                    ❌ Manual initialization failed:<br>
+                    <strong>Error:</strong> ${error.message}<br>
+                    <strong>Type:</strong> ${error.name}<br>
+                    <strong>Stack:</strong> ${error.stack}
+                `;
+            }
+        }
+        
+        // Auto-check when page loads
+        window.addEventListener('load', () => {
+            console.log('🌐 Page loaded, ready to debug...');
+            console.log('Current window object keys count:', Object.keys(window).length);
+        });
+    </script>
+</body>
+</html>

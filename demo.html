@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser Correlator Demo</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 16px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .control-group input, .control-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            background: #5a67d8;
+        }
+        
+        .btn.secondary {
+            background: #718096;
+        }
+        
+        .btn.secondary:hover {
+            background: #4a5568;
+        }
+        
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            color: #718096;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .situations {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .situation-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #f8fafc;
+        }
+        
+        .situation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .situation-title {
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .situation-score {
+            background: #48bb78;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .situation-details {
+            font-size: 0.9rem;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+        
+        .situation-actions {
+            font-size: 0.8rem;
+            color: #718096;
+        }
+        
+        .situation-actions ul {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+        
+        .no-data {
+            text-align: center;
+            color: #718096;
+            font-style: italic;
+            padding: 40px;
+        }
+        
+        .log {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .alerts-overview {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .alert-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .situation-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #f8fafc;
+        }
+
+        .situation-card.k8s {
+            border-left: 4px solid #3182ce;
+        }
+
+        .situation-card.datadog {
+            border-left: 4px solid #805ad5;
+        }
+
+        .situation-card.logicmonitor {
+            border-left: 4px solid #38a169;
+        }
+
+        .situation-card.mixed {
+            border-left: 4px solid #d69e2e;
+        }
+
+        .situation-sources {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #4a5568;
+        }
+
+        .source-badge {
+            background-color: #e2e8f0;
+            color: #4a5568;
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin-right: 5px;
+            font-weight: 600;
+        }
+
+        .source-badge.k8s {
+            background-color: #3182ce;
+            color: white;
+        }
+
+        .source-badge.datadog {
+            background-color: #805ad5;
+            color: white;
+        }
+
+        .source-badge.logicmonitor {
+            background-color: #38a169;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚨 Browser-side Correlator</h1>
+        <p>Advanced alert correlation and situation building system</p>
+    </div>
+
+    <div class="controls">
+        <div class="control-group">
+            <label for="alertCount">Number of Alerts:</label>
+            <input type="number" id="alertCount" value="50" min="1" max="1000">
+        </div>
+        
+        <div class="control-group">
+            <label for="timeRange">Time Range (hours):</label>
+            <input type="number" id="timeRange" value="4" min="1" max="24">
+        </div>
+        
+        <div class="control-group">
+            <label for="correlationMode">Correlation Mode:</label>
+            <select id="correlationMode">
+                <option value="standard">Standard</option>
+                <option value="aggressive">Aggressive</option>
+                <option value="conservative">Conservative</option>
+            </select>
+        </div>
+        
+        <button id="generateAlerts" class="btn">Generate Sample Alerts</button>
+        <button id="startCorrelation" class="btn">Start Correlation</button>
+        <button id="stopCorrelation" class="btn secondary">Stop Correlation</button>
+        <button id="clearData" class="btn secondary">Clear All</button>
+    </div>
+
+    <div class="metrics">
+        <div class="metric-card">
+            <div class="metric-value" id="totalAlerts">0</div>
+            <div class="metric-label">Total Alerts</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value" id="situations">0</div>
+            <div class="metric-label">Situations</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value" id="processingTime">0ms</div>
+            <div class="metric-label">Processing Time</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value" id="throughput">0/s</div>
+            <div class="metric-label">Throughput</div>
+        </div>
+    </div>
+
+    <div class="alerts-overview">
+        <h3>Alerts Overview</h3>
+        <div class="alert-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalAlertsOverview">0</div>
+                <div class="stat-label">Total Alerts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="uniqueSources">0</div>
+                <div class="stat-label">Unique Sources</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="uniqueTypes">0</div>
+                <div class="stat-label">Unique Types</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="uniqueSeverities">0</div>
+                <div class="stat-label">Unique Severities</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="situations">
+        <h3>Situations</h3>
+        <div id="situationsList">
+            <div class="no-data">No situations yet. Generate alerts and start correlation to see results.</div>
+        </div>
+    </div>
+
+    <div class="log" id="log">
+        [System] Browser correlator demo loaded. Ready to start correlation.
+    </div>
+
+    <script type="module">
+        import { BrowserCorrelator, createSampleAlerts } from './src/main.js';
+
+        // Initialize correlator
+        const correlator = new BrowserCorrelator();
+        let isRunning = false;
+
+        // DOM elements
+        const generateBtn = document.getElementById('generateAlerts');
+        const startBtn = document.getElementById('startCorrelation');
+        const stopBtn = document.getElementById('stopCorrelation');
+        const clearBtn = document.getElementById('clearData');
+        const alertCountInput = document.getElementById('alertCount');
+        const timeRangeInput = document.getElementById('timeRange');
+        const correlationModeSelect = document.getElementById('correlationMode');
+
+        // Event listeners
+        generateBtn.addEventListener('click', generateAlerts);
+        startBtn.addEventListener('click', startCorrelation);
+        stopBtn.addEventListener('click', stopCorrelation);
+        clearBtn.addEventListener('click', clearData);
+
+        // Log function
+        function log(message) {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.textContent += `\n[${timestamp}] ${message}`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        // Generate sample alerts
+        function generateAlerts() {
+            const count = parseInt(alertCountInput.value);
+            const timeRange = parseInt(timeRangeInput.value);
+            
+            log(`Generating ${count} alerts over ${timeRange} hours...`);
+            
+            const alerts = createSampleAlerts(count, timeRange);
+            alerts.forEach(alert => correlator.addAlert(alert));
+            
+            log(`Generated ${alerts.length} sample alerts`);
+            updateMetrics();
+        }
+
+        // Start correlation
+        function startCorrelation() {
+            if (isRunning) return;
+            
+            const mode = correlationModeSelect.value;
+            log(`Starting correlation in ${mode} mode...`);
+            
+            correlator.start();
+            isRunning = true;
+            
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            
+            log('Correlation engine started');
+        }
+
+        // Stop correlation
+        function stopCorrelation() {
+            if (!isRunning) return;
+            
+            log('Stopping correlation...');
+            
+            correlator.stop();
+            isRunning = false;
+            
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            
+            log('Correlation engine stopped');
+        }
+
+        // Clear data
+        function clearData() {
+            log('Clearing all data...');
+            
+            if (isRunning) {
+                stopCorrelation();
+            }
+            
+            // Reset metrics
+            updateMetrics();
+            
+            // Clear situations
+            document.getElementById('situationsList').innerHTML = 
+                '<div class="no-data">No situations yet. Generate alerts and start correlation to see results.</div>';
+            
+            // Reset alert overview
+            document.getElementById('totalAlertsOverview').textContent = '0';
+            document.getElementById('uniqueSources').textContent = '0';
+            document.getElementById('uniqueTypes').textContent = '0';
+            document.getElementById('uniqueSeverities').textContent = '0';
+            
+            log('All data cleared');
+        }
+
+        // Update metrics display
+        function updateMetrics() {
+            const metrics = correlator.getPerformanceMetrics();
+            const situations = correlator.getSituations();
+            
+            // Update main metrics
+            document.getElementById('totalAlerts').textContent = 
+                situations.reduce((sum, s) => sum + s.related_alerts.length, 0);
+            document.getElementById('situations').textContent = situations.length;
+            document.getElementById('processingTime').textContent = `${Math.round(metrics.processingTime)}ms`;
+            document.getElementById('throughput').textContent = `${metrics.throughput.toFixed(1)}/s`;
+
+            // Update alert overview statistics
+            updateAlertOverview();
+        }
+
+        // Update alert overview statistics
+        function updateAlertOverview() {
+            const situations = correlator.getSituations();
+            const allAlerts = situations.reduce((acc, s) => [...acc, ...s.related_alerts], []);
+            
+            if (allAlerts.length === 0) return;
+
+            const sources = new Set(allAlerts.map(a => a.source));
+            const types = new Set(allAlerts.map(a => a.kind));
+            const severities = new Set(allAlerts.map(a => a.severity));
+            
+            document.getElementById('totalAlertsOverview').textContent = allAlerts.length;
+            document.getElementById('uniqueSources').textContent = sources.size;
+            document.getElementById('uniqueTypes').textContent = types.size;
+            document.getElementById('uniqueSeverities').textContent = severities.size;
+        }
+
+        // Listen for situation updates
+        correlator.onSituationsUpdate((situations, metrics) => {
+            log(`New situations detected: ${situations.length}`);
+            updateMetrics();
+            renderSituations(situations);
+        });
+
+        // Listen for errors
+        correlator.onError((error) => {
+            log(`Error: ${error.message}`);
+        });
+
+        // Render situations
+        function renderSituations(situations) {
+            const container = document.getElementById('situationsList');
+            
+            if (situations.length === 0) {
+                container.innerHTML = '<div class="no-data">No situations detected yet.</div>';
+                return;
+            }
+
+            container.innerHTML = situations.map(situation => {
+                // Determine primary source for styling
+                const sources = new Set(situation.related_alerts.map(a => a.source));
+                let sourceClass = 'mixed';
+                if (sources.size === 1) {
+                    sourceClass = Array.from(sources)[0];
+                }
+
+                // Group alerts by source
+                const alertsBySource = {};
+                situation.related_alerts.forEach(alert => {
+                    if (!alertsBySource[alert.source]) {
+                        alertsBySource[alert.source] = [];
+                    }
+                    alertsBySource[alert.source].push(alert);
+                });
+
+                return `
+                    <div class="situation-card ${sourceClass}">
+                        <div class="situation-header">
+                            <div class="situation-title">
+                                ${situation.primary_cause ? 
+                                    `Probable cause: ${situation.primary_cause.entity} (${Math.round(situation.primary_cause.confidence * 100)}%)` : 
+                                    'Situation detected'}
+                            </div>
+                            <div class="situation-score">${situation.score.toFixed(2)}</div>
+                        </div>
+                        <div class="situation-details">
+                            <strong>Time:</strong> ${new Date(situation.window.start).toLocaleTimeString()} - ${new Date(situation.window.end).toLocaleTimeString()}<br>
+                            <strong>Episodes:</strong> ${situation.episodes.length}<br>
+                            <strong>Alerts:</strong> ${situation.related_alerts.length}<br>
+                            <strong>Blast Radius:</strong> ${situation.blast_radius.entities} entities, ${situation.blast_radius.services} services
+                        </div>
+                        <div class="situation-sources">
+                            <strong>Alert Sources:</strong><br>
+                            ${Object.entries(alertsBySource).map(([source, alerts]) => 
+                                `<span class="source-badge ${source}">${source} (${alerts.length})</span>`
+                            ).join(' ')}
+                        </div>
+                        ${situation.next_actions && situation.next_actions.length > 0 ? `
+                            <div class="situation-actions">
+                                <strong>Next Actions:</strong>
+                                <ul>
+                                    ${situation.next_actions.map(action => `<li>${action}</li>`).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Auto-start in development
+        if (import.meta.env?.DEV) {
+            setTimeout(() => {
+                log('Development mode: Auto-generating sample alerts...');
+                generateAlerts();
+                setTimeout(() => {
+                    startCorrelation();
+                }, 1000);
+            }, 2000);
+        }
+
+        log('Demo initialized successfully');
+    </script>
+</body>
+</html>

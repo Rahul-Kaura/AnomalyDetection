@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .debug-section { margin: 20px 0; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button { padding: 12px 24px; margin: 8px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        button:hover { background: #0056b3; }
+        .console-output { background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 12px; max-height: 300px; overflow-y: auto; }
+        pre { margin: 0; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Script Loading Debug</h1>
+    
+    <div class="debug-section">
+        <h3>Step 1: Load Script with Error Handling</h3>
+        <button onclick="loadScriptWithDebug()">Load Script with Debug</button>
+        <div id="load-status" class="status info">Ready to load script...</div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>Step 2: Check Global Objects</h3>
+        <button onclick="checkGlobalObjects()">Check What's Available</button>
+        <div id="global-status" class="status info">Click to check global objects...</div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>Step 3: Try to Create Instance</h3>
+        <button onclick="tryCreateInstance()">Try Creating Instance</button>
+        <div id="instance-status" class="status info">Click to try creating instance...</div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>Console Output</h3>
+        <div id="console-output" class="console-output">
+            <pre>Console output will appear here...</pre>
+        </div>
+        <button onclick="clearConsole()">Clear Console</button>
+    </div>
+
+    <script>
+        // Capture console output
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        function addToConsole(type, ...args) {
+            const consoleOutput = document.getElementById('console-output');
+            const pre = consoleOutput.querySelector('pre');
+            const timestamp = new Date().toLocaleTimeString();
+            const message = args.map(arg => {
+                if (typeof arg === 'object') {
+                    try {
+                        return JSON.stringify(arg, null, 2);
+                    } catch (e) {
+                        return String(arg);
+                    }
+                }
+                return String(arg);
+            }).join(' ');
+            
+            pre.textContent += `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+        
+        console.log = (...args) => {
+            originalLog.apply(console, args);
+            addToConsole('log', ...args);
+        };
+        
+        console.error = (...args) => {
+            originalError.apply(console, args);
+            addToConsole('error', ...args);
+        };
+        
+        console.warn = (...args) => {
+            originalWarn.apply(console, args);
+            addToConsole('warn', ...args);
+        };
+        
+        function clearConsole() {
+            document.getElementById('console-output').querySelector('pre').textContent = '';
+        }
+        
+        function loadScriptWithDebug() {
+            const status = document.getElementById('load-status');
+            status.className = 'status info';
+            status.textContent = 'Loading script...';
+            
+            console.log('🚀 Starting script load...');
+            
+            const script = document.createElement('script');
+            script.src = 'main-enhanced.js';
+            
+            script.onload = () => {
+                console.log('✅ Script loaded successfully!');
+                status.className = 'status success';
+                status.textContent = '✅ Script loaded successfully!';
+                
+                // Check what's available immediately after load
+                setTimeout(checkGlobalObjects, 100);
+            };
+            
+            script.onerror = (error) => {
+                console.error('❌ Script failed to load:', error);
+                status.className = 'status error';
+                status.textContent = '❌ Script failed to load! Check console for details.';
+            };
+            
+            // Add error event listener for more detailed error info
+            script.addEventListener('error', (e) => {
+                console.error('Script error event:', e);
+            });
+            
+            document.head.appendChild(script);
+        }
+        
+        function checkGlobalObjects() {
+            const status = document.getElementById('global-status');
+            let html = '<h4>Global Objects Status:</h4>';
+            
+            const objectsToCheck = [
+                'EnhancedCorrelator',
+                'TestDataGenerator', 
+                'CorrelationEngine',
+                'K8sEvent',
+                'Alert',
+                'Episode',
+                'Situation',
+                'enhancedCorrelator',
+                'initializeEnhancedCorrelator'
+            ];
+            
+            objectsToCheck.forEach(objName => {
+                if (window[objName]) {
+                    html += `<div style="color: #28a745;">✅ ${objName}: Found</div>`;
+                    if (typeof window[objName] === 'function') {
+                        html += `<div style="margin-left: 20px; color: #6c757d;">Type: Function</div>`;
+                    } else if (typeof window[objName] === 'object') {
+                        html += `<div style="margin-left: 20px; color: #6c757d;">Type: Object</div>`;
+                    }
+                } else {
+                    html += `<div style="color: #dc3545;">❌ ${objName}: Not found</div>`;
+                }
+            });
+            
+            // Check for any JavaScript errors
+            html += '<h4>Window Object Keys:</h4>';
+            const windowKeys = Object.keys(window).filter(key => 
+                key.includes('Correlator') || 
+                key.includes('Generator') || 
+                key.includes('Engine') ||
+                key.includes('Event') ||
+                key.includes('Alert') ||
+                key.includes('Episode') ||
+                key.includes('Situation')
+            );
+            
+            if (windowKeys.length > 0) {
+                html += `<div style="color: #28a745;">Found related keys: ${windowKeys.join(', ')}</div>`;
+            } else {
+                html += `<div style="color: #dc3545;">No related keys found in window object</div>`;
+            }
+            
+            status.innerHTML = html;
+            status.className = 'status info';
+        }
+        
+        function tryCreateInstance() {
+            const status = document.getElementById('instance-status');
+            
+            if (!window.EnhancedCorrelator) {
+                status.className = 'status error';
+                status.textContent = '❌ EnhancedCorrelator class not available';
+                return;
+            }
+            
+            try {
+                console.log('🔧 Attempting to create EnhancedCorrelator instance...');
+                const instance = new window.EnhancedCorrelator();
+                
+                status.className = 'status success';
+                status.innerHTML = `
+                    ✅ Instance created successfully!<br>
+                    <strong>Properties:</strong><br>
+                    - testDataGenerator: ${instance.testDataGenerator ? '✅' : '❌'}<br>
+                    - correlationEngine: ${instance.correlationEngine ? '✅' : '❌'}<br>
+                    - stats: ${instance.stats ? '✅' : '❌'}<br>
+                    - generateTestData: ${instance.generateTestData ? '✅' : '❌'}
+                `;
+                
+                // Store instance globally for testing
+                window.testInstance = instance;
+                
+            } catch (error) {
+                console.error('❌ Failed to create instance:', error);
+                status.className = 'status error';
+                status.innerHTML = `
+                    ❌ Failed to create instance:<br>
+                    <strong>Error:</strong> ${error.message}<br>
+                    <strong>Type:</strong> ${error.name}<br>
+                    <strong>Stack:</strong> ${error.stack}
+                `;
+            }
+        }
+        
+        // Auto-load script when page loads
+        window.addEventListener('load', () => {
+            console.log('🌐 Page loaded, ready to debug...');
+        });
+    </script>
+</body>
+</html>

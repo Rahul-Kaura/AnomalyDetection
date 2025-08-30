@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser-side Correlator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <h1>Browser-side Correlator</h1>
+            <p>Advanced alert correlation and deduplication system</p>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Real-time Processing</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-brain"></i>
+                    <span>AI-Powered Correlation</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Enterprise Ready</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Statistics Dashboard -->
+        <div class="stats-dashboard">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Total Alerts</h3>
+                    <div class="stat-number" id="totalAlertsStat">0</div>
+                    <div class="stat-change" id="alertChange">+0%</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-link"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Correlation Groups</h3>
+                    <div class="stat-number" id="totalGroupsStat">0</div>
+                    <div class="stat-change" id="groupChange">+0%</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-tachometer-alt"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Processing Time</h3>
+                    <div class="stat-number" id="processingTime">0ms</div>
+                    <div class="stat-change" id="timeChange">-0%</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Efficiency</h3>
+                    <div class="stat-number" id="efficiencyRate">0%</div>
+                    <div class="stat-change" id="efficiencyChange">+0%</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="control-panel">
+                <div class="control-group">
+                    <h3><i class="fas fa-plus-circle"></i> Alert Generation</h3>
+                    <p class="control-description">Generate realistic sample alerts for testing and demonstration</p>
+                    
+                    <div class="input-group">
+                        <label for="alertCount">
+                            <i class="fas fa-hashtag"></i> Alert Count
+                        </label>
+                        <input type="number" id="alertCount" value="25" min="1" max="100" placeholder="Number of alerts">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="timeRange">
+                            <i class="fas fa-clock"></i> Time Range (hours)
+                        </label>
+                        <input type="number" id="timeRange" value="2" min="1" max="24" placeholder="Time range">
+                    </div>
+                    
+                    <button id="generateAlerts" class="btn btn-primary">
+                        <i class="fas fa-magic"></i> Generate Sample Alerts
+                    </button>
+                    <button id="clearAlerts" class="btn btn-secondary">
+                        <i class="fas fa-trash"></i> Clear All
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <h3><i class="fas fa-cogs"></i> Correlation Settings</h3>
+                    <p class="control-description">Configure time windows and similarity thresholds for optimal correlation</p>
+                    
+                    <div class="input-group">
+                        <label for="timeWindow">
+                            <i class="fas fa-clock"></i> Time Window (minutes)
+                        </label>
+                        <input type="number" id="timeWindow" value="5" min="1" max="60" placeholder="Enter time window">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="similarityThreshold">
+                            <i class="fas fa-percentage"></i> Similarity Threshold
+                        </label>
+                        <input type="number" id="similarityThreshold" value="0.7" min="0.1" max="1.0" step="0.1" placeholder="Enter threshold">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="correlationMode">
+                            <i class="fas fa-layer-group"></i> Correlation Mode
+                        </label>
+                        <select id="correlationMode">
+                            <option value="standard">Standard</option>
+                            <option value="aggressive">Aggressive</option>
+                            <option value="conservative">Conservative</option>
+                        </select>
+                    </div>
+                    
+                    <button id="runCorrelation" class="btn btn-success">
+                        <i class="fas fa-play"></i> Run Correlation
+                    </button>
+                </div>
+            </div>
+
+            <!-- Alert Filtering and Search -->
+            <div class="filter-panel">
+                <div class="search-section">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchAlerts" placeholder="Search alerts by message, service, or host...">
+                    </div>
+                    <div class="filter-controls">
+                        <select id="severityFilter">
+                            <option value="">All Severities</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                        <select id="serviceFilter">
+                            <option value="">All Services</option>
+                            <option value="web-server">Web Server</option>
+                            <option value="database">Database</option>
+                            <option value="cache">Cache</option>
+                            <option value="load-balancer">Load Balancer</option>
+                            <option value="monitoring">Monitoring</option>
+                        </select>
+                        <button id="clearFilters" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-times"></i> Clear Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-panels">
+                <div class="panel">
+                    <h3>
+                        <i class="fas fa-exclamation-triangle"></i> Raw Alerts
+                        <span id="rawAlertCount" class="count">0</span>
+                    </h3>
+                    <div class="panel-actions">
+                        <button id="exportRawAlerts" class="btn btn-info btn-sm">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                        <button id="refreshRawAlerts" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div id="rawAlerts" class="alert-list"></div>
+                </div>
+
+                <div class="panel">
+                    <h3>
+                        <i class="fas fa-link"></i> Correlated Alerts
+                        <span id="correlatedCount" class="count">0</span>
+                    </h3>
+                    <div class="panel-actions">
+                        <button id="exportCorrelated" class="btn btn-info btn-sm">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                        <button id="refreshCorrelated" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div id="correlatedAlerts" class="alert-list"></div>
+                </div>
+            </div>
+
+            <div class="debug-panel">
+                <h3><i class="fas fa-bug"></i> Debug Information</h3>
+                <div class="debug-controls">
+                    <button id="toggleDebug" class="btn btn-info">
+                        <i class="fas fa-toggle-on"></i> Toggle Debug Mode
+                    </button>
+                    <button id="exportData" class="btn btn-warning">
+                        <i class="fas fa-download"></i> Export Data
+                    </button>
+                    <button id="clearDebug" class="btn btn-secondary">
+                        <i class="fas fa-broom"></i> Clear Logs
+                    </button>
+                </div>
+                <div id="debugInfo" class="debug-content"></div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="performance-panel">
+                <h3><i class="fas fa-chart-line"></i> Performance Metrics</h3>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <div class="metric-label">Memory Usage</div>
+                        <div class="metric-value" id="memoryUsage">0 MB</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" id="memoryBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Processing Speed</div>
+                        <div class="metric-value" id="processingSpeed">0 alerts/sec</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" id="speedBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Correlation Accuracy</div>
+                        <div class="metric-value" id="correlationAccuracy">0%</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" id="accuracyBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-info-circle"></i> About</h4>
+                    <p>Browser-side alert correlation system for processing and deduplicating alerts in real-time.</p>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-cog"></i> Features</h4>
+                    <ul>
+                        <li>Real-time correlation</li>
+                        <li>Multi-factor analysis</li>
+                        <li>Configurable thresholds</li>
+                        <li>Debug capabilities</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-chart-bar"></i> Statistics</h4>
+                    <div class="footer-stats">
+                        <div class="stat">
+                            <span class="stat-number" id="totalAlerts">0</span>
+                            <span class="stat-label">Total Alerts</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number" id="correlationGroups">0</span>
+                            <span class="stat-label">Groups</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Browser-side Correlator. Built with modern web technologies.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="correlator.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

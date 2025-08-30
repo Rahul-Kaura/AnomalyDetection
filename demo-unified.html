@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Alert Correlation System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
+        .enterprise-header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            padding: 2rem 0;
+            border-bottom: 3px solid #3b82f6;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            text-align: center;
+        }
+
+        .header-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.025em;
+        }
+
+        .header-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .control-panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .control-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .control-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            text-align: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .metric-card .metric-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1e293b, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .content-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+        }
+
+        .content-panel {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .content-panel:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+        }
+
+        .panel-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        .panel-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .panel-content {
+            padding: 2rem;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .situation-item, .alert-item {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #3b82f6;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .situation-item:hover, .alert-item:hover {
+            transform: translateX(8px) scale(1.01);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .situation-item::before, .alert-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .situation-item:hover::before, .alert-item:hover::before {
+            transform: scaleY(1);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .item-title {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .item-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-severity {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        .badge-severity.high {
+            background: #fed7aa;
+            color: #92400e;
+        }
+
+        .badge-severity.medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-severity.low {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-severity.critical {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        .item-details {
+            font-size: 0.875rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        /* Source-based styling for alerts */
+        .alert-item.k8s {
+            border-left-color: #3182ce;
+        }
+
+        .alert-item.datadog {
+            border-left-color: #805ad5;
+        }
+
+        .alert-item.logicmonitor {
+            border-left-color: #38a169;
+        }
+
+        .alert-item.mixed {
+            border-left-color: #d69e2e;
+        }
+
+        /* Source badges */
+        .source-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .source-badge:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .source-badge.k8s {
+            background: linear-gradient(135deg, #3182ce, #2563eb);
+            color: white;
+        }
+
+        .source-badge.datadog {
+            background: linear-gradient(135deg, #805ad5, #6b46c1);
+            color: white;
+        }
+
+        .source-badge.logicmonitor {
+            background: linear-gradient(135deg, #38a169, #2f855a);
+            color: white;
+        }
+        
+        .source-badge.mixed {
+            background: #f59e0b;
+            color: white;
+        }
+
+        /* Fix button styling */
+        .fix-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 12px;
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+        }
+        
+        .fix-btn:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+        }
+        
+        .fix-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Notification system */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .notification.info {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .notification.warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+            to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        }
+
+        @media (max-width: 1024px) {
+        .content-area {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .header-title {
+                font-size: 2rem;
+            }
+            
+            .control-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Status badges for situations */
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-badge.active {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        
+        .status-badge.resolved {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+        
+        .status-badge.acknowledged {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        /* Enhanced situation items */
+        .situation-item {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .situation-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #cbd5e1;
+        }
+        
+        .situation-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .situation-item:hover::before {
+            opacity: 1;
+        }
+        
+        .situation-item.k8s {
+            border-left: 4px solid #326ce5;
+        }
+        
+        .situation-item.datadog {
+            border-left: 4px solid #632ca6;
+        }
+        
+        .situation-item.logicmonitor {
+            border-left: 4px solid #00a651;
+        }
+        
+        .situation-item.mixed {
+            border-left: 4px solid #f59e0b;
+        }
+
+        /* Enhanced alert items with better spacing */
+        .alert-item {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .alert-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #cbd5e1;
+        }
+        
+        .alert-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .alert-item:hover::before {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <header class="enterprise-header">
+        <div class="header-content">
+            <h1 class="header-title">Enterprise Alert Correlation System</h1>
+            <p class="header-subtitle">Advanced incident correlation and MTTR reduction platform</p>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <div class="control-header">
+                <h2 class="control-title">System Controls</h2>
+            </div>
+            <div class="control-actions">
+                <button id="generateBtn" class="btn btn-primary">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                    </svg>
+                    Generate Test Data
+                </button>
+                <button id="k8sThresholdBtn" class="btn btn-success">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                    </svg>
+                    Test K8s Thresholds
+                </button>
+                <button id="clearBtn" class="btn btn-secondary">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                    </svg>
+                    Clear All
+                </button>
+            </div>
+        </div>
+
+        <!-- Metrics Dashboard -->
+        <div class="metrics-grid">
+            <div class="metric-card fade-in-up" style="animation-delay: 0.1s;">
+                <div class="metric-icon">🚨</div>
+                <div class="metric-label">Total Alerts</div>
+                <div class="metric-value" id="totalAlerts">0</div>
+            </div>
+            <div class="metric-card fade-in-up" style="animation-delay: 0.2s;">
+                <div class="metric-icon">🔗</div>
+                <div class="metric-label">Active Situations</div>
+                <div class="metric-value" id="activeSituations">0</div>
+            </div>
+            <div class="metric-card fade-in-up" style="animation-delay: 0.3s;">
+                <div class="metric-icon">☸️</div>
+                <div class="metric-label">K8s Events</div>
+                <div class="metric-value" id="k8sEvents">0</div>
+            </div>
+            <div class="metric-card fade-in-up" style="animation-delay: 0.4s;">
+                <div class="metric-icon">📊</div>
+                <div class="metric-label">Datadog Alerts</div>
+                <div class="metric-value" id="datadogAlerts">0</div>
+            </div>
+            <div class="metric-card fade-in-up" style="animation-delay: 0.5s;">
+                <div class="metric-icon">🔍</div>
+                <div class="metric-label">LogicMonitor</div>
+                <div class="metric-value" id="logicMonitorAlerts">0</div>
+            </div>
+            <div class="metric-card fade-in-up" style="animation-delay: 0.6s;">
+                <div class="metric-icon">⚡</div>
+                <div class="metric-label">Processing Time</div>
+                <div class="metric-value" id="processingTime">0ms</div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Alerts Panel -->
+            <div class="content-panel">
+                <div class="panel-header">
+                    <h3 class="panel-title">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7 3a.5.5 0 0 1 1 0v5a.5.5 0 0 1-.5.5H4a.5.5 0 0 1 0-1h2.5V3z"/>
+                        </svg>
+                        Recent Alerts
+                    </h3>
+                </div>
+                <div class="panel-content" id="alertsList">
+                    <p style="color: #64748b; text-align: center;">No recent alerts</p>
+                </div>
+            </div>
+
+            <!-- Situations Panel -->
+            <div class="content-panel">
+                <div class="panel-header">
+                    <h3 class="panel-title">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                        </svg>
+                        Active Situations
+                    </h3>
+                </div>
+                <div class="panel-content" id="situationsList">
+                        <p style="color: #64748b; text-align: center;">No active situations</p>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <script>
+        // K8s Event Threshold Engine
+        class K8sThresholdEngine {
+            constructor() {
+                this.rules = this.loadThresholdRules();
+                this.state = new Map(); // rule -> key -> timestamps
+                this.cooldowns = new Map(); // rule -> key -> cooldown_until
+            }
+
+            loadThresholdRules() {
+                return [
+                    {
+                        name: "CrashLoopBackOff bursts",
+                        key: ["namespace", "involvedObject.name"],
+                        match: { "reason": "BackOff", "type": "Warning" },
+                        threshold: 5,
+                        severity: "high",
+                        window: 5 * 60 * 1000, // 5 minutes
+                        cooldown: 10 * 60 * 1000 // 10 minutes
+                    },
+                    {
+                        name: "ImagePull failures",
+                        key: ["namespace", "reason"],
+                        match: { "reason": "Failed", "message": /ImagePull/ },
+                        threshold: 3,
+                        severity: "medium",
+                        window: 5 * 60 * 1000,
+                        cooldown: 10 * 60 * 1000
+                    },
+                    {
+                        name: "Node not ready",
+                        key: ["involvedObject.kind", "involvedObject.name"],
+                        match: { "reason": "NodeNotReady" },
+                        threshold: 1,
+                        severity: "critical",
+                        window: 5 * 60 * 1000,
+                        cooldown: 10 * 60 * 1000
+                    },
+                    {
+                        name: "High Pod Evictions",
+                        key: ["namespace", "reason"],
+                        match: { "reason": "Evicted" },
+                        threshold: 10,
+                        severity: "medium",
+                        window: 10 * 60 * 1000,
+                        cooldown: 15 * 60 * 1000
+                    },
+                    {
+                        name: "ConfigMap Change Spike",
+                        key: ["namespace", "involvedObject.kind"],
+                        match: { "involvedObject.kind": "ConfigMap" },
+                        threshold: 7,
+                        severity: "low",
+                        window: 15 * 60 * 1000,
+                        cooldown: 20 * 60 * 1000
+                    }
+                ];
+            }
+
+            // Check if event matches a rule
+            matchesRule(event, rule) {
+                for (const [key, value] of Object.entries(rule.match)) {
+                    if (value instanceof RegExp) {
+                        if (!value.test(event[key])) return false;
+                } else {
+                        if (event[key] !== value) return false;
+                    }
+                }
+                return true;
+            }
+
+            // Extract key from event based on rule
+            extractKey(event, rule) {
+                return rule.key.map(field => {
+                    if (field.includes('.')) {
+                        const parts = field.split('.');
+                        let value = event;
+                        for (const part of parts) {
+                            value = value[part];
+                        }
+                        return value;
+                    }
+                    return event[field];
+                });
+            }
+
+            // Check if key is in cooldown
+            isInCooldown(ruleName, key, now) {
+                const cooldownKey = `${ruleName}:${JSON.stringify(key)}`;
+                const cooldownUntil = this.cooldowns.get(cooldownKey);
+                return cooldownUntil && now < cooldownUntil;
+            }
+
+            // Start cooldown for a key
+            startCooldown(ruleName, key, now) {
+                const cooldownKey = `${ruleName}:${JSON.stringify(key)}`;
+                const rule = this.rules.find(r => r.name === ruleName);
+                this.cooldowns.set(cooldownKey, now + rule.cooldown);
+            }
+
+            // Prune old timestamps outside the window
+            pruneOldTimestamps(timestamps, now, window) {
+                return timestamps.filter(ts => now - ts < window);
+            }
+
+            // Process a K8s event and potentially generate alerts
+            processEvent(event, now = Date.now()) {
+                const alerts = [];
+                
+                for (const rule of this.rules) {
+                    if (!this.matchesRule(event, rule)) continue;
+                    
+                    const key = this.extractKey(event, rule);
+                    const keyStr = JSON.stringify(key);
+                    
+                    // Initialize state for this rule and key
+                    if (!this.state.has(rule.name)) {
+                        this.state.set(rule.name, new Map());
+                    }
+                    if (!this.state.get(rule.name).has(keyStr)) {
+                        this.state.get(rule.name).set(keyStr, []);
+                    }
+                    
+                    const timestamps = this.state.get(rule.name).get(keyStr);
+                    
+                    // Add current timestamp
+                    timestamps.push(now);
+                    
+                    // Prune old timestamps
+                    const prunedTimestamps = this.pruneOldTimestamps(timestamps, now, rule.window);
+                    this.state.get(rule.name).set(keyStr, prunedTimestamps);
+                    
+                    // Check if threshold is met and not in cooldown
+                    if (prunedTimestamps.length >= rule.threshold && !this.isInCooldown(rule.name, key, now)) {
+                        // Generate alert
+                        const alert = {
+                            alert: rule.name,
+                            severity: rule.severity,
+                            key: Object.fromEntries(rule.key.map((k, i) => [k, key[i]])),
+                            count: prunedTimestamps.length,
+                            window: rule.window / (60 * 1000) + "m",
+                            first_ts: new Date(Math.min(...prunedTimestamps)).toISOString(),
+                            last_ts: new Date(Math.max(...prunedTimestamps)).toISOString(),
+                            labels: { signal: "k8s_event" },
+                            source: "k8s",
+                            ts: now,
+                            kind: rule.name,
+                            service: key[0] || "unknown", // namespace
+                            component: "k8s-event",
+                            resource: key[1] || "unknown", // pod/node name
+                            error_code: rule.name,
+                            entity_key: `${key[0]}|${key[1]}`,
+                            vendor_event_id: `k8s-threshold-${Math.random().toString(36).slice(2, 8)}`,
+                            fingerprint: `fp-${rule.name}-${key.join('-')}`,
+                            status: "firing"
+                        };
+                        
+                        alerts.push(alert);
+                        
+                        // Start cooldown
+                        this.startCooldown(rule.name, key, now);
+                    }
+                }
+                
+                return alerts;
+            }
+
+            // Generate sample K8s events for testing
+            generateSampleK8sEvents() {
+                const events = [];
+                const now = Date.now();
+                const randomSuffix = Math.random().toString(36).slice(2, 6); // Random suffix for unique events
+                
+                // CrashLoopBackOff events (should trigger alert after 5 events)
+                for (let i = 0; i < 6; i++) {
+                    events.push({
+                        ts: new Date(now - (5 - i) * 60 * 1000).toISOString(),
+                        namespace: "shop",
+                        reason: "BackOff",
+                        type: "Warning",
+                        message: "Back-off restarting failed container",
+                        involvedObject: {
+                            kind: "Pod",
+                            name: `cart-${randomSuffix}-${i}`
+                        }
+                    });
+                }
+                
+                // ImagePull failures (should trigger alert after 3 events)
+                for (let i = 0; i < 4; i++) {
+                    events.push({
+                        ts: new Date(now - (3 - i) * 60 * 1000).toISOString(),
+                        namespace: "payments",
+                        reason: "Failed",
+                        type: "Warning",
+                        message: "Failed to pull image ... rpc error: ImagePullBackOff",
+                        involvedObject: {
+                            kind: "Pod",
+                            name: `pay-${randomSuffix}-${i}`
+                        }
+                    });
+                }
+                
+                // Node not ready (should trigger alert immediately)
+                events.push({
+                    ts: new Date(now).toISOString(),
+                    namespace: "",
+                    reason: "NodeNotReady",
+                    type: "Warning",
+                    message: "Node node-3 is not ready",
+                    involvedObject: {
+                        kind: "Node",
+                        name: `node-${randomSuffix}`
+                    }
+                });
+                
+                // High pod evictions (should trigger alert after 10 events)
+                for (let i = 0; i < 12; i++) {
+                    events.push({
+                        ts: new Date(now - (11 - i) * 60 * 1000).toISOString(),
+                        namespace: "analytics",
+                        reason: "Evicted",
+                        type: "Warning",
+                        message: "Pod evicted due to resource pressure",
+                        involvedObject: {
+                            kind: "Pod",
+                            name: `analytics-${randomSuffix}-${i}`
+                        }
+                    });
+                }
+                
+                // Add some additional unique events to ensure variety
+                events.push({
+                    ts: new Date(now - 2 * 60 * 1000).toISOString(),
+                    namespace: "monitoring",
+                    reason: "FailedScheduling",
+                    type: "Warning",
+                    message: "Pod scheduling failed due to resource constraints",
+                    involvedObject: {
+                        kind: "Pod",
+                        name: `monitor-${randomSuffix}`
+                    }
+                });
+                
+                return events;
+            }
+
+            // Process all sample events and return generated alerts
+            processSampleEvents() {
+                const events = this.generateSampleK8sEvents();
+                const alerts = [];
+                
+                for (const event of events) {
+                    const eventAlerts = this.processEvent(event, new Date(event.ts).getTime());
+                    alerts.push(...eventAlerts);
+                }
+                
+                return alerts;
+            }
+        }
+
+        // Simple demo state management
+        let demoState = {
+                    totalAlerts: 0,
+            activeSituations: 0,
+                    k8sEvents: 0,
+                    datadogAlerts: 0,
+                    logicMonitorAlerts: 0,
+            processingTime: 0
+        };
+
+        // Store all generated alerts
+        let allAlerts = [];
+        let alertCounter = 0;
+        let situationCounter = 0; // Counter for situation IDs
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Enterprise Alert Correlation System Initializing...');
+            
+            // Initialize K8s threshold engine
+            window.k8sThresholdEngine = new K8sThresholdEngine();
+            
+            // Set up event listeners
+            document.getElementById('generateBtn').onclick = generateTestData;
+            document.getElementById('k8sThresholdBtn').onclick = testK8sThresholds;
+            document.getElementById('clearBtn').onclick = clearAll;
+            
+            // Test K8s threshold engine initialization
+            console.log('🔍 Testing K8s Threshold Engine initialization...');
+            if (window.k8sThresholdEngine) {
+                console.log('✅ K8s Threshold Engine initialized successfully');
+                console.log('📋 Rules loaded:', window.k8sThresholdEngine.rules.length);
+                console.log('📋 Rules:', window.k8sThresholdEngine.rules);
+            } else {
+                console.error('❌ K8s Threshold Engine failed to initialize');
+            }
+
+            console.log('✅ Enterprise Alert Correlation System Ready!');
+            console.log('🏢 Features:');
+            console.log('  - Professional enterprise-grade UI');
+            console.log('  - K8s Event Threshold Engine with configurable rules');
+            console.log('  - Multi-source alert correlation');
+            console.log('  - Real-time monitoring and control');
+            console.log('  - Accumulating alerts (press buttons multiple times!)');
+        });
+
+        // Generate test data (accumulates alerts)
+        function generateTestData() {
+            console.log('🧪 Generating test data...');
+            
+            const startTime = performance.now();
+            
+            // Generate sample alerts from different sources
+            const newAlerts = [
+                // Datadog Alerts - Infrastructure & Application
+                {
+                    id: ++alertCounter,
+                    title: `High CPU Usage #${alertCounter}`,
+                    severity: "high",
+                    source: "datadog",
+                    service: "web-api",
+                    component: "cpu-monitor",
+                    resource: "web-api-pod-1",
+                    ts: Date.now(),
+                    message: "CPU usage exceeded 90% threshold for 5 minutes",
+                    error_code: "CPU_THRESHOLD_EXCEEDED",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `Memory Leak Detected #${alertCounter}`,
+                    severity: "critical",
+                    source: "datadog",
+                    service: "payment-service",
+                    component: "memory-monitor",
+                    resource: "payment-api-2",
+                    ts: Date.now() - 30000,
+                    message: "Memory usage growing exponentially, potential leak detected",
+                    error_code: "MEMORY_LEAK",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `Network Latency Spike #${alertCounter}`,
+                    severity: "medium",
+                    source: "datadog",
+                    service: "database",
+                    component: "network-monitor",
+                    resource: "db-cluster-1",
+                    ts: Date.now() - 60000,
+                    message: "Network latency increased by 200ms in last 10 minutes",
+                    error_code: "NETWORK_LATENCY",
+                    latency: "450ms"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `Disk I/O Bottleneck #${alertCounter}`,
+                    severity: "high",
+                    source: "datadog",
+                    service: "analytics",
+                    component: "disk-monitor",
+                    resource: "analytics-node-3",
+                    ts: Date.now() - 90000,
+                    message: "Disk I/O operations queuing up, performance degraded",
+                    error_code: "DISK_IO_BOTTLENECK",
+                    latency: "N/A"
+                },
+                
+                // LogicMonitor Alerts - Infrastructure & Business
+                {
+                    id: ++alertCounter,
+                    title: `Database Connection Pool Exhausted #${alertCounter}`,
+                    severity: "critical",
+                    source: "logicmonitor",
+                    service: "database",
+                    component: "connection-pool",
+                    resource: "postgres-primary",
+                    ts: Date.now() - 120000,
+                    message: "Connection pool exhausted, new connections failing",
+                    error_code: "DB_CONNECTION_EXHAUSTED",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `SSL Certificate Expiring #${alertCounter}`,
+                    severity: "warning",
+                    source: "logicmonitor",
+                    service: "infrastructure",
+                    component: "ssl-monitor",
+                    resource: "web-proxy-1",
+                    ts: Date.now() - 150000,
+                    message: "SSL certificate expires in 7 days",
+                    error_code: "SSL_EXPIRING_SOON",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `Service Response Time Degraded #${alertCounter}`,
+                    severity: "medium",
+                    source: "logicmonitor",
+                    service: "payment-service",
+                    component: "response-time",
+                    resource: "payment-api",
+                    ts: Date.now() - 180000,
+                    message: "95th percentile response time increased by 300ms",
+                    error_code: "RESPONSE_TIME_DEGRADED",
+                    latency: "850ms"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `Disk Space Critical #${alertCounter}`,
+                    severity: "critical",
+                    source: "logicmonitor",
+                    service: "infrastructure",
+                    component: "disk-monitor",
+                    resource: "node-worker-2",
+                    ts: Date.now() - 210000,
+                    message: "Disk usage at 95%, critical threshold exceeded",
+                    error_code: "DISK_SPACE_CRITICAL",
+                    latency: "N/A"
+                },
+                
+                // Additional varied alerts
+                {
+                    id: ++alertCounter,
+                    title: `API Rate Limit Exceeded #${alertCounter}`,
+                    severity: "medium",
+                    source: "datadog",
+                    service: "external-api",
+                    component: "rate-limiter",
+                    resource: "third-party-service",
+                    ts: Date.now() - 240000,
+                    message: "API rate limit exceeded, requests being throttled",
+                    error_code: "RATE_LIMIT_EXCEEDED",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `Cache Hit Rate Dropped #${alertCounter}`,
+                    severity: "high",
+                    source: "logicmonitor",
+                    service: "cache-service",
+                    component: "cache-monitor",
+                    resource: "redis-cluster",
+                    ts: Date.now() - 270000,
+                    message: "Cache hit rate dropped from 85% to 45%",
+                    error_code: "CACHE_HIT_RATE_DROPPED",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `Load Balancer Health Check Failed #${alertCounter}`,
+                    severity: "critical",
+                    source: "datadog",
+                    service: "load-balancer",
+                    component: "health-check",
+                    resource: "lb-primary",
+                    ts: Date.now() - 300000,
+                    message: "Health check failed for 3 backend servers",
+                    error_code: "HEALTH_CHECK_FAILED",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `Queue Processing Delayed #${alertCounter}`,
+                    severity: "medium",
+                    source: "logicmonitor",
+                    service: "message-queue",
+                    component: "queue-monitor",
+                    resource: "rabbitmq-cluster",
+                    ts: Date.now() - 330000,
+                    message: "Message processing delayed by 15 minutes",
+                    error_code: "QUEUE_PROCESSING_DELAYED",
+                    latency: "N/A"
+                }
+            ];
+            
+            // Add new alerts to existing list
+            allAlerts.push(...newAlerts);
+            
+            // Create situations from regular alerts (group by problem type)
+            createSituationsFromAlerts(newAlerts);
+
+            // Update alerts list (show all accumulated alerts)
+            updateAlertsList();
+            
+            // Update situations list
+            updateSituationsList();
+            
+            // Update metrics
+            demoState.totalAlerts = allAlerts.length;
+            demoState.activeSituations = allAlerts.filter(a => 
+                a.kind || // K8s threshold alerts
+                (a.error_code && (a.severity === 'high' || a.severity === 'critical')) // Only HIGH/CRITICAL regular alerts
+            ).length;
+            demoState.datadogAlerts = allAlerts.filter(a => a.source === 'datadog').length;
+            demoState.logicMonitorAlerts = allAlerts.filter(a => a.source === 'logicmonitor').length;
+            demoState.processingTime = Math.round(performance.now() - startTime);
+            
+            updateMetrics();
+            showNotification(`Added ${newAlerts.length} new alerts (Total: ${allAlerts.length})`, 'success');
+        }
+
+        // Test K8s threshold engine (accumulates alerts)
+        function testK8sThresholds() {
+            console.log('🧪 Testing K8s Threshold Engine...');
+            
+            // Process sample events through threshold engine
+            const alerts = window.k8sThresholdEngine.processSampleEvents();
+            
+            console.log('📊 Generated alerts from K8s events:', alerts);
+            
+            // Add unique IDs and add to accumulated alerts
+            const newK8sAlerts = alerts.map(alert => ({
+                ...alert,
+                id: ++alertCounter,
+                title: `${alert.alert} #${alertCounter}`,
+                ts: Date.now() - Math.random() * 300000, // Random time within last 5 minutes
+                service: alert.service || 'kubernetes',
+                component: alert.component || 'k8s-monitor',
+                resource: alert.resource || 'cluster',
+                message: alert.message || `Threshold exceeded: ${alert.count} events in ${alert.window}`,
+                source: 'k8s' // Ensure source is set
+            }));
+            
+            allAlerts.push(...newK8sAlerts);
+            
+            // Create situations from new K8s alerts
+            createSituationsFromAlerts(newK8sAlerts);
+
+            // Update alerts list (show all accumulated alerts)
+            updateAlertsList();
+            
+            // Update situations list
+            updateSituationsList();
+            
+            // Update metrics
+            demoState.k8sEvents = allAlerts.filter(a => a.source === 'k8s').length;
+            demoState.totalAlerts = allAlerts.length;
+            updateMetrics();
+            
+            // Show notification
+            showNotification(`Added ${newK8sAlerts.length} K8s threshold alerts (Total: ${allAlerts.length})`, 'success');
+        }
+
+        // Update alerts list display
+        function updateAlertsList() {
+            const alertsList = document.getElementById('alertsList');
+            
+            if (allAlerts.length === 0) {
+                alertsList.innerHTML = '<p style="color: #64748b; text-align: center;">No recent alerts</p>';
+                return;
+            }
+            
+            // Sort alerts by timestamp (newest first)
+            const sortedAlerts = [...allAlerts].sort((a, b) => b.ts - a.ts);
+            
+            alertsList.innerHTML = sortedAlerts.map(alert => `
+                    <div class="alert-item ${alert.source}">
+                        <div class="item-header">
+                        <div class="item-title">${alert.title}</div>
+                            <div class="item-badge badge-severity ${alert.severity}">${alert.severity}</div>
+                        </div>
+                        <div class="item-details">
+                            <strong>Source:</strong> 
+                            <span class="source-badge ${alert.source}">${alert.source}</span><br>
+                            <strong>Service:</strong> ${alert.service}<br>
+                            <strong>Component:</strong> ${alert.component}<br>
+                        <strong>Resource:</strong> ${alert.resource}<br>
+                        <strong>Time:</strong> ${new Date(alert.ts).toLocaleTimeString()}<br>
+                        ${alert.message ? `<strong>Message:</strong> ${alert.message}<br>` : ''}
+                        ${alert.count ? `<strong>Threshold:</strong> ${alert.count} events in ${alert.window}<br>` : ''}
+                        ${alert.key ? `<strong>Key:</strong> ${JSON.stringify(alert.key)}<br>` : ''}
+                        <strong>Alert ID:</strong> #${alert.id}
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        // Update situations list display
+        function updateSituationsList() {
+            const situationsList = document.getElementById('situationsList');
+            
+            // Get all alerts that can be situations (K8s threshold alerts + regular alerts with error codes)
+            const k8sSituations = allAlerts.filter(alert => 
+                alert.kind === 'CrashLoopBackOff bursts' || 
+                alert.kind === 'ImagePull failures' || 
+                alert.kind === 'Node not ready' || 
+                alert.kind === 'High Pod Evictions' || 
+                alert.kind === 'ConfigMap Change Spike'
+            );
+            
+            const regularSituations = allAlerts.filter(alert => alert.error_code);
+            
+            // Combine all situations
+            const allSituations = [...k8sSituations, ...regularSituations];
+            
+            // Update the activeSituations metric
+            demoState.activeSituations = allSituations.length;
+            
+            if (allSituations.length === 0) {
+                situationsList.innerHTML = '<p style="color: #64748b; text-align: center;">No active situations</p>';
+                return;
+            }
+
+            situationsList.innerHTML = allSituations.map(situation => {
+                const severity = situation.severity;
+                const statusClass = situation.status === 'firing' ? 'active' : 'resolved';
+                const statusBadge = `<span class="status-badge ${statusClass}">${situation.status}</span>`;
+                
+                // Handle different situation types
+                if (situation.kind) {
+                    // K8s threshold situation
+                    return `
+                        <div class="situation-item ${situation.source}">
+                            <div class="item-header">
+                                <div class="item-title">${situation.alert}</div>
+                                <div class="item-badge badge-severity ${severity}">${severity}</div>
+                            </div>
+                            <div class="item-details">
+                                <strong>Source:</strong> 
+                                <span class="source-badge ${situation.source}">${situation.source}</span><br>
+                                <strong>Service:</strong> ${situation.service}<br>
+                                <strong>Component:</strong> ${situation.component}<br>
+                                <strong>Resource:</strong> ${situation.resource}<br>
+                                <strong>Time:</strong> ${new Date(situation.ts).toLocaleTimeString()}<br>
+                                ${situation.message ? `<strong>Message:</strong> ${situation.message}<br>` : ''}
+                                ${situation.count ? `<strong>Threshold:</strong> ${situation.count} events in ${situation.window}<br>` : ''}
+                                ${situation.key ? `<strong>Key:</strong> ${JSON.stringify(situation.key)}<br>` : ''}
+                                <strong>Status:</strong> ${statusBadge}<br>
+                                <button onclick="fixAlert(${situation.id})" class="fix-btn">🔧 Fix Issue</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Regular alert situation
+                    return `
+                        <div class="situation-item ${situation.source}">
+                            <div class="item-header">
+                                <div class="item-title">${situation.title}</div>
+                                <div class="item-badge badge-severity ${severity}">${severity}</div>
+                            </div>
+                            <div class="item-details">
+                                <strong>Source:</strong> 
+                                <span class="source-badge ${situation.source}">${situation.source}</span><br>
+                                <strong>Service:</strong> ${situation.service}<br>
+                                <strong>Component:</strong> ${situation.component}<br>
+                                <strong>Resource:</strong> ${situation.resource}<br>
+                                <strong>Time:</strong> ${new Date(situation.ts).toLocaleTimeString()}<br>
+                                <strong>Error Code:</strong> ${situation.error_code}<br>
+                                <strong>Latency:</strong> ${situation.latency}<br>
+                                <strong>Message:</strong> ${situation.message}<br>
+                                <strong>Status:</strong> ${statusBadge}<br>
+                                <button onclick="fixAlert(${situation.id})" class="fix-btn">🔧 Fix Issue</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
+        }
+
+        // Clear all data
+        function clearAll() {
+            console.log('🧹 Clearing all data...');
+            
+            // Reset state
+            demoState = {
+                totalAlerts: 0,
+                activeSituations: 0,
+                k8sEvents: 0,
+                datadogAlerts: 0,
+                logicMonitorAlerts: 0,
+                processingTime: 0
+            };
+            
+            // Clear accumulated alerts
+            allAlerts = [];
+            alertCounter = 0;
+            situationCounter = 0; // Reset situation counter
+            
+            // Clear content
+            updateAlertsList();
+            document.getElementById('situationsList').innerHTML = '<p style="color: #64748b; text-align: center;">No active situations</p>';
+            
+            // Update metrics
+            updateMetrics();
+            
+            showNotification('All data cleared', 'info');
+        }
+
+        // Update metrics display
+        function updateMetrics() {
+            document.getElementById('totalAlerts').textContent = demoState.totalAlerts;
+            document.getElementById('activeSituations').textContent = demoState.activeSituations;
+            document.getElementById('k8sEvents').textContent = demoState.k8sEvents;
+            document.getElementById('datadogAlerts').textContent = demoState.datadogAlerts;
+            document.getElementById('logicMonitorAlerts').textContent = demoState.logicMonitorAlerts;
+            document.getElementById('processingTime').textContent = demoState.processingTime + 'ms';
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Trigger animation
+            setTimeout(() => notification.classList.add('show'), 100);
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+
+        // Create situations from regular alerts (group by problem type)
+        function createSituationsFromAlerts(newAlerts) {
+            // Group alerts by problem type (error_code) and service
+            const problemGroups = {};
+            
+            newAlerts.forEach(alert => {
+                if (alert.error_code) {
+                    const key = `${alert.error_code}-${alert.service}`;
+                    if (!problemGroups[key]) {
+                        problemGroups[key] = [];
+                    }
+                    problemGroups[key].push(alert);
+                }
+            });
+            
+            // Create situations for problem groups with multiple alerts
+            Object.entries(problemGroups).forEach(([key, alerts]) => {
+                if (alerts.length >= 1) { // Show all alerts as situations
+                    const [errorCode, service] = key.split('-');
+                    const situation = {
+                        id: `situation-${++situationCounter}`,
+                        title: `${errorCode.replace(/_/g, ' ')} in ${service}`,
+                        severity: getHighestSeverity(alerts),
+                        status: "active",
+                        source: alerts[0].source,
+                        service: service,
+                        component: alerts[0].component,
+                        resource: alerts.map(a => a.resource).join(', '),
+                        ts: Math.max(...alerts.map(a => a.ts)),
+                        message: `Multiple ${errorCode.toLowerCase().replace(/_/g, ' ')} issues detected`,
+                        alertCount: alerts.length,
+                        errorCode: errorCode,
+                        alerts: alerts.map(a => a.id)
+                    };
+                    
+                    // Add to situations list (we'll use this for the fix button logic)
+                    if (!window.allSituations) window.allSituations = [];
+                    window.allSituations.push(situation);
+                }
+            });
+        }
+
+        // Helper function to get highest severity
+        function getHighestSeverity(alerts) {
+            const severityLevels = { 'critical': 4, 'high': 3, 'medium': 2, 'warning': 1, 'info': 0 };
+            let highest = 'info';
+            let maxLevel = 0;
+            
+            alerts.forEach(alert => {
+                const level = severityLevels[alert.severity] || 0;
+                if (level > maxLevel) {
+                    maxLevel = level;
+                    highest = alert.severity;
+                }
+            });
+            
+            return highest;
+        }
+
+        // Fix/Resolve an alert
+        function fixAlert(alertId) {
+            console.log(`🔧 Fixing alert #${alertId}...`);
+            
+            // Remove the alert from the list
+            allAlerts = allAlerts.filter(alert => alert.id !== alertId);
+            
+            // Update displays
+            updateAlertsList();
+            updateSituationsList();
+            
+            // Update metrics
+            demoState.totalAlerts = allAlerts.length;
+            demoState.activeSituations = allAlerts.filter(a => a.kind || a.error_code).length;
+            demoState.datadogAlerts = allAlerts.filter(a => a.source === 'datadog').length;
+            demoState.logicMonitorAlerts = allAlerts.filter(a => a.source === 'logicmonitor').length;
+            demoState.k8sEvents = allAlerts.filter(a => a.source === 'k8s').length;
+            
+            updateMetrics();
+            
+            showNotification(`Alert #${alertId} has been resolved!`, 'success');
+        }
+    </script>
+</body>
+</html>
