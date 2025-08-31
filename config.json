@@ -1,0 +1,250 @@
+{
+  "system": {
+    "name": "Enterprise Alert Correlation System",
+    "version": "2.0.0",
+    "description": "Advanced incident correlation and MTTR reduction platform"
+  },
+  "correlation": {
+    "rules": [
+      {
+        "name": "Service Correlation",
+        "weight": 0.8,
+        "factors": ["service", "component"],
+        "threshold": 0.7,
+        "description": "Groups alerts from the same service and component"
+      },
+      {
+        "name": "Error Pattern Correlation",
+        "weight": 0.9,
+        "factors": ["error_code", "severity"],
+        "threshold": 0.8,
+        "description": "Groups alerts with similar error patterns and severity"
+      },
+      {
+        "name": "Resource Correlation",
+        "weight": 0.7,
+        "factors": ["resource", "component"],
+        "threshold": 0.6,
+        "description": "Groups alerts affecting related resources"
+      },
+      {
+        "name": "Temporal Correlation",
+        "weight": 0.6,
+        "factors": ["time_window"],
+        "threshold": 0.5,
+        "description": "Groups alerts that occur within similar time windows"
+      },
+      {
+        "name": "Source Correlation",
+        "weight": 0.5,
+        "factors": ["source"],
+        "threshold": 0.4,
+        "description": "Groups alerts from the same monitoring source"
+      }
+    ],
+    "globalThreshold": 0.6,
+    "maxGroupSize": 10
+  },
+  "k8sThresholds": {
+    "rules": [
+      {
+        "name": "CrashLoopBackOff bursts",
+        "key": ["namespace", "involvedObject.name"],
+        "match": { "reason": "BackOff", "type": "Warning" },
+        "threshold": 5,
+        "severity": "high",
+        "window": 300000,
+        "cooldown": 600000
+      },
+      {
+        "name": "ImagePull failures",
+        "key": ["namespace", "reason"],
+        "match": { "reason": "Failed", "message": "ImagePull" },
+        "threshold": 3,
+        "severity": "medium",
+        "window": 300000,
+        "cooldown": 600000
+      },
+      {
+        "name": "Node not ready",
+        "key": ["involvedObject.kind", "involvedObject.name"],
+        "match": { "reason": "NodeNotReady" },
+        "threshold": 1,
+        "severity": "critical",
+        "window": 300000,
+        "cooldown": 600000
+      },
+      {
+        "name": "High Pod Evictions",
+        "key": ["namespace", "reason"],
+        "match": { "reason": "Evicted" },
+        "threshold": 10,
+        "severity": "medium",
+        "window": 600000,
+        "cooldown": 900000
+      },
+      {
+        "name": "ConfigMap Change Spike",
+        "key": ["namespace", "involvedObject.kind"],
+        "match": { "involvedObject.kind": "ConfigMap" },
+        "threshold": 7,
+        "severity": "low",
+        "window": 900000,
+        "cooldown": 1200000
+      }
+    ]
+  },
+  "sampleAlerts": {
+    "datadog": [
+      {
+        "title": "High CPU Usage",
+        "severity": "high",
+        "service": "web-api",
+        "component": "cpu-monitor",
+        "resource": "web-api-pod-1",
+        "error_code": "CPU_THRESHOLD_EXCEEDED",
+        "message": "CPU usage exceeded 90% threshold for 5 minutes",
+        "latency": "N/A"
+      },
+      {
+        "title": "Memory Leak Detected",
+        "severity": "critical",
+        "service": "payment-service",
+        "component": "memory-monitor",
+        "resource": "payment-api-2",
+        "error_code": "MEMORY_LEAK",
+        "message": "Memory usage growing exponentially, potential leak detected",
+        "latency": "N/A"
+      },
+      {
+        "title": "Network Latency Spike",
+        "severity": "medium",
+        "service": "database",
+        "component": "network-monitor",
+        "resource": "db-cluster-1",
+        "error_code": "NETWORK_LATENCY",
+        "message": "Network latency increased by 200ms in last 10 minutes",
+        "latency": "450ms"
+      },
+      {
+        "title": "Disk I/O Bottleneck",
+        "severity": "high",
+        "service": "analytics",
+        "component": "disk-monitor",
+        "resource": "analytics-node-3",
+        "error_code": "DISK_IO_BOTTLENECK",
+        "message": "Disk I/O operations queuing up, performance degraded",
+        "latency": "N/A"
+      },
+      {
+        "title": "API Rate Limit Exceeded",
+        "severity": "medium",
+        "service": "external-api",
+        "component": "rate-limiter",
+        "resource": "third-party-service",
+        "error_code": "RATE_LIMIT_EXCEEDED",
+        "message": "API rate limit exceeded, requests being throttled",
+        "latency": "N/A"
+      },
+      {
+        "title": "Load Balancer Health Check Failed",
+        "severity": "critical",
+        "service": "load-balancer",
+        "component": "health-check",
+        "resource": "lb-primary",
+        "error_code": "HEALTH_CHECK_FAILED",
+        "message": "Health check failed for 3 backend servers",
+        "latency": "N/A"
+      }
+    ],
+    "logicmonitor": [
+      {
+        "title": "Database Connection Pool Exhausted",
+        "severity": "critical",
+        "service": "database",
+        "component": "connection-pool",
+        "resource": "postgres-primary",
+        "error_code": "DB_CONNECTION_EXHAUSTED",
+        "message": "Connection pool exhausted, new connections failing",
+        "latency": "N/A"
+      },
+      {
+        "title": "SSL Certificate Expiring",
+        "severity": "warning",
+        "service": "infrastructure",
+        "component": "ssl-monitor",
+        "resource": "web-proxy-1",
+        "error_code": "SSL_EXPIRING_SOON",
+        "message": "SSL certificate expires in 7 days",
+        "latency": "N/A"
+      },
+      {
+        "title": "Service Response Time Degraded",
+        "severity": "medium",
+        "service": "payment-service",
+        "component": "response-time",
+        "resource": "payment-api",
+        "error_code": "RESPONSE_TIME_DEGRADED",
+        "message": "95th percentile response time increased by 300ms",
+        "latency": "850ms"
+      },
+      {
+        "title": "Disk Space Critical",
+        "severity": "critical",
+        "service": "infrastructure",
+        "component": "disk-monitor",
+        "resource": "node-worker-2",
+        "error_code": "DISK_SPACE_CRITICAL",
+        "message": "Disk usage at 95%, critical threshold exceeded",
+        "latency": "N/A"
+      },
+      {
+        "title": "Cache Hit Rate Dropped",
+        "severity": "high",
+        "service": "cache-service",
+        "component": "cache-monitor",
+        "resource": "redis-cluster",
+        "error_code": "CACHE_HIT_RATE_DROPPED",
+        "message": "Cache hit rate dropped from 85% to 45%",
+        "latency": "N/A"
+      },
+      {
+        "title": "Queue Processing Delayed",
+        "severity": "medium",
+        "service": "message-queue",
+        "component": "queue-monitor",
+        "resource": "rabbitmq-cluster",
+        "error_code": "QUEUE_PROCESSING_DELAYED",
+        "message": "Message processing delayed by 15 minutes",
+        "latency": "N/A"
+      }
+    ]
+  },
+  "ui": {
+    "theme": {
+      "primary": "#3b82f6",
+      "secondary": "#8b5cf6",
+      "success": "#10b981",
+      "warning": "#f59e0b",
+      "danger": "#ef4444",
+      "info": "#06b6d4"
+    },
+    "animations": {
+      "enabled": true,
+      "duration": 300,
+      "easing": "cubic-bezier(0.4, 0, 0.2, 1)"
+    },
+    "correlation": {
+      "showSimilarityScore": true,
+      "showCorrelationFactors": true,
+      "maxGroupsToShow": 10,
+      "autoUpdate": true
+    }
+  },
+  "notifications": {
+    "enabled": true,
+    "duration": 5000,
+    "position": "top-right",
+    "types": ["success", "error", "info", "warning"]
+  }
+}

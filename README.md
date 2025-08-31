@@ -1,6 +1,6 @@
 # 🚨 Enterprise Alert Correlation System
 
-A sophisticated, enterprise-grade incident correlation and MTTR (Mean Time To Resolution) reduction platform that demonstrates advanced alert correlation, Kubernetes event threshold processing, and multi-source monitoring integration.
+A sophisticated, enterprise-grade incident correlation and MTTR (Mean Time To Resolution) reduction platform that demonstrates advanced alert correlation, Kubernetes event threshold processing, multi-source monitoring integration, and **intelligent correlation analysis**.
 
 ## 🌟 Features
 
@@ -9,6 +9,13 @@ A sophisticated, enterprise-grade incident correlation and MTTR (Mean Time To Re
 - **Datadog Alerts** - Infrastructure and application monitoring integration
 - **LogicMonitor Alerts** - Business and infrastructure monitoring
 - **Real-time Correlation** - Automatic situation building from related alerts
+
+### 🧠 **Intelligent Correlation Analysis Engine**
+- **Multi-Factor Correlation** - Service, error pattern, resource, temporal, and source-based grouping
+- **Weighted Similarity Scoring** - Advanced algorithms with configurable thresholds
+- **Real-time Analysis** - Automatic correlation updates as new alerts arrive
+- **Smart Grouping** - Identifies related incidents across different monitoring tools
+- **Correlation Factors** - Explains why alerts were grouped together
 
 ### ☸️ **Kubernetes Event Threshold Engine**
 - **Configurable Rules** - Define thresholds per key, per window
@@ -27,6 +34,7 @@ A sophisticated, enterprise-grade incident correlation and MTTR (Mean Time To Re
 - **Responsive Layout** - Works on all device sizes
 - **Real-time Metrics** - Live dashboard with key performance indicators
 - **Interactive Elements** - Hover effects, transitions, and visual feedback
+- **Correlation Dashboard** - Dedicated panel for incident correlation analysis
 
 ## 🚀 Quick Start
 
@@ -64,6 +72,12 @@ A sophisticated, enterprise-grade incident correlation and MTTR (Mean Time To Re
 - Generates sample K8s events that trigger threshold-based alerts
 - Each click creates unique events to bypass cooldown mechanisms
 
+### **Correlation Analysis**
+- **Automatic Analysis** - Correlation engine runs after each alert generation
+- **Multi-Factor Grouping** - Alerts grouped by service, error patterns, resources, time, and source
+- **Similarity Scoring** - Each correlation group shows similarity percentage
+- **Action Buttons** - Create incidents or dismiss correlation groups
+
 ### **Active Situations**
 - **High and Critical** severity alerts automatically become active situations
 - Situations group related alerts by error code and service
@@ -93,6 +107,16 @@ class K8sThresholdEngine {
 }
 ```
 
+#### **Correlation Analysis Engine**
+```javascript
+class CorrelationEngine {
+    // Multi-factor correlation analysis
+    // Weighted similarity scoring algorithms
+    // Real-time correlation updates
+    // Smart grouping with configurable thresholds
+}
+```
+
 #### **Alert Correlation Engine**
 ```javascript
 // Groups alerts by error_code and service
@@ -106,6 +130,7 @@ class K8sThresholdEngine {
 - **Control Panel** - Interactive buttons for testing and management
 - **Alerts Panel** - Comprehensive alert display with source badges
 - **Situations Panel** - Correlated incident management
+- **Correlation Panel** - Advanced incident correlation analysis
 
 ## 📊 Sample Data Types
 
@@ -149,9 +174,27 @@ The system includes pre-configured rules for common Kubernetes issues:
 }
 ```
 
+### **Correlation Rules**
+Advanced correlation analysis with configurable weights and thresholds:
+
+```javascript
+{
+    name: "Service Correlation",
+    weight: 0.8,
+    factors: ["service", "component"],
+    threshold: 0.7
+},
+{
+    name: "Error Pattern Correlation", 
+    weight: 0.9,
+    factors: ["error_code", "severity"],
+    threshold: 0.8
+}
+```
+
 ### **Customization**
 - Modify threshold values in `K8sThresholdEngine.loadThresholdRules()`
-- Adjust cooldown periods for different alert types
+- Adjust correlation weights and thresholds in `CorrelationEngine.loadCorrelationRules()`
 - Add new rule patterns for specific use cases
 - Customize severity levels and window sizes
 
@@ -164,6 +207,12 @@ The system includes pre-configured rules for common Kubernetes issues:
 - **Datadog Alerts** - Infrastructure monitoring alerts
 - **LogicMonitor** - Business monitoring alerts
 - **Processing Time** - Performance metrics
+
+### **Correlation Metrics**
+- **Correlation Groups** - Number of identified incident correlations
+- **Similarity Scores** - Percentage-based correlation strength
+- **Group Sizes** - Number of alerts per correlation group
+- **Correlation Factors** - Key reasons for alert grouping
 
 ### **Alert Accumulation**
 - Alerts accumulate with each button press
@@ -180,9 +229,16 @@ The system includes pre-configured rules for common Kubernetes issues:
 - **Responsive Design** - Adapts to different screen sizes
 - **Professional Styling** - Enterprise-grade visual design
 
+### **Correlation Dashboard**
+- **Full-width Panel** - Dedicated space for correlation analysis
+- **Interactive Groups** - Hover effects and expandable details
+- **Similarity Badges** - Visual correlation strength indicators
+- **Action Buttons** - Incident creation and correlation management
+- **Real-time Updates** - Live correlation analysis as alerts arrive
+
 ### **Interactive Elements**
 - **Hover Effects** - Enhanced visual feedback
-- **Click Actions** - Fix buttons, clear functions
+- **Click Actions** - Fix buttons, clear functions, correlation actions
 - **Real-time Updates** - Live metric updates
 - **Notification System** - Success, error, and info messages
 
@@ -193,12 +249,14 @@ The system includes pre-configured rules for common Kubernetes issues:
 - **Sample Data** - Realistic alert scenarios
 - **Accumulation Testing** - Test correlation with large alert volumes
 - **Threshold Testing** - Validate K8s event processing
+- **Correlation Testing** - Test multi-factor alert grouping
 
 ### **Development Features**
 - **Console Logging** - Comprehensive debugging information
 - **Error Handling** - Graceful fallbacks and user feedback
 - **Performance Monitoring** - Processing time metrics
 - **State Management** - Centralized demo state
+- **Correlation Debugging** - Detailed similarity calculations
 
 ## 🔒 Security & Best Practices
 
@@ -212,6 +270,7 @@ The system includes pre-configured rules for common Kubernetes issues:
 - **Modular Design** - Clean separation of concerns
 - **Error Handling** - Comprehensive error management
 - **Performance Optimized** - Efficient algorithms and data structures
+- **Correlation Algorithms** - Optimized similarity matrix calculations
 
 ## 🚀 Future Enhancements
 
@@ -221,12 +280,14 @@ The system includes pre-configured rules for common Kubernetes issues:
 - **Advanced Correlation** - Machine learning-based incident grouping
 - **Mobile App** - Native mobile experience
 - **Multi-tenant Support** - Team and organization management
+- **Correlation History** - Track correlation patterns over time
 
 ### **Extensibility**
 - **Plugin Architecture** - Custom alert source integration
 - **Rule Engine** - Visual rule builder interface
 - **Custom Dashboards** - Personalized metric views
 - **API Endpoints** - RESTful integration points
+- **Correlation Templates** - Pre-defined correlation patterns
 
 ## 🤝 Contributing
 
@@ -259,6 +320,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Kubernetes Community** - For event-driven architecture inspiration
 - **Monitoring Tools** - Datadog and LogicMonitor for alert format examples
 - **Modern Web Standards** - HTML5, CSS3, and ES6+ for powerful frontend capabilities
+- **Correlation Research** - Academic and industry research on incident correlation
 
 ## 📞 Support
 
@@ -270,4 +332,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Built with ❤️ for the DevOps and SRE community**
 
-*Transform your alert noise into actionable intelligence with the Enterprise Alert Correlation System.*
+*Transform your alert noise into actionable intelligence with the Enterprise Alert Correlation System featuring advanced correlation analysis.*

@@ -800,6 +800,19 @@
                     </svg>
                     Clear All
                 </button>
+                <button id="resetCooldownsBtn" class="btn btn-warning">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                    </svg>
+                    Reset K8s Cooldowns
+                </button>
+                <button id="testCorrelationBtn" class="btn btn-info">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                    </svg>
+                    Test Correlation
+                </button>
             </div>
         </div>
 
@@ -1191,30 +1204,32 @@
                 ];
             }
 
-            // Calculate similarity score between two alerts
-            calculateSimilarity(alert1, alert2) {
-                let totalScore = 0;
-                let maxScore = 0;
+                    // Calculate similarity score between two alerts
+        calculateSimilarity(alert1, alert2) {
+            let totalScore = 0;
+            let maxScore = 0;
 
-                for (const rule of this.correlationRules) {
-                    let ruleScore = 0;
-                    let ruleMax = 0;
+            for (const rule of this.correlationRules) {
+                let ruleScore = 0;
+                let ruleMax = 0;
 
-                    for (const factor of rule.factors) {
-                        const score = this.compareFactor(alert1, alert2, factor);
-                        ruleScore += score;
-                        ruleMax += 1;
-                    }
-
-                    if (ruleMax > 0) {
-                        ruleScore = (ruleScore / ruleMax) * rule.weight;
-                        totalScore += ruleScore;
-                        maxScore += rule.weight;
-                    }
+                for (const factor of rule.factors) {
+                    const score = this.compareFactor(alert1, alert2, factor);
+                    ruleScore += score;
+                    ruleMax += 1;
                 }
 
-                return maxScore > 0 ? totalScore / maxScore : 0;
+                if (ruleMax > 0) {
+                    ruleScore = (ruleScore / ruleMax) * rule.weight;
+                    totalScore += ruleScore;
+                    maxScore += rule.weight;
+                }
             }
+
+            const finalScore = maxScore > 0 ? totalScore / maxScore : 0;
+            console.log(`🔍 Similarity between "${alert1.title}" and "${alert2.title}": ${(finalScore * 100).toFixed(1)}%`);
+            return finalScore;
+        }
 
             // Compare specific factors between alerts
             compareFactor(alert1, alert2, factor) {
@@ -1333,11 +1348,13 @@
                         if (processed.has(j)) continue;
 
                         const similarity = similarityMatrix[i][j];
-                        if (similarity >= 0.6) { // Correlation threshold
+                        console.log(`🔗 Checking similarity: ${(similarity * 100).toFixed(1)}% >= 40% threshold`);
+                        if (similarity >= 0.4) { // Lower correlation threshold for testing
                             group.alerts.push(alerts[j]);
                             group.similarity = Math.min(group.similarity, similarity);
                             group.count++;
                             processed.add(j);
+                            console.log(`✅ Added alert "${alerts[j].title}" to correlation group`);
                         }
                     }
 
@@ -1380,8 +1397,21 @@
         let situationCounter = 0; // Counter for situation IDs
 
         // Initialize when DOM is ready
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             console.log('🚀 Enterprise Alert Correlation System Initializing...');
+            
+            // Load configuration
+            try {
+                const response = await fetch('./config.json');
+                window.systemConfig = await response.json();
+                console.log('✅ Configuration loaded:', window.systemConfig);
+            } catch (error) {
+                console.warn('⚠️ Could not load config.json, using defaults');
+                window.systemConfig = {
+                    correlation: { globalThreshold: 0.4 },
+                    ui: { correlation: { autoUpdate: true } }
+                };
+            }
             
             // Initialize K8s threshold engine
             window.k8sThresholdEngine = new K8sThresholdEngine();
@@ -1389,10 +1419,7 @@
             // Initialize correlation engine
             window.correlationEngine = new CorrelationEngine();
             
-            // Set up event listeners
-            document.getElementById('generateBtn').onclick = generateTestData;
-            document.getElementById('k8sThresholdBtn').onclick = testK8sThresholds;
-            document.getElementById('clearBtn').onclick = clearAll;
+            // Event listeners will be set up in the separate DOMContentLoaded listener
             
             // Test K8s threshold engine initialization
             console.log('🔍 Testing K8s Threshold Engine initialization...');
@@ -1529,7 +1556,7 @@
                     latency: "N/A"
                 },
                 
-                // Additional varied alerts
+                // Additional varied alerts - designed to correlate
                 {
                     id: ++alertCounter,
                     title: `API Rate Limit Exceeded #${alertCounter}`,
@@ -1541,6 +1568,45 @@
                     ts: Date.now() - 240000,
                     message: "API rate limit exceeded, requests being throttled",
                     error_code: "RATE_LIMIT_EXCEEDED",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `API Rate Limit Exceeded #${alertCounter}`,
+                    severity: "medium",
+                    source: "datadog",
+                    service: "external-api",
+                    component: "rate-limiter",
+                    resource: "third-party-service",
+                    ts: Date.now() - 250000,
+                    message: "API rate limit exceeded, requests being throttled",
+                    error_code: "RATE_LIMIT_EXCEEDED",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `High CPU Usage #${alertCounter}`,
+                    severity: "high",
+                    source: "datadog",
+                    service: "web-api",
+                    component: "cpu-monitor",
+                    resource: "web-api-pod-2",
+                    ts: Date.now() - 260000,
+                    message: "CPU usage exceeded 90% threshold for 5 minutes",
+                    error_code: "CPU_THRESHOLD_EXCEEDED",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `High CPU Usage #${alertCounter}`,
+                    severity: "high",
+                    source: "datadog",
+                    service: "web-api",
+                    component: "cpu-monitor",
+                    resource: "web-api-pod-3",
+                    ts: Date.now() - 270000,
+                    message: "CPU usage exceeded 90% threshold for 5 minutes",
+                    error_code: "CPU_THRESHOLD_EXCEEDED",
                     latency: "N/A"
                 },
                 {
@@ -1580,6 +1646,32 @@
                     ts: Date.now() - 330000,
                     message: "Message processing delayed by 15 minutes",
                     error_code: "QUEUE_PROCESSING_DELAYED",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `Queue Processing Delayed #${alertCounter}`,
+                    severity: "medium",
+                    source: "logicmonitor",
+                    service: "message-queue",
+                    component: "queue-monitor",
+                    resource: "rabbitmq-cluster",
+                    ts: Date.now() - 340000,
+                    message: "Message processing delayed by 15 minutes",
+                    error_code: "QUEUE_PROCESSING_DELAYED",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `Database Connection Pool Exhausted #${alertCounter}`,
+                    severity: "critical",
+                    source: "logicmonitor",
+                    service: "database",
+                    component: "connection-pool",
+                    resource: "postgres-secondary",
+                    ts: Date.now() - 350000,
+                    message: "Connection pool exhausted, new connections failing",
+                    error_code: "DB_CONNECTION_EXHAUSTED",
                     latency: "N/A"
                 }
             ];
@@ -1807,6 +1899,17 @@
             document.getElementById('processingTime').textContent = demoState.processingTime + 'ms';
         }
 
+        // Reset K8s cooldowns
+        function resetK8sCooldowns() {
+            console.log('🔄 Resetting K8s threshold cooldowns...');
+            if (window.k8sThresholdEngine && window.k8sThresholdEngine.cooldowns) {
+                window.k8sThresholdEngine.cooldowns = {};
+                showNotification('K8s threshold cooldowns have been reset!', 'success');
+            } else {
+                showNotification('K8s threshold engine not available', 'error');
+            }
+        }
+
         // Show notification
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
@@ -1979,6 +2082,35 @@
         function dismissCorrelation(groupId) {
             showNotification(`Dismissed correlation group ${groupId}`, 'info');
         }
+
+        // Test correlation analysis manually
+        function testCorrelationAnalysis() {
+            console.log('🧪 Testing correlation analysis...');
+            
+            if (allAlerts.length < 2) {
+                showNotification('Generate some alerts first to test correlation!', 'warning');
+                return;
+            }
+            
+            // Force correlation update
+            updateCorrelationAnalysis();
+            
+            // Show detailed correlation info
+            const correlations = window.correlationEngine.findCorrelations(allAlerts);
+            console.log('📊 Found correlations:', correlations);
+            
+            showNotification(`Correlation analysis complete! Found ${correlations.length} correlation groups.`, 'success');
+        }
+
+        // Add event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add button event listeners
+            document.getElementById('generateBtn').addEventListener('click', generateTestData);
+            document.getElementById('k8sThresholdBtn').addEventListener('click', testK8sThresholds);
+            document.getElementById('clearBtn').addEventListener('click', clearAll);
+            document.getElementById('resetCooldownsBtn').addEventListener('click', resetK8sCooldowns);
+            document.getElementById('testCorrelationBtn').addEventListener('click', testCorrelationAnalysis);
+        });
     </script>
 </body>
 </html>
