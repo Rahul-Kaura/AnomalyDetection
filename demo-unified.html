@@ -841,6 +841,187 @@
             padding: 4px 8px;
         }
 
+        /* Splunk-Style Timeline Graph */
+        .main-results-panel {
+            grid-column: 1 / -1;
+        }
+
+        .timeline-graph-container {
+            margin: 20px 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .timeline-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .timeline-control-left {
+            display: flex;
+            gap: 20px;
+        }
+
+        .control-item {
+            font-size: 0.85rem;
+            color: #475569;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .control-item:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .timeline-graph {
+            height: 200px;
+            padding: 20px;
+            background: white;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            overflow-x: auto;
+        }
+
+        .timeline-bar-vertical {
+            background: linear-gradient(to top, #10b981, #059669);
+            min-width: 8px;
+            border-radius: 2px 2px 0 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .timeline-bar-vertical:hover {
+            background: linear-gradient(to top, #059669, #047857);
+            transform: scaleY(1.05);
+        }
+
+        .timeline-bar-vertical::after {
+            content: attr(data-count);
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .timeline-bar-vertical:hover::after {
+            opacity: 1;
+        }
+
+        .timeline-controls-bottom {
+            display: flex;
+            gap: 20px;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* Event Table Styles */
+        .event-table-container {
+            margin-top: 20px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .event-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .event-table th {
+            background: #f8fafc;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #1e293b;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .event-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: top;
+        }
+
+        .event-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .col-info {
+            width: 40px;
+            text-align: center;
+        }
+
+        .col-time {
+            width: 200px;
+            font-family: monospace;
+            color: #475569;
+        }
+
+        .col-event {
+            flex: 1;
+            font-family: monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .expand-icon {
+            cursor: pointer;
+            color: #64748b;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+
+        .expand-icon:hover {
+            color: #3b82f6;
+            transform: scale(1.1);
+        }
+
+        .event-details {
+            background: #f8fafc;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border-left: 3px solid #3b82f6;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        .event-details-row {
+            display: flex;
+            margin-bottom: 4px;
+        }
+
+        .event-details-label {
+            font-weight: 600;
+            min-width: 120px;
+            color: #1e293b;
+        }
+
+        .event-details-value {
+            color: #64748b;
+        }
+
         .correlated-alerts {
             display: grid;
             gap: 8px;
@@ -1211,20 +1392,54 @@
             </div>
         </div>
 
-        <!-- Content Area -->
+        <!-- Content Area - Splunk Style -->
         <div class="content-area">
-            <!-- Alerts Panel -->
-            <div class="content-panel">
+            <!-- Main Results Panel -->
+            <div class="content-panel main-results-panel">
                 <div class="panel-header">
-                    <h3 class="panel-title">
-                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7 3a.5.5 0 0 1 1 0v5a.5.5 0 0 1-.5.5H4a.5.5 0 0 1 0-1h2.5V3z"/>
-                        </svg>
-                        Recent Alerts
-                    </h3>
+                    <h3 class="panel-title">Search Results</h3>
                 </div>
-                <div class="panel-content" id="alertsList">
-                    <p style="color: #64748b; text-align: center;">No recent alerts</p>
+                
+                <!-- Timeline Graph (Splunk Style) -->
+                <div class="timeline-graph-container">
+                    <div class="timeline-controls">
+                        <div class="timeline-control-left">
+                            <span class="control-item">Format Timeline ▾</span>
+                            <span class="control-item">– Zoom Out</span>
+                            <span class="control-item">+ Zoom to Selection</span>
+                            <span class="control-item">× Deselect</span>
+                        </div>
+                    </div>
+                    <div class="timeline-graph" id="timelineGraph">
+                        <!-- Vertical bars will be generated here -->
+                    </div>
+                    <div class="timeline-controls-bottom">
+                        <span class="control-item">List ▾</span>
+                        <span class="control-item">✓ Format</span>
+                        <span class="control-item">20 Per Page ▾</span>
+                    </div>
+                </div>
+
+                <!-- Event Table -->
+                <div class="event-table-container">
+                    <table class="event-table" id="eventTable">
+                        <thead>
+                            <tr>
+                                <th class="col-info">i</th>
+                                <th class="col-time">Time</th>
+                                <th class="col-event">Event</th>
+                            </tr>
+                        </thead>
+                        <tbody id="eventTableBody">
+                            <tr>
+                                <td class="col-info">
+                                    <span class="expand-icon">▶</span>
+                                </td>
+                                <td class="col-time">No events available</td>
+                                <td class="col-event">Generate some alerts to see events</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -1235,18 +1450,11 @@
                         <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                             <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
                         </svg>
-                        Active Situations & Timeline
+                        Active Situations
                     </h3>
                 </div>
                 <div class="panel-content" id="situationsList">
                     <p style="color: #64748b; text-align: center;">No active situations</p>
-                </div>
-                <!-- Timeline Visualization -->
-                <div class="timeline-container" id="timelineContainer" style="display: none;">
-                    <div class="timeline-title">
-                        📊 Alert Timeline Visualization
-                    </div>
-                    <div id="timelineBars"></div>
                 </div>
             </div>
 
@@ -2049,8 +2257,9 @@
             // Create situations from regular alerts (group by problem type)
             createSituationsFromAlerts(newAlerts);
 
-            // Update alerts list (show all accumulated alerts)
-            updateAlertsList();
+            // Update timeline and event table
+            generateTimelineVisualization(allAlerts);
+            generateEventTable(allAlerts);
             
             // Update situations list
             updateSituationsList();
@@ -2107,8 +2316,9 @@
             // Create situations from new K8s alerts
             createSituationsFromAlerts(newK8sAlerts);
 
-            // Update alerts list (show all accumulated alerts)
-            updateAlertsList();
+            // Update timeline and event table
+            generateTimelineVisualization(allAlerts);
+            generateEventTable(allAlerts);
             
             // Update situations list
             updateSituationsList();
@@ -2273,9 +2483,9 @@
             situationCounter = 0; // Reset situation counter
             
             // Clear content
-            updateAlertsList();
+            generateTimelineVisualization([]);
+            generateEventTable([]);
             document.getElementById('situationsList').innerHTML = '<p style="color: #64748b; text-align: center;">No active situations</p>';
-            document.getElementById('timelineContainer').style.display = 'none';
             
             // Update metrics
             updateMetrics();
@@ -2388,7 +2598,8 @@
             allAlerts = allAlerts.filter(alert => alert.id !== alertId);
             
             // Update displays
-            updateAlertsList();
+            generateTimelineVisualization(allAlerts);
+            generateEventTable(allAlerts);
             updateSituationsList();
             updateCorrelationAnalysis();
             
@@ -2400,13 +2611,6 @@
             demoState.k8sEvents = allAlerts.filter(a => a.source === 'k8s').length;
             
             updateMetrics();
-            
-            // Refresh timeline if there are still alerts
-            if (allAlerts.length > 0) {
-                generateTimelineVisualization(allAlerts);
-            } else {
-                document.getElementById('timelineContainer').style.display = 'none';
-            }
             
             showNotification(`Alert #${alertId} has been resolved!`, 'success');
         }
@@ -2487,78 +2691,159 @@
             }).join('');
         }
 
-        // Generate timeline visualization
+        // Generate Splunk-style timeline visualization with vertical bars
         function generateTimelineVisualization(alerts) {
-            const timelineContainer = document.getElementById('timelineContainer');
-            const timelineBars = document.getElementById('timelineBars');
+            const timelineGraph = document.getElementById('timelineGraph');
             
             if (alerts.length === 0) {
-                timelineContainer.style.display = 'none';
+                timelineGraph.innerHTML = '<p style="color: #64748b; text-align: center; padding: 40px;">No alerts available for timeline visualization</p>';
                 return;
             }
             
-            // Group alerts by error type and source
-            const alertGroups = {};
+            // Group alerts by time intervals (like Splunk's event distribution)
+            const timeIntervals = {};
+            const intervalSize = 5 * 60 * 1000; // 5 minute intervals
             
             alerts.forEach(alert => {
-                let key = '';
-                if (alert.kind) {
-                    // K8s threshold alerts
-                    key = `k8s-${alert.kind}`;
-                } else if (alert.error_code) {
-                    // Regular alerts
-                    key = `${alert.source}-${alert.error_code}`;
-                } else {
-                    return; // Skip alerts without error codes
+                const interval = Math.floor(alert.ts / intervalSize) * intervalSize;
+                if (!timeIntervals[interval]) {
+                    timeIntervals[interval] = 0;
                 }
-                
-                if (!alertGroups[key]) {
-                    alertGroups[key] = {
-                        key: key,
-                        source: alert.source,
-                        errorCode: alert.error_code || alert.kind,
-                        service: alert.service,
-                        alerts: [],
-                        count: 0
-                    };
-                }
-                
-                alertGroups[key].alerts.push(alert);
-                alertGroups[key].count++;
+                timeIntervals[interval]++;
             });
             
-            // Generate timeline bars
-            const timelineHTML = Object.values(alertGroups).map((group, index) => {
-                const sourceClass = group.source;
-                const barWidth = Math.min(100, Math.max(20, group.count * 10)); // Scale width based on count
+            // Sort intervals by time
+            const sortedIntervals = Object.keys(timeIntervals).sort((a, b) => parseInt(a) - parseInt(b));
+            
+            // Generate vertical bars
+            const barsHTML = sortedIntervals.map(interval => {
+                const count = timeIntervals[interval];
+                const height = Math.max(20, Math.min(150, count * 10)); // Scale height based on count
+                const time = new Date(parseInt(interval));
                 
                 return `
-                    <div class="timeline-bar ${sourceClass}" style="width: ${barWidth}%;" 
-                         onclick="toggleTimelineDetails('${group.key}')">
-                        <div class="timeline-label">${group.errorCode}</div>
-                        <div class="timeline-count">${group.count}</div>
-                    </div>
-                    <div class="timeline-details" id="timeline-${group.key}">
-                        <div class="timeline-title">
-                            📊 ${group.errorCode} (${group.count} alerts)
-                        </div>
-                        ${group.alerts.map(alert => `
-                            <div class="timeline-alert-item ${alert.source}">
-                                <span class="timeline-alert-source ${alert.source}">${alert.source}</span>
-                                <div class="timeline-alert-info">
-                                    <div class="timeline-alert-title">${alert.title || alert.alert}</div>
-                                    <div class="timeline-alert-meta">
-                                        ${alert.service} • ${alert.component} • ${new Date(alert.ts).toLocaleTimeString()}
-                                    </div>
-                                </div>
-                            </div>
-                        `).join('')}
+                    <div class="timeline-bar-vertical" 
+                         style="height: ${height}px;" 
+                         data-count="${count}"
+                         title="${time.toLocaleTimeString()} - ${count} events">
                     </div>
                 `;
             }).join('');
             
-            timelineBars.innerHTML = timelineHTML;
-            timelineContainer.style.display = 'block';
+            timelineGraph.innerHTML = barsHTML;
+        }
+
+        // Generate Splunk-style event table
+        function generateEventTable(alerts) {
+            const eventTableBody = document.getElementById('eventTableBody');
+            
+            if (alerts.length === 0) {
+                eventTableBody.innerHTML = `
+                    <tr>
+                        <td class="col-info">
+                            <span class="expand-icon">▶</span>
+                        </td>
+                        <td class="col-time">No events available</td>
+                        <td class="col-event">Generate some alerts to see events</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Sort alerts by timestamp (newest first)
+            const sortedAlerts = [...alerts].sort((a, b) => b.ts - a.ts);
+            
+            // Generate event rows with detailed information
+            const eventRowsHTML = sortedAlerts.map(alert => {
+                const time = new Date(alert.ts);
+                const timeString = time.toLocaleString('en-US', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    year: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                });
+                
+                // Create detailed event description (like Splunk's event format)
+                let eventDescription = '';
+                if (alert.source === 'k8s') {
+                    eventDescription = `${alert.service} - ${alert.component} reported ${alert.kind} on ${alert.resource}`;
+                } else if (alert.source === 'datadog') {
+                    eventDescription = `${alert.service} ${alert.component} detected ${alert.error_code} on ${alert.resource}`;
+                } else if (alert.source === 'logicmonitor') {
+                    eventDescription = `${alert.service} ${alert.component} alert: ${alert.error_code} affecting ${alert.resource}`;
+                }
+                
+                return `
+                    <tr class="event-row" data-alert-id="${alert.id}">
+                        <td class="col-info">
+                            <span class="expand-icon" onclick="toggleEventDetails(${alert.id})">▶</span>
+                        </td>
+                        <td class="col-time">${timeString}</td>
+                        <td class="col-event">
+                            <div class="event-main">${eventDescription}</div>
+                            <div class="event-details" id="event-details-${alert.id}" style="display: none;">
+                                <div class="event-details-row">
+                                    <span class="event-details-label">Source:</span>
+                                    <span class="event-details-value">${alert.source}</span>
+                                </div>
+                                <div class="event-details-row">
+                                    <span class="event-details-label">Service:</span>
+                                    <span class="event-details-value">${alert.service}</span>
+                                </div>
+                                <div class="event-details-row">
+                                    <span class="event-details-label">Component:</span>
+                                    <span class="event-details-value">${alert.component}</span>
+                                </div>
+                                <div class="event-details-row">
+                                    <span class="event-details-label">Resource:</span>
+                                    <span class="event-details-value">${alert.resource}</span>
+                                </div>
+                                <div class="event-details-row">
+                                    <span class="event-details-label">Severity:</span>
+                                    <span class="event-details-value">${alert.severity}</span>
+                                </div>
+                                <div class="event-details-row">
+                                    <span class="event-details-label">Message:</span>
+                                    <span class="event-details-value">${alert.message || 'No message available'}</span>
+                                </div>
+                                ${alert.error_code ? `
+                                <div class="event-details-row">
+                                    <span class="event-details-label">Error Code:</span>
+                                    <span class="event-details-value">${alert.error_code}</span>
+                                </div>
+                                ` : ''}
+                                ${alert.count ? `
+                                <div class="event-details-row">
+                                    <span class="event-details-label">Threshold:</span>
+                                    <span class="event-details-value">${alert.count} events in ${alert.window}ms</span>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            eventTableBody.innerHTML = eventRowsHTML;
+        }
+
+        // Toggle event details
+        function toggleEventDetails(alertId) {
+            const detailsElement = document.getElementById(`event-details-${alertId}`);
+            const expandIcon = event.target;
+            
+            if (detailsElement.style.display === 'none') {
+                detailsElement.style.display = 'block';
+                expandIcon.textContent = '▼';
+                expandIcon.style.transform = 'rotate(0deg)';
+            } else {
+                detailsElement.style.display = 'none';
+                expandIcon.textContent = '▶';
+                expandIcon.style.transform = 'rotate(0deg)';
+            }
         }
 
         // Toggle timeline details
@@ -2647,36 +2932,9 @@
 
         // Update search results display
         function updateSearchResults(alerts) {
-            const alertsList = document.getElementById('alertsList');
-            
-            if (alerts.length === 0) {
-                alertsList.innerHTML = '<p style="color: #64748b; text-align: center;">No alerts found matching your search criteria</p>';
-                return;
-            }
-            
-            // Sort alerts by timestamp (newest first)
-            const sortedAlerts = [...alerts].sort((a, b) => b.ts - a.ts);
-            
-            alertsList.innerHTML = sortedAlerts.map(alert => `
-                <div class="alert-item ${alert.source}">
-                    <div class="item-header">
-                        <div class="item-title">${alert.title || alert.alert}</div>
-                        <div class="item-badge badge-severity ${alert.severity}">${alert.severity}</div>
-                    </div>
-                    <div class="item-details">
-                        <strong>Source:</strong> 
-                        <span class="source-badge ${alert.source}">${alert.source}</span><br>
-                        <strong>Service:</strong> ${alert.service}<br>
-                        <strong>Component:</strong> ${alert.component}<br>
-                        <strong>Resource:</strong> ${alert.resource}<br>
-                        <strong>Time:</strong> ${new Date(alert.ts).toLocaleTimeString()}<br>
-                        ${alert.message ? `<strong>Message:</strong> ${alert.message}<br>` : ''}
-                        ${alert.count ? `<strong>Threshold:</strong> ${alert.count} events in ${alert.window}<br>` : ''}
-                        ${alert.key ? `<strong>Key:</strong> ${JSON.stringify(alert.key)}<br>` : ''}
-                        <strong>Alert ID:</strong> #${alert.id}
-                    </div>
-                </div>
-            `).join('');
+            // Update timeline and event table with filtered results
+            generateTimelineVisualization(alerts);
+            generateEventTable(alerts);
         }
 
         // Handle search tab clicks
@@ -2692,30 +2950,28 @@
             // Handle different tab views
             switch(tabName) {
                 case 'events':
-                    // Show alerts list (default view)
-                    document.getElementById('alertsList').style.display = 'block';
+                    // Show main results panel (timeline + event table)
+                    document.querySelector('.main-results-panel').style.display = 'block';
                     document.getElementById('situationsList').style.display = 'none';
                     document.getElementById('correlationList').style.display = 'none';
                     break;
                 case 'patterns':
                     // Show correlation analysis
-                    document.getElementById('alertsList').style.display = 'none';
+                    document.querySelector('.main-results-panel').style.display = 'none';
                     document.getElementById('situationsList').style.display = 'none';
                     document.getElementById('correlationList').style.display = 'block';
                     break;
                 case 'statistics':
                     // Show situations
-                    document.getElementById('alertsList').style.display = 'none';
+                    document.querySelector('.main-results-panel').style.display = 'none';
                     document.getElementById('situationsList').style.display = 'block';
                     document.getElementById('correlationList').style.display = 'none';
                     break;
                 case 'visualization':
-                    // Show timeline
-                    document.getElementById('alertsList').style.display = 'none';
+                    // Show main results panel (timeline + event table)
+                    document.querySelector('.main-results-panel').style.display = 'block';
                     document.getElementById('situationsList').style.display = 'none';
                     document.getElementById('correlationList').style.display = 'none';
-                    // Show timeline container
-                    document.getElementById('timelineContainer').style.display = 'block';
                     break;
             }
         }
@@ -2747,6 +3003,9 @@
             
             // Initialize search results
             updateSearchResults(allAlerts);
+            
+            // Show main results panel by default
+            document.querySelector('.main-results-panel').style.display = 'block';
         });
     </script>
 </body>
