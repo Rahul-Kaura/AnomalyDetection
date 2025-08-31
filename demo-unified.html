@@ -19,36 +19,184 @@
         }
 
         .enterprise-header {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            background: linear-gradient(135deg, #1e293b, #334155);
             color: white;
-            padding: 2rem 0;
-            border-bottom: 3px solid #3b82f6;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             max-width: 1400px;
             margin: 0 auto;
-            padding: 0 2rem;
-            text-align: center;
         }
 
-        .header-title {
-            font-size: 2.5rem;
+        .header-logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
             font-weight: 700;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.025em;
+            color: #94a3b8;
         }
 
-        .header-subtitle {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            font-weight: 400;
+        .logo-accent {
+            color: #10b981;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-item {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item.active {
+            color: #10b981;
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #10b981;
+            border-radius: 1px;
         }
 
         .main-container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 2rem;
+        }
+
+        /* Splunk-Style Search Interface */
+        .search-interface {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .search-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .search-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .search-bar-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-bar {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid #3b82f6;
+            border-radius: 6px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .search-bar:focus {
+            border-color: #1d4ed8;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-btn {
+            padding: 0.75rem 1.5rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .search-btn:hover {
+            background: #2563eb;
+        }
+
+        .search-results-summary {
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .results-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        .results-icon {
+            font-size: 1.2rem;
+        }
+
+        .results-count {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .results-time {
+            color: #64748b;
+        }
+
+        .search-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .search-tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .search-tab:hover {
+            color: #1e293b;
+            background: #f8fafc;
+        }
+
+        .search-tab.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+            font-weight: 600;
         }
 
         .control-panel {
@@ -949,16 +1097,48 @@
 <body>
     <header class="enterprise-header">
         <div class="header-content">
-            <h1 class="header-title">Enterprise Alert Correlation System</h1>
-            <p class="header-subtitle">Advanced incident correlation and MTTR reduction platform</p>
+            <div class="header-logo">
+                <span class="logo-text">alert<span class="logo-accent">>correlator</span></span>
+            </div>
+            <div class="header-nav">
+                <span class="nav-item active">Search</span>
+                <span class="nav-item">Analytics</span>
+                <span class="nav-item">Reports</span>
+                <span class="nav-item">Alerts</span>
+                <span class="nav-item">Dashboards</span>
+            </div>
         </div>
     </header>
 
     <div class="main-container">
+        <!-- Splunk-Style Search Interface -->
+        <div class="search-interface">
+            <div class="search-header">
+                <h2 class="search-title">New Search</h2>
+            </div>
+            <div class="search-bar-container">
+                <input type="text" id="searchBar" class="search-bar" placeholder="Enter search query (e.g., source=k8s severity=high)" value="">
+                <button id="searchBtn" class="search-btn">Search</button>
+            </div>
+            <div class="search-results-summary" id="searchResultsSummary">
+                <div class="results-info">
+                    <span class="results-icon">✅</span>
+                    <span class="results-count">0 events</span>
+                    <span class="results-time">No data available</span>
+                </div>
+            </div>
+            <div class="search-tabs">
+                <span class="search-tab active" data-tab="events">Events</span>
+                <span class="search-tab" data-tab="patterns">Patterns</span>
+                <span class="search-tab" data-tab="statistics">Statistics</span>
+                <span class="search-tab" data-tab="visualization">Visualization</span>
+            </div>
+        </div>
+
         <!-- Control Panel -->
         <div class="control-panel">
             <div class="control-header">
-                <h2 class="control-title">System Controls</h2>
+                <h3 class="control-title">Quick Actions</h3>
             </div>
             <div class="control-actions">
                 <button id="generateBtn" class="btn btn-primary">
@@ -975,13 +1155,14 @@
                 </button>
                 <button id="clearBtn" class="btn btn-secondary">
                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 1 0 1V6a.5.5 0 0 0 1 0V6z"/>
                         <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                     </svg>
                     Clear All
                 </button>
                 <button id="resetCooldownsBtn" class="btn btn-warning">
                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
                         <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
                         <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
                     </svg>
@@ -1885,6 +2066,17 @@
             demoState.processingTime = Math.round(performance.now() - startTime);
             
             updateMetrics();
+            
+            // Update search results summary
+            const timeRange = `(${new Date(Date.now() - 24 * 60 * 60 * 1000).toLocaleDateString()} to ${new Date().toLocaleDateString()})`;
+            document.getElementById('searchResultsSummary').innerHTML = `
+                <div class="results-info">
+                    <span class="results-icon">✅</span>
+                    <span class="results-count">${allAlerts.length} events</span>
+                    <span class="results-time">${timeRange}</span>
+                </div>
+            `;
+            
             showNotification(`Added ${newAlerts.length} new alerts (Total: ${allAlerts.length})`, 'success');
         }
 
@@ -1925,6 +2117,16 @@
             demoState.k8sEvents = allAlerts.filter(a => a.source === 'k8s').length;
             demoState.totalAlerts = allAlerts.length;
             updateMetrics();
+            
+            // Update search results summary
+            const timeRange = `(${new Date(Date.now() - 24 * 60 * 60 * 1000).toLocaleDateString()} to ${new Date().toLocaleDateString()})`;
+            document.getElementById('searchResultsSummary').innerHTML = `
+                <div class="results-info">
+                    <span class="results-icon">✅</span>
+                    <span class="results-count">${allAlerts.length} events</span>
+                    <span class="results-time">${timeRange}</span>
+                </div>
+            `;
             
             // Show notification
             showNotification(`Added ${newK8sAlerts.length} K8s threshold alerts (Total: ${allAlerts.length})`, 'success');
@@ -2395,6 +2597,129 @@
             showNotification(`Correlation analysis complete! Found ${correlations.length} correlation groups.`, 'success');
         }
 
+        // Search functionality
+        function performSearch() {
+            const searchQuery = document.getElementById('searchBar').value.trim();
+            const resultsSummary = document.getElementById('searchResultsSummary');
+            
+            if (!searchQuery) {
+                // Show all alerts if no search query
+                updateSearchResults(allAlerts);
+                return;
+            }
+            
+            console.log('🔍 Performing search:', searchQuery);
+            
+            // Parse search query (simple key=value format)
+            const searchTerms = searchQuery.split(' ').filter(term => term.includes('='));
+            const searchFilters = {};
+            
+            searchTerms.forEach(term => {
+                const [key, value] = term.split('=');
+                searchFilters[key] = value;
+            });
+            
+            // Filter alerts based on search criteria
+            const filteredAlerts = allAlerts.filter(alert => {
+                for (const [key, value] of Object.entries(searchFilters)) {
+                    if (key === 'source' && alert.source !== value) return false;
+                    if (key === 'severity' && alert.severity !== value) return false;
+                    if (key === 'service' && alert.service !== value) return false;
+                    if (key === 'component' && alert.component !== value) return false;
+                    if (key === 'error_code' && alert.error_code !== value) return false;
+                    if (key === 'kind' && alert.kind !== value) return false;
+                }
+                return true;
+            });
+            
+            updateSearchResults(filteredAlerts);
+            
+            // Update results summary
+            const timeRange = `(${new Date(Date.now() - 24 * 60 * 60 * 1000).toLocaleDateString()} to ${new Date().toLocaleDateString()})`;
+            resultsSummary.innerHTML = `
+                <div class="results-info">
+                    <span class="results-icon">✅</span>
+                    <span class="results-count">${filteredAlerts.length} events</span>
+                    <span class="results-time">${timeRange}</span>
+                </div>
+            `;
+        }
+
+        // Update search results display
+        function updateSearchResults(alerts) {
+            const alertsList = document.getElementById('alertsList');
+            
+            if (alerts.length === 0) {
+                alertsList.innerHTML = '<p style="color: #64748b; text-align: center;">No alerts found matching your search criteria</p>';
+                return;
+            }
+            
+            // Sort alerts by timestamp (newest first)
+            const sortedAlerts = [...alerts].sort((a, b) => b.ts - a.ts);
+            
+            alertsList.innerHTML = sortedAlerts.map(alert => `
+                <div class="alert-item ${alert.source}">
+                    <div class="item-header">
+                        <div class="item-title">${alert.title || alert.alert}</div>
+                        <div class="item-badge badge-severity ${alert.severity}">${alert.severity}</div>
+                    </div>
+                    <div class="item-details">
+                        <strong>Source:</strong> 
+                        <span class="source-badge ${alert.source}">${alert.source}</span><br>
+                        <strong>Service:</strong> ${alert.service}<br>
+                        <strong>Component:</strong> ${alert.component}<br>
+                        <strong>Resource:</strong> ${alert.resource}<br>
+                        <strong>Time:</strong> ${new Date(alert.ts).toLocaleTimeString()}<br>
+                        ${alert.message ? `<strong>Message:</strong> ${alert.message}<br>` : ''}
+                        ${alert.count ? `<strong>Threshold:</strong> ${alert.count} events in ${alert.window}<br>` : ''}
+                        ${alert.key ? `<strong>Key:</strong> ${JSON.stringify(alert.key)}<br>` : ''}
+                        <strong>Alert ID:</strong> #${alert.id}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Handle search tab clicks
+        function handleSearchTabClick(tabName) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.search-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Handle different tab views
+            switch(tabName) {
+                case 'events':
+                    // Show alerts list (default view)
+                    document.getElementById('alertsList').style.display = 'block';
+                    document.getElementById('situationsList').style.display = 'none';
+                    document.getElementById('correlationList').style.display = 'none';
+                    break;
+                case 'patterns':
+                    // Show correlation analysis
+                    document.getElementById('alertsList').style.display = 'none';
+                    document.getElementById('situationsList').style.display = 'none';
+                    document.getElementById('correlationList').style.display = 'block';
+                    break;
+                case 'statistics':
+                    // Show situations
+                    document.getElementById('alertsList').style.display = 'none';
+                    document.getElementById('situationsList').style.display = 'block';
+                    document.getElementById('correlationList').style.display = 'none';
+                    break;
+                case 'visualization':
+                    // Show timeline
+                    document.getElementById('alertsList').style.display = 'none';
+                    document.getElementById('situationsList').style.display = 'none';
+                    document.getElementById('correlationList').style.display = 'none';
+                    // Show timeline container
+                    document.getElementById('timelineContainer').style.display = 'block';
+                    break;
+            }
+        }
+
         // Add event listeners
         document.addEventListener('DOMContentLoaded', () => {
             // Add button event listeners
@@ -2403,6 +2728,25 @@
             document.getElementById('clearBtn').addEventListener('click', clearAll);
             document.getElementById('resetCooldownsBtn').addEventListener('click', resetK8sCooldowns);
             document.getElementById('testCorrelationBtn').addEventListener('click', testCorrelationAnalysis);
+            
+            // Add search functionality event listeners
+            document.getElementById('searchBtn').addEventListener('click', performSearch);
+            document.getElementById('searchBar').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+            
+            // Add search tab event listeners
+            document.querySelectorAll('.search-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    const tabName = e.target.getAttribute('data-tab');
+                    handleSearchTabClick(tabName);
+                });
+            });
+            
+            // Initialize search results
+            updateSearchResults(allAlerts);
         });
     </script>
 </body>
