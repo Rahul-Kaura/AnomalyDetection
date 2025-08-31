@@ -674,6 +674,25 @@
             color: #475569;
         }
 
+        .correlation-breakdown {
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .correlation-source-count {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .correlation-source-count .source-badge {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+        }
+
         .correlated-alerts {
             display: grid;
             gap: 8px;
@@ -763,6 +782,167 @@
             background: linear-gradient(135deg, #4b5563, #374151);
             transform: translateY(-1px);
             box-shadow: 0 4px 8px rgba(107, 114, 128, 0.3);
+        }
+
+        /* Timeline Alert Visualization */
+        .timeline-container {
+            margin: 16px 0;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .timeline-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timeline-bar {
+            height: 24px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-bar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .timeline-bar.k8s {
+            background: linear-gradient(135deg, #3182ce, #1e40af);
+        }
+
+        .timeline-bar.datadog {
+            background: linear-gradient(135deg, #805ad5, #553c9a);
+        }
+
+        .timeline-bar.logicmonitor {
+            background: linear-gradient(135deg, #38a169, #276749);
+        }
+
+        .timeline-bar.mixed {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .timeline-label {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .timeline-count {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            backdrop-filter: blur(4px);
+        }
+
+        .timeline-details {
+            display: none;
+            margin-top: 12px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-details.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .timeline-alert-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            background: #f8fafc;
+            border-left: 3px solid #3b82f6;
+            transition: all 0.2s ease;
+        }
+
+        .timeline-alert-item:hover {
+            background: #f1f5f9;
+            transform: translateX(4px);
+        }
+
+        .timeline-alert-item.k8s {
+            border-left-color: #3182ce;
+        }
+
+        .timeline-alert-item.datadog {
+            border-left-color: #805ad5;
+        }
+
+        .timeline-alert-item.logicmonitor {
+            border-left-color: #38a169;
+        }
+
+        .timeline-alert-source {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .timeline-alert-source.k8s {
+            background: #3182ce;
+        }
+
+        .timeline-alert-source.datadog {
+            background: #805ad5;
+        }
+
+        .timeline-alert-source.logicmonitor {
+            background: #38a169;
+        }
+
+        .timeline-alert-info {
+            flex: 1;
+            font-size: 0.85rem;
+        }
+
+        .timeline-alert-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+
+        .timeline-alert-meta {
+            color: #64748b;
+            font-size: 0.75rem;
         }
     </style>
 </head>
@@ -874,12 +1054,18 @@
                         <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                             <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
                         </svg>
-                        Active Situations
+                        Active Situations & Timeline
                     </h3>
                 </div>
                 <div class="panel-content" id="situationsList">
-                        <p style="color: #64748b; text-align: center;">No active situations</p>
+                    <p style="color: #64748b; text-align: center;">No active situations</p>
+                </div>
+                <!-- Timeline Visualization -->
+                <div class="timeline-container" id="timelineContainer" style="display: none;">
+                    <div class="timeline-title">
+                        📊 Alert Timeline Visualization
                     </div>
+                    <div id="timelineBars"></div>
                 </div>
             </div>
 
@@ -1781,6 +1967,7 @@
         // Update situations list display
         function updateSituationsList() {
             const situationsList = document.getElementById('situationsList');
+            const timelineContainer = document.getElementById('timelineContainer');
             
             // Get all alerts that can be situations (K8s threshold alerts + regular alerts with error codes)
             const k8sSituations = allAlerts.filter(alert => 
@@ -1801,6 +1988,7 @@
             
             if (allSituations.length === 0) {
                 situationsList.innerHTML = '<p style="color: #64748b; text-align: center;">No active situations</p>';
+                timelineContainer.style.display = 'none';
                 return;
             }
 
@@ -1858,6 +2046,9 @@
                     `;
                 }
             }).join('');
+
+            // Generate timeline visualization
+            generateTimelineVisualization(allAlerts);
         }
 
         // Clear all data
@@ -1882,6 +2073,7 @@
             // Clear content
             updateAlertsList();
             document.getElementById('situationsList').innerHTML = '<p style="color: #64748b; text-align: center;">No active situations</p>';
+            document.getElementById('timelineContainer').style.display = 'none';
             
             // Update metrics
             updateMetrics();
@@ -2007,56 +2199,75 @@
             
             updateMetrics();
             
+            // Refresh timeline if there are still alerts
+            if (allAlerts.length > 0) {
+                generateTimelineVisualization(allAlerts);
+            } else {
+                document.getElementById('timelineContainer').style.display = 'none';
+            }
+            
             showNotification(`Alert #${alertId} has been resolved!`, 'success');
         }
 
-        // Update correlation analysis
+        // Update correlation analysis - Show unified correlations between all 3 alert types
         function updateCorrelationAnalysis() {
             const correlationList = document.getElementById('correlationList');
             const correlationCount = document.getElementById('correlationCount');
             
             if (allAlerts.length < 2) {
                 correlationList.innerHTML = '<p style="color: #64748b; text-align: center;">No correlations found. Generate more alerts to see correlation analysis.</p>';
-                correlationCount.textContent = '(0 groups)';
+                correlationCount.textContent = '(0 correlations)';
                 return;
             }
             
             // Find correlations using the correlation engine
             const correlations = window.correlationEngine.findCorrelations(allAlerts);
             
-            correlationCount.textContent = `(${correlations.length} groups)`;
+            correlationCount.textContent = `(${correlations.length} correlations)`;
             
             if (correlations.length === 0) {
                 correlationList.innerHTML = '<p style="color: #64748b; text-align: center;">No significant correlations found.</p>';
                 return;
             }
             
-            // Render correlation groups
+            // Render unified correlation view - show correlations between all 3 alert types
             correlationList.innerHTML = correlations.map((group, index) => {
                 const severityBadge = `<span class="item-badge badge-severity ${group.severity}">${group.severity}</span>`;
                 const similarityScore = Math.round(group.similarity * 100);
+                
+                // Count alerts by source type
+                const k8sCount = group.alerts.filter(a => a.source === 'k8s').length;
+                const datadogCount = group.alerts.filter(a => a.source === 'datadog').length;
+                const logicmonitorCount = group.alerts.filter(a => a.source === 'logicmonitor').length;
                 
                 return `
                     <div class="correlation-group fade-in-up" style="animation-delay: ${index * 0.1}s;">
                         <div class="correlation-header">
                             <div class="correlation-title">
-                                <h4>🔗 Correlation Group ${index + 1}</h4>
+                                <h4>🔗 Cross-Source Correlation ${index + 1}</h4>
                                 ${severityBadge}
                                 <span class="similarity-score">Similarity: ${similarityScore}%</span>
                             </div>
                             <div class="correlation-meta">
-                                <span class="alert-count">${group.count} alerts</span>
+                                <span class="alert-count">${group.count} total alerts</span>
                                 <span class="correlation-service">${group.service}</span>
                             </div>
                         </div>
                         <div class="correlation-factors">
                             <strong>Correlation Factors:</strong> ${group.factors.join(' • ')}
                         </div>
+                        <div class="correlation-breakdown">
+                            <div class="correlation-source-count">
+                                <span class="source-badge k8s">K8s: ${k8sCount}</span>
+                                <span class="source-badge datadog">Datadog: ${datadogCount}</span>
+                                <span class="source-badge logicmonitor">LogicMonitor: ${logicmonitorCount}</span>
+                            </div>
+                        </div>
                         <div class="correlated-alerts">
                             ${group.alerts.map(alert => `
                                 <div class="mini-alert ${alert.source}">
                                     <span class="source-badge ${alert.source}">${alert.source}</span>
-                                    <span class="alert-title">${alert.title}</span>
+                                    <span class="alert-title">${alert.title || alert.alert}</span>
                                     <span class="alert-time">${new Date(alert.ts).toLocaleTimeString()}</span>
                                 </div>
                             `).join('')}
@@ -2072,6 +2283,88 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        // Generate timeline visualization
+        function generateTimelineVisualization(alerts) {
+            const timelineContainer = document.getElementById('timelineContainer');
+            const timelineBars = document.getElementById('timelineBars');
+            
+            if (alerts.length === 0) {
+                timelineContainer.style.display = 'none';
+                return;
+            }
+            
+            // Group alerts by error type and source
+            const alertGroups = {};
+            
+            alerts.forEach(alert => {
+                let key = '';
+                if (alert.kind) {
+                    // K8s threshold alerts
+                    key = `k8s-${alert.kind}`;
+                } else if (alert.error_code) {
+                    // Regular alerts
+                    key = `${alert.source}-${alert.error_code}`;
+                } else {
+                    return; // Skip alerts without error codes
+                }
+                
+                if (!alertGroups[key]) {
+                    alertGroups[key] = {
+                        key: key,
+                        source: alert.source,
+                        errorCode: alert.error_code || alert.kind,
+                        service: alert.service,
+                        alerts: [],
+                        count: 0
+                    };
+                }
+                
+                alertGroups[key].alerts.push(alert);
+                alertGroups[key].count++;
+            });
+            
+            // Generate timeline bars
+            const timelineHTML = Object.values(alertGroups).map((group, index) => {
+                const sourceClass = group.source;
+                const barWidth = Math.min(100, Math.max(20, group.count * 10)); // Scale width based on count
+                
+                return `
+                    <div class="timeline-bar ${sourceClass}" style="width: ${barWidth}%;" 
+                         onclick="toggleTimelineDetails('${group.key}')">
+                        <div class="timeline-label">${group.errorCode}</div>
+                        <div class="timeline-count">${group.count}</div>
+                    </div>
+                    <div class="timeline-details" id="timeline-${group.key}">
+                        <div class="timeline-title">
+                            📊 ${group.errorCode} (${group.count} alerts)
+                        </div>
+                        ${group.alerts.map(alert => `
+                            <div class="timeline-alert-item ${alert.source}">
+                                <span class="timeline-alert-source ${alert.source}">${alert.source}</span>
+                                <div class="timeline-alert-info">
+                                    <div class="timeline-alert-title">${alert.title || alert.alert}</div>
+                                    <div class="timeline-alert-meta">
+                                        ${alert.service} • ${alert.component} • ${new Date(alert.ts).toLocaleTimeString()}
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }).join('');
+            
+            timelineBars.innerHTML = timelineHTML;
+            timelineContainer.style.display = 'block';
+        }
+
+        // Toggle timeline details
+        function toggleTimelineDetails(key) {
+            const details = document.getElementById(`timeline-${key}`);
+            if (details) {
+                details.classList.toggle('show');
+            }
         }
 
         // Handle correlation group actions

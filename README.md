@@ -45,7 +45,7 @@ A sophisticated, enterprise-grade incident correlation and MTTR (Mean Time To Re
 ### Installation & Running
 
 1. **Clone the repository**
-   ```bash
+```bash
    git clone https://github.com/Rahul-Kaura/AnomalyDetection.git
    cd AnomalyDetection
    ```
