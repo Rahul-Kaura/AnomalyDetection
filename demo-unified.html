@@ -86,28 +86,134 @@
             padding: 2rem;
         }
 
-        /* Splunk-Style Search Interface */
-        .search-interface {
+        /* Professional Quick Actions Panel */
+        .quick-actions-panel {
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
             margin-bottom: 2rem;
             border: 1px solid #e2e8f0;
         }
 
-        .search-header {
-            margin-bottom: 1.5rem;
+        .panel-header {
+            text-align: center;
+            margin-bottom: 2rem;
         }
 
-        .search-title {
-            font-size: 1.5rem;
-            font-weight: 600;
+        .panel-title {
+            font-size: 1.75rem;
+            font-weight: 700;
             color: #1e293b;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .panel-subtitle {
+            font-size: 1rem;
+            color: #64748b;
             margin: 0;
         }
 
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            background: #f8fafc;
+            border: 2px solid transparent;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+
+        .action-btn.primary:hover {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+        }
+
+        .action-btn.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .action-btn.success:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        .action-btn.info {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            color: white;
+        }
+
+        .action-btn.info:hover {
+            background: linear-gradient(135deg, #0891b2, #0e7490);
+        }
+
+        .action-btn.warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .action-btn.warning:hover {
+            background: linear-gradient(135deg, #d97706, #b45309);
+        }
+
+        .action-btn.danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .action-btn.danger:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+        }
+
+        .action-icon {
+            font-size: 2rem;
+            min-width: 48px;
+        }
+
+        .action-content {
+            flex: 1;
+        }
+
+        .action-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .action-desc {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Search Bar Above Timeline */
         .search-bar-container {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .search-input-group {
             display: flex;
             gap: 1rem;
             margin-bottom: 1rem;
@@ -115,25 +221,29 @@
 
         .search-bar {
             flex: 1;
-            padding: 0.75rem 1rem;
-            border: 2px solid #3b82f6;
-            border-radius: 6px;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
             font-size: 1rem;
             outline: none;
             transition: all 0.2s ease;
+            background: white;
         }
 
         .search-bar:focus {
-            border-color: #1d4ed8;
+            border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
         .search-btn {
-            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
             background: #3b82f6;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
@@ -142,13 +252,13 @@
 
         .search-btn:hover {
             background: #2563eb;
+            transform: translateY(-1px);
         }
 
         .search-results-summary {
-            background: #f8fafc;
+            background: white;
             border-radius: 6px;
             padding: 1rem;
-            margin-bottom: 1rem;
             border: 1px solid #e2e8f0;
         }
 
@@ -173,104 +283,9 @@
             color: #64748b;
         }
 
-        .search-tabs {
-            display: flex;
-            gap: 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
 
-        .search-tab {
-            padding: 0.75rem 1.5rem;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s ease;
-            color: #64748b;
-            font-weight: 500;
-        }
 
-        .search-tab:hover {
-            color: #1e293b;
-            background: #f8fafc;
-        }
 
-        .search-tab.active {
-            color: #3b82f6;
-            border-bottom-color: #3b82f6;
-            font-weight: 600;
-        }
-
-        .control-panel {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            border: 1px solid #e2e8f0;
-        }
-
-        .control-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .control-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        .control-actions {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.2s ease;
-        }
-
-        .btn-primary {
-            background: #3b82f6;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #2563eb;
-        }
-
-        .btn-success {
-            background: #10b981;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #059669;
-        }
-
-        .btn-secondary {
-            background: #6b7280;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #4b5563;
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
 
         .metrics-grid {
             display: grid;
@@ -926,6 +941,60 @@
             opacity: 1;
         }
 
+        /* Error Group Sections */
+        .error-group-section {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .error-group-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .error-group-name {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 1rem;
+        }
+
+        .error-group-count {
+            background: #3b82f6;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .error-group-source {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .error-group-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 160px;
+            padding: 0 1rem;
+            overflow-x: auto;
+        }
+
         .timeline-controls-bottom {
             display: flex;
             gap: 20px;
@@ -1292,71 +1361,53 @@
     </header>
 
     <div class="main-container">
-        <!-- Splunk-Style Search Interface -->
-        <div class="search-interface">
-            <div class="search-header">
-                <h2 class="search-title">New Search</h2>
+        <!-- Professional Quick Actions Panel -->
+        <div class="quick-actions-panel">
+            <div class="panel-header">
+                <h3 class="panel-title">Quick Actions</h3>
+                <p class="panel-subtitle">Generate and manage alert data</p>
             </div>
-            <div class="search-bar-container">
-                <input type="text" id="searchBar" class="search-bar" placeholder="Enter search query (e.g., source=k8s severity=high)" value="">
-                <button id="searchBtn" class="search-btn">Search</button>
-            </div>
-            <div class="search-results-summary" id="searchResultsSummary">
-                <div class="results-info">
-                    <span class="results-icon">✅</span>
-                    <span class="results-count">0 events</span>
-                    <span class="results-time">No data available</span>
-                </div>
-            </div>
-            <div class="search-tabs">
-                <span class="search-tab active" data-tab="events">Events</span>
-                <span class="search-tab" data-tab="patterns">Patterns</span>
-                <span class="search-tab" data-tab="statistics">Statistics</span>
-                <span class="search-tab" data-tab="visualization">Visualization</span>
+            <div class="action-grid">
+                <button id="generateBtn" class="action-btn primary">
+                    <div class="action-icon">🚀</div>
+                    <div class="action-content">
+                        <div class="action-title">Generate Test Data</div>
+                        <div class="action-desc">Create sample alerts</div>
+                    </div>
+                </button>
+                <button id="k8sThresholdBtn" class="action-btn success">
+                    <div class="action-icon">☸️</div>
+                    <div class="action-content">
+                        <div class="action-title">Test K8s Thresholds</div>
+                        <div class="action-desc">Process K8s events</div>
+                    </div>
+                </button>
+                <button id="testCorrelationBtn" class="action-btn info">
+                    <div class="action-icon">🔗</div>
+                    <div class="action-content">
+                        <div class="action-title">Test Correlation</div>
+                        <div class="action-desc">Analyze patterns</div>
+                    </div>
+                </button>
+                <button id="resetCooldownsBtn" class="action-btn warning">
+                    <div class="action-icon">🔄</div>
+                    <div class="action-content">
+                        <div class="action-title">Reset Cooldowns</div>
+                        <div class="action-desc">Clear K8s thresholds</div>
+                    </div>
+                </button>
+                <button id="clearBtn" class="action-btn danger">
+                    <div class="action-icon">🗑️</div>
+                    <div class="action-content">
+                        <div class="action-title">Clear All</div>
+                        <div class="action-desc">Reset system</div>
+                    </div>
+                </button>
             </div>
         </div>
 
-        <!-- Control Panel -->
-        <div class="control-panel">
-            <div class="control-header">
-                <h3 class="control-title">Quick Actions</h3>
-            </div>
-            <div class="control-actions">
-                <button id="generateBtn" class="btn btn-primary">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                    </svg>
-                    Generate Test Data
-                </button>
-                <button id="k8sThresholdBtn" class="btn btn-success">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
-                    </svg>
-                    Test K8s Thresholds
-                </button>
-                <button id="clearBtn" class="btn btn-secondary">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 1 0 1V6a.5.5 0 0 0 1 0V6z"/>
-                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                    </svg>
-                    Clear All
-                </button>
-                <button id="resetCooldownsBtn" class="btn btn-warning">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
-                        <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
-                        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
-                    </svg>
-                    Reset K8s Cooldowns
-                </button>
-                <button id="testCorrelationBtn" class="btn btn-info">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
-                    </svg>
-                    Test Correlation
-                </button>
-            </div>
-        </div>
+
+
 
         <!-- Metrics Dashboard -->
         <div class="metrics-grid">
@@ -1398,6 +1449,26 @@
             <div class="content-panel main-results-panel">
                 <div class="panel-header">
                     <h3 class="panel-title">Search Results</h3>
+                </div>
+                
+                <!-- Search Bar Above Timeline -->
+                <div class="search-bar-container">
+                    <div class="search-input-group">
+                        <input type="text" id="searchBar" class="search-bar" placeholder="Search alerts (e.g., source=k8s severity=high service=web-api)" value="">
+                        <button id="searchBtn" class="search-btn">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.098zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                            </svg>
+                            Search
+                        </button>
+                    </div>
+                    <div class="search-results-summary" id="searchResultsSummary">
+                        <div class="results-info">
+                            <span class="results-icon">✅</span>
+                            <span class="results-count">0 events</span>
+                            <span class="results-time">No data available</span>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Timeline Graph (Splunk Style) -->
@@ -2629,15 +2700,19 @@
             // Find correlations using the correlation engine
             const correlations = window.correlationEngine.findCorrelations(allAlerts);
             
-            correlationCount.textContent = `(${correlations.length} correlations)`;
+            // Add constant correlation analysis
+            const constantCorrelations = findConstantCorrelations(allAlerts);
+            const allCorrelations = [...correlations, ...constantCorrelations];
             
-            if (correlations.length === 0) {
+            correlationCount.textContent = `(${allCorrelations.length} correlations)`;
+            
+            if (allCorrelations.length === 0) {
                 correlationList.innerHTML = '<p style="color: #64748b; text-align: center;">No significant correlations found.</p>';
                 return;
             }
             
             // Render unified correlation view - show correlations between all 3 alert types
-            correlationList.innerHTML = correlations.map((group, index) => {
+            correlationList.innerHTML = allCorrelations.map((group, index) => {
                 const severityBadge = `<span class="item-badge badge-severity ${group.severity}">${group.severity}</span>`;
                 const similarityScore = Math.round(group.similarity * 100);
                 
@@ -2646,11 +2721,13 @@
                 const datadogCount = group.alerts.filter(a => a.source === 'datadog').length;
                 const logicmonitorCount = group.alerts.filter(a => a.source === 'logicmonitor').length;
                 
+                const correlationType = group.type === 'constant' ? '🔄 Constant Pattern' : '🔗 Cross-Source';
+                
                 return `
                     <div class="correlation-group fade-in-up" style="animation-delay: ${index * 0.1}s;">
                         <div class="correlation-header">
                             <div class="correlation-title">
-                                <h4>🔗 Cross-Source Correlation ${index + 1}</h4>
+                                <h4>${correlationType} ${index + 1}</h4>
                                 ${severityBadge}
                                 <span class="similarity-score">Similarity: ${similarityScore}%</span>
                             </div>
@@ -2691,7 +2768,109 @@
             }).join('');
         }
 
-        // Generate Splunk-style timeline visualization with vertical bars
+        // Find constant correlations between all alerts
+        function findConstantCorrelations(alerts) {
+            const constantCorrelations = [];
+            
+            // Group alerts by service and component
+            const serviceGroups = {};
+            alerts.forEach(alert => {
+                const key = `${alert.service}-${alert.component}`;
+                if (!serviceGroups[key]) {
+                    serviceGroups[key] = [];
+                }
+                serviceGroups[key].push(alert);
+            });
+            
+            // Find services with multiple alerts from different sources
+            Object.entries(serviceGroups).forEach(([key, groupAlerts]) => {
+                if (groupAlerts.length >= 3) {
+                    const sources = [...new Set(groupAlerts.map(a => a.source))];
+                    if (sources.length >= 2) {
+                        // This is a constant correlation - same service/component across sources
+                        const constantCorrelation = {
+                            id: `constant-${key}`,
+                            type: 'constant',
+                            alerts: groupAlerts,
+                            count: groupAlerts.length,
+                            similarity: 0.85, // High similarity for constant patterns
+                            severity: getHighestSeverityFromAlerts(groupAlerts),
+                            source: 'mixed',
+                            service: groupAlerts[0].service,
+                            component: groupAlerts[0].component,
+                            factors: [
+                                `Service: ${groupAlerts[0].service}`,
+                                `Component: ${groupAlerts[0].component}`,
+                                `Multi-source: ${sources.join(', ')}`,
+                                'Constant pattern detected'
+                            ]
+                        };
+                        constantCorrelations.push(constantCorrelation);
+                    }
+                }
+            });
+            
+            // Group alerts by error pattern
+            const errorGroups = {};
+            alerts.forEach(alert => {
+                const errorKey = alert.kind || alert.error_code;
+                if (errorKey) {
+                    if (!errorGroups[errorKey]) {
+                        errorGroups[errorKey] = [];
+                    }
+                    errorGroups[errorKey].push(alert);
+                }
+            });
+            
+            // Find error patterns with multiple occurrences
+            Object.entries(errorGroups).forEach(([errorKey, groupAlerts]) => {
+                if (groupAlerts.length >= 4) {
+                    const sources = [...new Set(groupAlerts.map(a => a.source))];
+                    if (sources.length >= 2) {
+                        // This is a constant error pattern correlation
+                        const constantCorrelation = {
+                            id: `error-${errorKey}`,
+                            type: 'constant',
+                            alerts: groupAlerts,
+                            count: groupAlerts.length,
+                            similarity: 0.9, // Very high similarity for error patterns
+                            severity: getHighestSeverityFromAlerts(groupAlerts),
+                            source: 'mixed',
+                            service: 'multiple',
+                            component: 'multiple',
+                            factors: [
+                                `Error Pattern: ${errorKey}`,
+                                `Multi-source: ${sources.join(', ')}`,
+                                `High frequency: ${groupAlerts.length} occurrences`,
+                                'Constant error pattern'
+                            ]
+                        };
+                        constantCorrelations.push(constantCorrelation);
+                    }
+                }
+            });
+            
+            return constantCorrelations;
+        }
+
+        // Helper function to get highest severity from alerts
+        function getHighestSeverityFromAlerts(alerts) {
+            const severityLevels = { 'critical': 4, 'high': 3, 'medium': 2, 'warning': 1, 'info': 0 };
+            let highest = 'info';
+            let maxLevel = 0;
+            
+            alerts.forEach(alert => {
+                const level = severityLevels[alert.severity] || 0;
+                if (level > maxLevel) {
+                    maxLevel = level;
+                    highest = alert.severity;
+                }
+            });
+            
+            return highest;
+        }
+
+        // Generate Splunk-style timeline visualization with error grouping and color coding
         function generateTimelineVisualization(alerts) {
             const timelineGraph = document.getElementById('timelineGraph');
             
@@ -2700,37 +2879,87 @@
                 return;
             }
             
-            // Group alerts by time intervals (like Splunk's event distribution)
-            const timeIntervals = {};
+            // Group alerts by error type and time intervals
+            const errorGroups = {};
             const intervalSize = 5 * 60 * 1000; // 5 minute intervals
             
             alerts.forEach(alert => {
-                const interval = Math.floor(alert.ts / intervalSize) * intervalSize;
-                if (!timeIntervals[interval]) {
-                    timeIntervals[interval] = 0;
+                let errorKey = '';
+                if (alert.kind) {
+                    errorKey = `k8s-${alert.kind}`;
+                } else if (alert.error_code) {
+                    errorKey = `${alert.source}-${alert.error_code}`;
+                } else {
+                    return; // Skip alerts without error codes
                 }
-                timeIntervals[interval]++;
+                
+                if (!errorGroups[errorKey]) {
+                    errorGroups[errorKey] = {
+                        name: alert.kind || alert.error_code,
+                        source: alert.source,
+                        timeIntervals: {},
+                        totalCount: 0
+                    };
+                }
+                
+                const interval = Math.floor(alert.ts / intervalSize) * intervalSize;
+                if (!errorGroups[errorKey].timeIntervals[interval]) {
+                    errorGroups[errorKey].timeIntervals[interval] = 0;
+                }
+                errorGroups[errorKey].timeIntervals[interval]++;
+                errorGroups[errorKey].totalCount++;
             });
             
-            // Sort intervals by time
-            const sortedIntervals = Object.keys(timeIntervals).sort((a, b) => parseInt(a) - parseInt(b));
+            // Sort error groups by total count (descending)
+            const sortedErrorGroups = Object.values(errorGroups).sort((a, b) => b.totalCount - a.totalCount);
             
-            // Generate vertical bars
-            const barsHTML = sortedIntervals.map(interval => {
-                const count = timeIntervals[interval];
-                const height = Math.max(20, Math.min(150, count * 10)); // Scale height based on count
-                const time = new Date(parseInt(interval));
+            // Generate timeline with grouped bars
+            let timelineHTML = '';
+            
+            sortedErrorGroups.forEach((errorGroup, groupIndex) => {
+                const sortedIntervals = Object.keys(errorGroup.timeIntervals).sort((a, b) => parseInt(a) - parseInt(b));
                 
-                return `
-                    <div class="timeline-bar-vertical" 
-                         style="height: ${height}px;" 
-                         data-count="${count}"
-                         title="${time.toLocaleTimeString()} - ${count} events">
+                // Color code based on total count
+                let barColor = '';
+                if (errorGroup.totalCount > 20) {
+                    barColor = 'background: linear-gradient(to top, #1e40af, #1e3a8a);'; // Dark blue
+                } else if (errorGroup.totalCount > 15) {
+                    barColor = 'background: linear-gradient(to top, #3b82f6, #1d4ed8);'; // Blue
+                } else if (errorGroup.totalCount > 10) {
+                    barColor = 'background: linear-gradient(to top, #06b6d4, #0891b2);'; // Cyan
+                } else if (errorGroup.totalCount > 5) {
+                    barColor = 'background: linear-gradient(to top, #10b981, #059669);'; // Green
+                } else {
+                    barColor = 'background: linear-gradient(to top, #ef4444, #dc2626);'; // Red
+                }
+                
+                timelineHTML += `
+                    <div class="error-group-section">
+                        <div class="error-group-header">
+                            <span class="error-group-name">${errorGroup.name}</span>
+                            <span class="error-group-count">${errorGroup.totalCount} total</span>
+                            <span class="error-group-source">${errorGroup.source}</span>
+                        </div>
+                        <div class="error-group-bars">
+                            ${sortedIntervals.map(interval => {
+                                const count = errorGroup.timeIntervals[interval];
+                                const height = Math.max(20, Math.min(150, count * 8)); // Scale height
+                                const time = new Date(parseInt(interval));
+                                
+                                return `
+                                    <div class="timeline-bar-vertical" 
+                                         style="height: ${height}px; ${barColor}" 
+                                         data-count="${count}"
+                                         title="${time.toLocaleTimeString()} - ${count} ${errorGroup.name} events">
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
                     </div>
                 `;
-            }).join('');
+            });
             
-            timelineGraph.innerHTML = barsHTML;
+            timelineGraph.innerHTML = timelineHTML;
         }
 
         // Generate Splunk-style event table
