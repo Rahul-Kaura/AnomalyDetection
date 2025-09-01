@@ -1188,6 +1188,204 @@
             box-shadow: 0 4px 8px rgba(107, 114, 128, 0.3);
         }
 
+        /* Unified Correlation Group Styling */
+        .unified-correlation-group {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #475569;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .correlation-group-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #475569;
+        }
+
+        .correlation-group-header h4 {
+            color: #f1f5f9;
+            margin: 0 0 8px 0;
+            font-size: 18px;
+        }
+
+        .correlation-group-header p {
+            color: #94a3b8;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .correlation-pair {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .correlation-pair:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .correlation-pair.high {
+            border-left: 4px solid #10b981;
+        }
+
+        .correlation-pair.medium {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .correlation-pair.low {
+            border-left: 4px solid #ef4444;
+        }
+
+        .pair-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .pair-number {
+            background: #475569;
+            color: #f1f5f9;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .pair-similarity {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .pair-similarity.high {
+            color: #10b981;
+        }
+
+        .pair-similarity.medium {
+            color: #f59e0b;
+        }
+
+        .pair-similarity.low {
+            color: #ef4444;
+        }
+
+        .pair-alerts {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .pair-alert {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .pair-alert.k8s {
+            border-left: 3px solid #3b82f6;
+        }
+
+        .pair-alert.datadog {
+            border-left: 3px solid #8b5cf6;
+        }
+
+        .pair-alert.logicmonitor {
+            border-left: 3px solid #06b6d4;
+        }
+
+        .pair-alert.victoria-logs {
+            border-left: 3px solid #10b981;
+        }
+
+        .alert-source {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 4px;
+            font-weight: bold;
+        }
+
+        .alert-title {
+            color: #f1f5f9;
+            font-weight: 500;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .alert-service {
+            color: #cbd5e1;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .alert-severity {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .alert-severity.critical {
+            background: #dc2626;
+            color: white;
+        }
+
+        .alert-severity.high {
+            background: #ea580c;
+            color: white;
+        }
+
+        .alert-severity.medium {
+            background: #d97706;
+            color: white;
+        }
+
+        .alert-severity.low {
+            background: #059669;
+            color: white;
+        }
+
+        .alert-severity.warning {
+            background: #ca8a04;
+            color: white;
+        }
+
+        .pair-connector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .connector-line {
+            width: 2px;
+            height: 20px;
+            background: #475569;
+        }
+
+        .connector-arrow {
+            color: #64748b;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .no-similarities {
+            text-align: center;
+            color: #94a3b8;
+            font-style: italic;
+            padding: 20px;
+        }
+
         /* Timeline Alert Visualization */
         .timeline-container {
             margin: 16px 0;
@@ -2845,7 +3043,7 @@
             showNotification(`Alert #${alertId} has been resolved!`, 'success');
         }
 
-        // Update correlation analysis - Show unified correlations between all 3 alert types
+        // Update correlation analysis - Single unified group with similarity percentages
         function updateCorrelationAnalysis() {
             const correlationList = document.getElementById('correlationList');
             const correlationCount = document.getElementById('correlationCount');
@@ -2870,61 +3068,80 @@
                 return;
             }
             
-            // Render unified correlation view - show correlations between all 3 alert types
-            correlationList.innerHTML = allCorrelations.map((group, index) => {
-                const severityBadge = `<span class="item-badge badge-severity ${group.severity}">${group.severity}</span>`;
-                const similarityScore = Math.round(group.similarity * 100);
-                
-                // Count alerts by source type
-                const k8sCount = group.alerts.filter(a => a.source === 'k8s').length;
-                const datadogCount = group.alerts.filter(a => a.source === 'datadog').length;
-                const logicmonitorCount = group.alerts.filter(a => a.source === 'logicmonitor').length;
-                
-                const correlationType = group.type === 'constant' ? '🔄 Constant Pattern' : '🔗 Cross-Source';
-                
-                return `
-                    <div class="correlation-group fade-in-up" style="animation-delay: ${index * 0.1}s;">
-                        <div class="correlation-header">
-                            <div class="correlation-title">
-                                <h4>${correlationType} ${index + 1}</h4>
-                                ${severityBadge}
-                                <span class="similarity-score">Similarity: ${similarityScore}%</span>
-                            </div>
-                            <div class="correlation-meta">
-                                <span class="alert-count">${group.count} total alerts</span>
-                                <span class="correlation-service">${group.service}</span>
-                            </div>
-                        </div>
-                        <div class="correlation-factors">
-                            <strong>Correlation Factors:</strong> ${group.factors.join(' • ')}
-                        </div>
-                        <div class="correlation-breakdown">
-                            <div class="correlation-source-count">
-                                <span class="source-badge k8s">K8s: ${k8sCount}</span>
-                                <span class="source-badge datadog">Datadog: ${datadogCount}</span>
-                                <span class="source-badge logicmonitor">LogicMonitor: ${logicmonitorCount}</span>
-                            </div>
-                        </div>
-                        <div class="correlated-alerts">
-                            ${group.alerts.map(alert => `
-                                <div class="mini-alert ${alert.source}">
-                                    <span class="source-badge ${alert.source}">${alert.source}</span>
-                                    <span class="alert-title">${alert.title || alert.alert}</span>
-                                    <span class="alert-time">${new Date(alert.ts).toLocaleTimeString()}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                        <div class="correlation-actions">
-                            <button onclick="correlateGroup('${group.id}')" class="correlation-btn">
-                                🔗 Create Incident
-                            </button>
-                            <button onclick="dismissCorrelation('${group.id}')" class="dismiss-btn">
-                                ❌ Dismiss
-                            </button>
-                        </div>
+            // Create unified correlation view - single group with all alerts and similarity percentages
+            let html = `
+                <div class="unified-correlation-group">
+                    <div class="correlation-group-header">
+                        <h4>📊 All Alert Correlations</h4>
+                        <p>Showing similarity percentages between all correlated alerts</p>
                     </div>
-                `;
-            }).join('');
+            `;
+            
+            // Create a unified view of all correlations
+            const allCorrelatedAlerts = new Set();
+            allCorrelations.forEach(correlation => {
+                correlation.alerts.forEach(alert => allCorrelatedAlerts.add(alert.id));
+            });
+            
+            const uniqueAlerts = allAlerts.filter(alert => allCorrelatedAlerts.has(alert.id));
+            
+            // Calculate similarity matrix for all alerts
+            const similarityMatrix = [];
+            for (let i = 0; i < uniqueAlerts.length; i++) {
+                for (let j = i + 1; j < uniqueAlerts.length; j++) {
+                    const similarity = window.correlationEngine.calculateSimilarity(uniqueAlerts[i], uniqueAlerts[j]);
+                    if (similarity > 0.3) { // Only show meaningful similarities
+                        similarityMatrix.push({
+                            alert1: uniqueAlerts[i],
+                            alert2: uniqueAlerts[j],
+                            similarity: similarity
+                        });
+                    }
+                }
+            }
+            
+            // Sort by similarity (highest first)
+            similarityMatrix.sort((a, b) => b.similarity - a.similarity);
+            
+            if (similarityMatrix.length > 0) {
+                similarityMatrix.forEach((pair, index) => {
+                    const similarityPercent = Math.round(pair.similarity * 100);
+                    const similarityClass = similarityPercent >= 80 ? 'high' : similarityPercent >= 60 ? 'medium' : 'low';
+                    
+                    html += `
+                        <div class="correlation-pair ${similarityClass}">
+                            <div class="pair-header">
+                                <span class="pair-number">#${index + 1}</span>
+                                <span class="pair-similarity ${similarityClass}">${similarityPercent}% similar</span>
+                            </div>
+                            <div class="pair-alerts">
+                                <div class="pair-alert ${pair.alert1.source}">
+                                    <div class="alert-source">${pair.alert1.source}</div>
+                                    <div class="alert-title">${pair.alert1.title || pair.alert1.alert}</div>
+                                    <div class="alert-service">${pair.alert1.service} - ${pair.alert1.component}</div>
+                                    <div class="alert-severity ${pair.alert1.severity}">${pair.alert1.severity}</div>
+                                </div>
+                                <div class="pair-connector">
+                                    <div class="connector-line"></div>
+                                    <div class="connector-arrow">→</div>
+                                </div>
+                                <div class="pair-alert ${pair.alert2.source}">
+                                    <div class="alert-source">${pair.alert2.source}</div>
+                                    <div class="alert-title">${pair.alert2.title || pair.alert2.alert}</div>
+                                    <div class="alert-service">${pair.alert2.service} - ${pair.alert2.component}</div>
+                                    <div class="alert-severity ${pair.alert2.severity}">${pair.alert2.severity}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                html += '<p class="no-similarities">No significant similarities found between alerts.</p>';
+            }
+            
+            html += '</div>'; // Close unified-correlation-group
+            
+            correlationList.innerHTML = html;
         }
 
         // Find constant correlations between all alerts
