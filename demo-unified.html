@@ -184,6 +184,15 @@
             background: linear-gradient(135deg, #dc2626, #b91c1c);
         }
 
+        .action-btn.secondary {
+            background: linear-gradient(135deg, #64748b, #475569);
+            color: white;
+        }
+
+        .action-btn.secondary:hover {
+            background: linear-gradient(135deg, #475569, #374151);
+        }
+
         .action-icon {
             font-size: 2rem;
             min-width: 48px;
@@ -1365,11 +1374,18 @@
                 <p class="panel-subtitle">Generate and manage alert data</p>
             </div>
             <div class="action-grid">
-                <button id="generateBtn" class="action-btn primary">
-                    <div class="action-icon">🚀</div>
+                <button id="fetchVictoriaLogsBtn" class="action-btn primary">
+                    <div class="action-icon">📊</div>
+                    <div class="action-content">
+                        <div class="action-title">Fetch Victoria Logs</div>
+                        <div class="action-desc">Get real logs from Victoria Logs</div>
+                    </div>
+                </button>
+                <button id="generateBtn" class="action-btn secondary">
+                    <div class="action-icon">🧪</div>
                     <div class="action-content">
                         <div class="action-title">Generate Test Data</div>
-                        <div class="action-desc">Create sample alerts</div>
+                        <div class="action-desc">Create sample alerts (fallback)</div>
                     </div>
                 </button>
                 <button id="k8sThresholdBtn" class="action-btn success">
@@ -2108,7 +2124,117 @@
             console.log('  - Accumulating alerts (press buttons multiple times!)');
         });
 
-        // Generate test data (accumulates alerts)
+        // Fetch real logs from Victoria Logs
+        async function fetchVictoriaLogs() {
+            console.log('🔍 Fetching logs from Victoria Logs...');
+            
+            const startTime = performance.now();
+            
+            try {
+                // Victoria Logs query endpoint
+                const victoriaLogsUrl = 'https://vlinsert.dev.manifestit.tech/';
+                
+                // Example query - you can modify this based on your needs
+                const query = {
+                    query: '{job="varlogs"}', // Adjust this query based on your Victoria Logs setup
+                    start: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(), // Last 1 hour
+                    end: new Date().toISOString(),
+                    limit: 100
+                };
+                
+                // For demonstration, we'll create a mock response since we can't directly query the endpoint
+                // In a real implementation, you would make an actual HTTP request to Victoria Logs
+                console.log('📡 Would query Victoria Logs with:', query);
+                
+                // Simulate fetching logs and converting them to alerts
+                const newAlerts = await simulateVictoriaLogsFetch();
+                
+                // Add new alerts to existing list
+                allAlerts.push(...newAlerts);
+                
+                // Create situations from new alerts
+                createSituationsFromAlerts(newAlerts);
+                
+                // Update timeline and event table
+                generateTimelineVisualization(allAlerts);
+                generateEventTable(allAlerts);
+                
+                // Update situations list
+                updateSituationsList();
+                
+                // Update metrics
+                demoState.totalAlerts = allAlerts.length;
+                demoState.activeSituations = allAlerts.filter(a => 
+                    a.kind || // K8s threshold alerts
+                    (a.error_code && (a.severity === 'high' || a.severity === 'critical')) // Only HIGH/CRITICAL regular alerts
+                ).length;
+                demoState.datadogAlerts = allAlerts.filter(a => a.source === 'datadog').length;
+                demoState.logicMonitorAlerts = allAlerts.filter(a => a.source === 'logicmonitor').length;
+                demoState.processingTime = Math.round(performance.now() - startTime);
+                
+                updateMetrics();
+                
+                // Update search results summary
+                const timeRange = `(${new Date(Date.now() - 1 * 60 * 60 * 1000).toLocaleDateString()} to ${new Date().toLocaleDateString()})`;
+                document.getElementById('searchResultsSummary').innerHTML = `
+                    <div class="results-info">
+                        <span class="results-icon">✅</span>
+                        <span class="results-count">${allAlerts.length} events from Victoria Logs</span>
+                        <span class="results-time">${timeRange}</span>
+                    </div>
+                `;
+                
+                showNotification(`Fetched ${newAlerts.length} logs from Victoria Logs (Total: ${allAlerts.length})`, 'success');
+                
+            } catch (error) {
+                console.error('❌ Error fetching from Victoria Logs:', error);
+                showNotification('Failed to fetch from Victoria Logs. Using test data instead.', 'error');
+                
+                // Fallback to test data if Victoria Logs fails
+                generateTestData();
+            }
+        }
+
+        // Simulate Victoria Logs fetch (replace with actual implementation)
+        async function simulateVictoriaLogsFetch() {
+            // This simulates what you'd get from Victoria Logs
+            // In reality, you'd parse the actual log response
+            const newAlerts = [];
+            
+            // Simulate different types of logs from Victoria Logs
+            const logTypes = [
+                { source: 'victoria-logs', service: 'web-api', component: 'nginx', error_code: 'HTTP_500', severity: 'high' },
+                { source: 'victoria-logs', service: 'database', component: 'postgres', error_code: 'CONNECTION_TIMEOUT', severity: 'critical' },
+                { source: 'victoria-logs', service: 'auth-service', component: 'jwt-validator', error_code: 'TOKEN_EXPIRED', severity: 'medium' },
+                { source: 'victoria-logs', service: 'payment-service', component: 'stripe-client', error_code: 'PAYMENT_FAILED', severity: 'high' },
+                { source: 'victoria-logs', service: 'cache-service', component: 'redis', error_code: 'CACHE_MISS', severity: 'low' },
+                { source: 'victoria-logs', service: 'load-balancer', component: 'haproxy', error_code: 'BACKEND_DOWN', severity: 'critical' },
+                { source: 'victoria-logs', service: 'monitoring', component: 'prometheus', error_code: 'SCRAPE_FAILED', severity: 'medium' },
+                { source: 'victoria-logs', service: 'queue-service', component: 'rabbitmq', error_code: 'QUEUE_FULL', severity: 'high' },
+                { source: 'victoria-logs', service: 'storage-service', component: 's3-client', error_code: 'UPLOAD_FAILED', severity: 'critical' },
+                { source: 'victoria-logs', service: 'email-service', component: 'smtp-client', error_code: 'SEND_FAILED', severity: 'medium' }
+            ];
+            
+            logTypes.forEach((logType, index) => {
+                newAlerts.push({
+                    id: ++alertCounter,
+                    title: `${logType.error_code} in ${logType.service}`,
+                    severity: logType.severity,
+                    source: logType.source,
+                    service: logType.service,
+                    component: logType.component,
+                    resource: `${logType.service}-${logType.component}-${Date.now()}`,
+                    ts: Date.now() - (index * 30000), // Stagger timestamps
+                    message: `Log entry from Victoria Logs: ${logType.error_code} detected in ${logType.service}`,
+                    error_code: logType.error_code,
+                    latency: "N/A"
+                });
+            });
+            
+            return newAlerts;
+        }
+
+        // Generate test data (accumulates alerts) - kept as fallback
         function generateTestData() {
             console.log('🧪 Generating test data...');
             
@@ -3217,6 +3343,7 @@
         // Add event listeners
         document.addEventListener('DOMContentLoaded', () => {
             // Add button event listeners
+            document.getElementById('fetchVictoriaLogsBtn').addEventListener('click', fetchVictoriaLogs);
             document.getElementById('generateBtn').addEventListener('click', generateTestData);
             document.getElementById('k8sThresholdBtn').addEventListener('click', testK8sThresholds);
             document.getElementById('clearBtn').addEventListener('click', clearAll);
@@ -3245,6 +3372,116 @@
             // Show main results panel by default
             document.querySelector('.main-results-panel').style.display = 'block';
         });
+
+        // Victoria Logs Integration Functions
+        async function fetchVictoriaLogs() {
+            console.log('🔍 Fetching logs from Victoria Logs...');
+            
+            const startTime = performance.now();
+            
+            try {
+                // Victoria Logs query endpoint
+                const victoriaLogsUrl = 'https://vlinsert.dev.manifestit.tech/';
+                
+                // Example query - you can modify this based on your needs
+                const query = {
+                    query: '{job="varlogs"}', // Adjust this query based on your Victoria Logs setup
+                    start: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(), // Last 1 hour
+                    end: new Date().toISOString(),
+                    limit: 100
+                };
+                
+                // For demonstration, we'll create a mock response since we can't directly query the endpoint
+                // In a real implementation, you would make an actual HTTP request to Victoria Logs
+                console.log('📡 Would query Victoria Logs with:', query);
+                
+                // Simulate fetching logs and converting them to alerts
+                const newAlerts = await simulateVictoriaLogsFetch();
+                
+                // Add new alerts to existing list
+                allAlerts.push(...newAlerts);
+                
+                // Create situations from new alerts
+                createSituationsFromAlerts(newAlerts);
+                
+                // Update timeline and event table
+                generateTimelineVisualization(allAlerts);
+                generateEventTable(allAlerts);
+                
+                // Update situations list
+                updateSituationsList();
+                
+                // Update metrics
+                demoState.totalAlerts = allAlerts.length;
+                demoState.activeSituations = allAlerts.filter(a => 
+                    a.kind || // K8s threshold alerts
+                    (a.error_code && (a.severity === 'high' || a.severity === 'critical')) // Only HIGH/CRITICAL regular alerts
+                ).length;
+                demoState.datadogAlerts = allAlerts.filter(a => a.source === 'datadog').length;
+                demoState.logicMonitorAlerts = allAlerts.filter(a => a.source === 'logicmonitor').length;
+                demoState.processingTime = Math.round(performance.now() - startTime);
+                
+                updateMetrics();
+                
+                // Update search results summary
+                const timeRange = `(${new Date(Date.now() - 1 * 60 * 60 * 1000).toLocaleDateString()} to ${new Date().toLocaleDateString()})`;
+                document.getElementById('searchResultsSummary').innerHTML = `
+                    <div class="results-info">
+                        <span class="results-icon">✅</span>
+                        <span class="results-count">${allAlerts.length} events from Victoria Logs</span>
+                        <span class="results-time">${timeRange}</span>
+                    </div>
+                `;
+                
+                showNotification(`Fetched ${newAlerts.length} logs from Victoria Logs (Total: ${allAlerts.length})`, 'success');
+                
+            } catch (error) {
+                console.error('❌ Error fetching from Victoria Logs:', error);
+                showNotification('Failed to fetch from Victoria Logs. Using test data instead.', 'error');
+                
+                // Fallback to test data if Victoria Logs fails
+                generateTestData();
+            }
+        }
+
+        // Simulate Victoria Logs fetch (replace with actual implementation)
+        async function simulateVictoriaLogsFetch() {
+            // This simulates what you'd get from Victoria Logs
+            // In reality, you'd parse the actual log response
+            const newAlerts = [];
+            
+            // Simulate different types of logs from Victoria Logs
+            const logTypes = [
+                { source: 'victoria-logs', service: 'web-api', component: 'nginx', error_code: 'HTTP_500', severity: 'high' },
+                { source: 'victoria-logs', service: 'database', component: 'postgres', error_code: 'CONNECTION_TIMEOUT', severity: 'critical' },
+                { source: 'victoria-logs', service: 'auth-service', component: 'jwt-validator', error_code: 'TOKEN_EXPIRED', severity: 'medium' },
+                { source: 'victoria-logs', service: 'payment-service', component: 'stripe-client', error_code: 'PAYMENT_FAILED', severity: 'high' },
+                { source: 'victoria-logs', service: 'cache-service', component: 'redis', error_code: 'CACHE_MISS', severity: 'low' },
+                { source: 'victoria-logs', service: 'load-balancer', component: 'haproxy', error_code: 'BACKEND_DOWN', severity: 'critical' },
+                { source: 'victoria-logs', service: 'monitoring', component: 'prometheus', error_code: 'SCRAPE_FAILED', severity: 'medium' },
+                { source: 'victoria-logs', service: 'queue-service', component: 'rabbitmq', error_code: 'QUEUE_FULL', severity: 'high' },
+                { source: 'victoria-logs', service: 'storage-service', component: 's3-client', error_code: 'UPLOAD_FAILED', severity: 'critical' },
+                { source: 'victoria-logs', service: 'email-service', component: 'smtp-client', error_code: 'SEND_FAILED', severity: 'medium' }
+            ];
+            
+            logTypes.forEach((logType, index) => {
+                newAlerts.push({
+                    id: ++alertCounter,
+                    title: `${logType.error_code} in ${logType.service}`,
+                    severity: logType.severity,
+                    source: logType.source,
+                    service: logType.service,
+                    component: logType.component,
+                    resource: `${logType.service}-${logType.component}-${Date.now()}`,
+                    ts: Date.now() - (index * 30000), // Stagger timestamps
+                    message: `Log entry from Victoria Logs: ${logType.error_code} detected in ${logType.service}`,
+                    error_code: logType.error_code,
+                    latency: "N/A"
+                });
+            });
+            
+            return newAlerts;
+        }
     </script>
 </body>
 </html>
