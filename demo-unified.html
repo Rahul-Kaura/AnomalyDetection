@@ -906,6 +906,7 @@
             align-items: flex-end;
             gap: 2px;
             overflow-x: auto;
+            min-height: 200px;
         }
 
         .timeline-bar-vertical {
@@ -941,59 +942,7 @@
             opacity: 1;
         }
 
-        /* Error Group Sections */
-        .error-group-section {
-            margin-bottom: 2rem;
-            padding: 1rem;
-            background: #f8fafc;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-        }
 
-        .error-group-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            padding: 0.75rem;
-            background: white;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .error-group-name {
-            font-weight: 600;
-            color: #1e293b;
-            font-size: 1rem;
-        }
-
-        .error-group-count {
-            background: #3b82f6;
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .error-group-source {
-            background: #f1f5f9;
-            color: #475569;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            text-transform: uppercase;
-        }
-
-        .error-group-bars {
-            display: flex;
-            align-items: flex-end;
-            gap: 2px;
-            height: 160px;
-            padding: 0 1rem;
-            overflow-x: auto;
-        }
 
         .timeline-controls-bottom {
             display: flex;
@@ -1001,6 +950,54 @@
             padding: 12px 16px;
             background: #f8fafc;
             border-top: 1px solid #e2e8f0;
+            align-items: center;
+        }
+
+        /* Timeline Legend */
+        .timeline-legend {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-left: auto;
+            margin-right: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: #475569;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        .legend-color.red {
+            background: linear-gradient(to top, #ef4444, #dc2626);
+        }
+
+        .legend-color.green {
+            background: linear-gradient(to top, #10b981, #059669);
+        }
+
+        .legend-color.cyan {
+            background: linear-gradient(to top, #06b6d4, #0891b2);
+        }
+
+        .legend-color.blue {
+            background: linear-gradient(to top, #3b82f6, #1d4ed8);
+        }
+
+        .legend-color.dark-blue {
+            background: linear-gradient(to top, #1e40af, #1e3a8a);
+        }
+
+        .legend-text {
+            font-weight: 500;
         }
 
         /* Event Table Styles */
@@ -1487,6 +1484,28 @@
                     <div class="timeline-controls-bottom">
                         <span class="control-item">List ▾</span>
                         <span class="control-item">✓ Format</span>
+                        <span class="timeline-legend">
+                            <span class="legend-item">
+                                <span class="legend-color red"></span>
+                                <span class="legend-text">Low (1-5)</span>
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color green"></span>
+                                <span class="legend-text">Medium (6-10)</span>
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color cyan"></span>
+                                <span class="legend-text">High (11-15)</span>
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color blue"></span>
+                                <span class="legend-text">Very High (16-20)</span>
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color dark-blue"></span>
+                                <span class="legend-text">Critical (>20)</span>
+                            </span>
+                        </span>
                         <span class="control-item">20 Per Page ▾</span>
                     </div>
                 </div>
@@ -2870,7 +2889,7 @@
             return highest;
         }
 
-        // Generate Splunk-style timeline visualization with error grouping and color coding
+        // Generate Splunk-style timeline visualization with single unified graph
         function generateTimelineVisualization(alerts) {
             const timelineGraph = document.getElementById('timelineGraph');
             
@@ -2879,87 +2898,51 @@
                 return;
             }
             
-            // Group alerts by error type and time intervals
-            const errorGroups = {};
+            // Group all alerts by time intervals (like Splunk's single event distribution)
+            const timeIntervals = {};
             const intervalSize = 5 * 60 * 1000; // 5 minute intervals
             
             alerts.forEach(alert => {
-                let errorKey = '';
-                if (alert.kind) {
-                    errorKey = `k8s-${alert.kind}`;
-                } else if (alert.error_code) {
-                    errorKey = `${alert.source}-${alert.error_code}`;
-                } else {
-                    return; // Skip alerts without error codes
-                }
-                
-                if (!errorGroups[errorKey]) {
-                    errorGroups[errorKey] = {
-                        name: alert.kind || alert.error_code,
-                        source: alert.source,
-                        timeIntervals: {},
-                        totalCount: 0
-                    };
-                }
-                
                 const interval = Math.floor(alert.ts / intervalSize) * intervalSize;
-                if (!errorGroups[errorKey].timeIntervals[interval]) {
-                    errorGroups[errorKey].timeIntervals[interval] = 0;
+                if (!timeIntervals[interval]) {
+                    timeIntervals[interval] = 0;
                 }
-                errorGroups[errorKey].timeIntervals[interval]++;
-                errorGroups[errorKey].totalCount++;
+                timeIntervals[interval]++;
             });
             
-            // Sort error groups by total count (descending)
-            const sortedErrorGroups = Object.values(errorGroups).sort((a, b) => b.totalCount - a.totalCount);
+            // Sort intervals by time
+            const sortedIntervals = Object.keys(timeIntervals).sort((a, b) => parseInt(a) - parseInt(b));
             
-            // Generate timeline with grouped bars
-            let timelineHTML = '';
-            
-            sortedErrorGroups.forEach((errorGroup, groupIndex) => {
-                const sortedIntervals = Object.keys(errorGroup.timeIntervals).sort((a, b) => parseInt(a) - parseInt(b));
+            // Generate single timeline with all bars together
+            const barsHTML = sortedIntervals.map(interval => {
+                const count = timeIntervals[interval];
+                const height = Math.max(20, Math.min(150, count * 8)); // Scale height based on count
+                const time = new Date(parseInt(interval));
                 
-                // Color code based on total count
+                // Color code based on event count in this time interval
                 let barColor = '';
-                if (errorGroup.totalCount > 20) {
+                if (count > 20) {
                     barColor = 'background: linear-gradient(to top, #1e40af, #1e3a8a);'; // Dark blue
-                } else if (errorGroup.totalCount > 15) {
+                } else if (count > 15) {
                     barColor = 'background: linear-gradient(to top, #3b82f6, #1d4ed8);'; // Blue
-                } else if (errorGroup.totalCount > 10) {
+                } else if (count > 10) {
                     barColor = 'background: linear-gradient(to top, #06b6d4, #0891b2);'; // Cyan
-                } else if (errorGroup.totalCount > 5) {
+                } else if (count > 5) {
                     barColor = 'background: linear-gradient(to top, #10b981, #059669);'; // Green
                 } else {
                     barColor = 'background: linear-gradient(to top, #ef4444, #dc2626);'; // Red
                 }
                 
-                timelineHTML += `
-                    <div class="error-group-section">
-                        <div class="error-group-header">
-                            <span class="error-group-name">${errorGroup.name}</span>
-                            <span class="error-group-count">${errorGroup.totalCount} total</span>
-                            <span class="error-group-source">${errorGroup.source}</span>
-                        </div>
-                        <div class="error-group-bars">
-                            ${sortedIntervals.map(interval => {
-                                const count = errorGroup.timeIntervals[interval];
-                                const height = Math.max(20, Math.min(150, count * 8)); // Scale height
-                                const time = new Date(parseInt(interval));
-                                
-                                return `
-                                    <div class="timeline-bar-vertical" 
-                                         style="height: ${height}px; ${barColor}" 
-                                         data-count="${count}"
-                                         title="${time.toLocaleTimeString()} - ${count} ${errorGroup.name} events">
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
+                return `
+                    <div class="timeline-bar-vertical" 
+                         style="height: ${height}px; ${barColor}" 
+                         data-count="${count}"
+                         title="${time.toLocaleTimeString()} - ${count} total events">
                     </div>
                 `;
-            });
+            }).join('');
             
-            timelineGraph.innerHTML = timelineHTML;
+            timelineGraph.innerHTML = barsHTML;
         }
 
         // Generate Splunk-style event table
