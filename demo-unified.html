@@ -1461,9 +1461,9 @@
                     </div>
                     <div class="search-results-summary" id="searchResultsSummary">
                         <div class="results-info">
-                            <span class="results-icon">✅</span>
-                            <span class="results-count">0 events</span>
-                            <span class="results-time">No data available</span>
+                            <span class="results-icon">🔍</span>
+                            <span class="results-count">No search active</span>
+                            <span class="results-time">Enter search criteria to view events</span>
                         </div>
                     </div>
                 </div>
@@ -2065,6 +2065,9 @@
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('🚀 Enterprise Alert Correlation System Initializing...');
             
+            // Initialize active search flag
+            window.activeSearch = false;
+            
             // Load configuration
             try {
                 const response = await fetch('./config.json');
@@ -2580,6 +2583,17 @@
             // Update metrics
             updateMetrics();
             
+            // Clear search and reset search state
+            document.getElementById('searchBar').value = '';
+            window.activeSearch = false;
+            document.getElementById('searchResultsSummary').innerHTML = `
+                <div class="results-info">
+                    <span class="results-icon">🔍</span>
+                    <span class="results-count">No search active</span>
+                    <span class="results-time">Enter search criteria to view events</span>
+                </div>
+            `;
+            
             showNotification('All data cleared', 'info');
         }
 
@@ -2949,14 +2963,15 @@
         function generateEventTable(alerts) {
             const eventTableBody = document.getElementById('eventTableBody');
             
-            if (alerts.length === 0) {
+            // Only show events if there's an active search, otherwise show placeholder
+            if (alerts.length === 0 || !window.activeSearch) {
                 eventTableBody.innerHTML = `
                     <tr>
                         <td class="col-info">
-                            <span class="expand-icon">▶</span>
+                            <span class="expand-icon">🔍</span>
                         </td>
-                        <td class="col-time">No events available</td>
-                        <td class="col-event">Generate some alerts to see events</td>
+                        <td class="col-time">Search Required</td>
+                        <td class="col-event">Use the search bar above to view specific events</td>
                     </tr>
                 `;
                 return;
@@ -3100,10 +3115,21 @@
             const resultsSummary = document.getElementById('searchResultsSummary');
             
             if (!searchQuery) {
-                // Show all alerts if no search query
-                updateSearchResults(allAlerts);
+                // Clear search and show placeholder
+                window.activeSearch = false;
+                updateSearchResults([]);
+                resultsSummary.innerHTML = `
+                    <div class="results-info">
+                        <span class="results-icon">🔍</span>
+                        <span class="results-count">No search active</span>
+                        <span class="results-time">Enter search criteria to view events</span>
+                    </div>
+                `;
                 return;
             }
+            
+            // Set active search flag
+            window.activeSearch = true;
             
             console.log('🔍 Performing search:', searchQuery);
             
@@ -3136,7 +3162,7 @@
             resultsSummary.innerHTML = `
                 <div class="results-info">
                     <span class="results-icon">✅</span>
-                    <span class="results-count">${filteredAlerts.length} events</span>
+                    <span class="results-count">${filteredAlerts.length} events found</span>
                     <span class="results-time">${timeRange}</span>
                 </div>
             `;
