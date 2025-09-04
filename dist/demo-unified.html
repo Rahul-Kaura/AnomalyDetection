@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Alert Correlation System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
+        .enterprise-header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            padding: 2rem 0;
+            border-bottom: 3px solid #3b82f6;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            text-align: center;
+        }
+
+        .header-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.025em;
+        }
+
+        .header-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .mode-navigation {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .mode-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .mode-tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 3px solid transparent;
+            position: relative;
+        }
+
+        .mode-tab:hover {
+            color: #3b82f6;
+            background: #f8fafc;
+        }
+
+        .mode-tab.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+            background: #f1f5f9;
+        }
+
+        .control-panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .control-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .control-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #64748b;
+            color: white;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #475569;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: #059669;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-warning:hover:not(:disabled) {
+            background: #d97706;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #dc2626;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Professional Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .slide-in-right {
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Enhanced hover effects */
+        .metric-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .metric-card:hover::before {
+            left: 100%;
+        }
+
+        .situation-item, .alert-item {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(0);
+        }
+
+        .situation-item:hover, .alert-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .mode-tab {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-tab::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background: #3b82f6;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
+        }
+
+        .mode-tab.active::after {
+            width: 100%;
+        }
+
+        .mode-tab:hover::after {
+            width: 50%;
+        }
+
+        /* Status animations */
+        .status-dot {
+            transition: all 0.3s ease;
+        }
+
+        .status-dot.stopped {
+            background: #ef4444;
+        }
+
+        /* Source-based styling for alerts */
+        .alert-item.k8s {
+            border-left-color: #3182ce;
+        }
+
+        .alert-item.datadog {
+            border-left-color: #805ad5;
+        }
+
+        .alert-item.logicmonitor {
+            border-left-color: #38a169;
+        }
+
+        .alert-item.mixed {
+            border-left-color: #d69e2e;
+        }
+
+        .situation-item.k8s {
+            border-left-color: #3182ce;
+        }
+
+        .situation-item.datadog {
+            border-left-color: #805ad5;
+        }
+
+        .situation-item.logicmonitor {
+            border-left-color: #38a169;
+        }
+
+        .situation-item.mixed {
+            border-left-color: #d69e2e;
+        }
+
+        /* Source badges */
+        .source-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .source-badge:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .source-badge.k8s {
+            background: linear-gradient(135deg, #3182ce, #2563eb);
+            color: white;
+        }
+
+        .source-badge.datadog {
+            background: linear-gradient(135deg, #805ad5, #6b46c1);
+            color: white;
+        }
+
+        .source-badge.logicmonitor {
+            background: linear-gradient(135deg, #38a169, #2f855a);
+            color: white;
+        }
+
+        /* Enhanced metric cards */
+        .metric-card .metric-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        /* Enhanced hover effects */
+        .metric-card {
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .metric-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .metric-card:hover::after {
+            opacity: 1;
+        }
+
+        /* Enhanced list items */
+        .situation-item, .alert-item {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .situation-item:hover, .alert-item:hover {
+            transform: translateX(8px) scale(1.01);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .situation-item::before, .alert-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .situation-item:hover::before, .alert-item:hover::before {
+            transform: scaleY(1);
+        }
+
+        /* Notification system */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .notification.info {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .notification.warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        /* Content transitions */
+        .content-panel {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .content-panel.hidden {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .content-panel:not(.hidden) {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .content-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .content-panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            background: #f8fafc;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .panel-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .panel-content {
+            padding: 1.5rem;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .situation-item, .alert-item {
+            background: #f8fafc;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 6px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .situation-item.critical { border-left-color: #dc2626; }
+        .situation-item.high { border-left-color: #ea580c; }
+        .situation-item.medium { border-left-color: #d97706; }
+        .situation-item.low { border-left-color: #059669; }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .item-title {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .item-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-score {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .badge-severity {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        .badge-severity.high {
+            background: #fed7aa;
+            color: #92400e;
+        }
+
+        .badge-severity.medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-severity.low {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .item-details {
+            font-size: 0.875rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .welcome-content {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .welcome-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-description {
+            font-size: 1.1rem;
+            color: #64748b;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #3b82f6;
+        }
+
+        .feature-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-description {
+            font-size: 0.875rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #f1f5f9;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+
+        .status-dot.stopped {
+            background: #ef4444;
+        }
+
+        @media (max-width: 1024px) {
+            .content-area {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .header-title {
+                font-size: 2rem;
+            }
+            
+            .mode-tabs {
+                flex-direction: column;
+            }
+            
+            .control-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="enterprise-header">
+        <div class="header-content">
+            <h1 class="header-title">Enterprise Alert Correlation System</h1>
+            <p class="header-subtitle">Advanced incident correlation and MTTR reduction platform</p>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Mode Navigation -->
+        <nav class="mode-navigation">
+            <div class="mode-tabs">
+                <button class="mode-tab active" data-mode="welcome">Overview</button>
+                <button class="mode-tab" data-mode="k8s-enhanced">Kubernetes Enhanced</button>
+                <button class="mode-tab" data-mode="advanced">Advanced Correlation</button>
+                <button class="mode-tab" data-mode="basic">Basic Mode</button>
+            </div>
+        </nav>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <div class="control-header">
+                <h2 class="control-title">System Controls</h2>
+                <div class="status-indicator">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span id="statusText">Ready</span>
+                </div>
+            </div>
+            <div class="control-actions">
+                <button id="startBtn" class="btn btn-primary">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.945z"/>
+                    </svg>
+                    Start Correlation
+                </button>
+                <button id="stopBtn" class="btn btn-secondary" disabled>
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M5 6.5A1.5 1.5 0 0 1 6.5 5h3A1.5 1.5 0 0 1 11 6.5v3A1.5 1.5 0 0 1 9.5 11h-3A1.5 1.5 0 0 1 5 9.5v-3z"/>
+                    </svg>
+                    Stop
+                </button>
+                <button id="generateBtn" class="btn btn-success">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                    </svg>
+                    Generate Test Data
+                </button>
+                <button id="clearBtn" class="btn btn-warning">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                    </svg>
+                    Clear All
+                </button>
+                <button id="debugBtn" class="btn btn-danger">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M9.669 6.538A.5.5 0 0 1 10 7v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5V7a.5.5 0 0 1 .5-.5h2.5l-.5-.5a.5.5 0 0 1 .707-.707l1 1a.5.5 0 0 1 0 .707l-1 1a.5.5 0 0 1-.707-.707L9.669 6.538z"/>
+                    </svg>
+                    Debug
+                </button>
+            </div>
+        </div>
+
+        <!-- Metrics Dashboard -->
+        <div class="metrics-grid">
+            <div class="metric-card fade-in-up" style="animation-delay: 0.1s;">
+                <div class="metric-icon">🚨</div>
+                <div class="metric-label">Total Alerts</div>
+                <div class="metric-value" id="totalAlerts">0</div>
+            </div>
+            <div class="metric-card fade-in-up" style="animation-delay: 0.2s;">
+                <div class="metric-icon">🔗</div>
+                <div class="metric-label">Active Situations</div>
+                <div class="metric-value" id="activeSituations">0</div>
+            </div>
+            <div class="metric-card fade-in-up" style="animation-delay: 0.3s;">
+                <div class="metric-icon">☸️</div>
+                <div class="metric-label">K8s Events</div>
+                <div class="metric-value" id="k8sEvents">0</div>
+            </div>
+            <div class="metric-card fade-in-up" style="animation-delay: 0.4s;">
+                <div class="metric-icon">📊</div>
+                <div class="metric-label">Datadog Alerts</div>
+                <div class="metric-value" id="datadogAlerts">0</div>
+            </div>
+            <div class="metric-card fade-in-up" style="animation-delay: 0.5s;">
+                <div class="metric-icon">🔍</div>
+                <div class="metric-label">LogicMonitor</div>
+                <div class="metric-value" id="logicMonitorAlerts">0</div>
+            </div>
+            <div class="metric-card fade-in-up" style="animation-delay: 0.6s;">
+                <div class="metric-icon">⚡</div>
+                <div class="metric-label">Processing Time</div>
+                <div class="metric-value" id="processingTime">0ms</div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Welcome Mode -->
+            <div id="welcome-content" class="content-panel">
+                <div class="welcome-content">
+                    <h2 class="welcome-title">Enterprise Alert Correlation Platform</h2>
+                    <p class="welcome-description">
+                        Professional-grade incident correlation system designed for enterprise environments. 
+                        Reduce MTTR with intelligent alert processing and real-time situation building.
+                    </p>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">⚡</div>
+                            <h3 class="feature-title">Kubernetes Enhanced</h3>
+                            <p class="feature-description">Threshold-based K8s event processing with configurable rules</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🔗</div>
+                            <h3 class="feature-title">Multi-Source Correlation</h3>
+                            <p class="feature-description">Correlate alerts across K8s, Datadog, and LogicMonitor</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🎯</div>
+                            <h3 class="feature-title">MTTR Focused</h3>
+                            <p class="feature-description">Intelligent incident correlation for faster resolution</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📊</div>
+                            <h3 class="feature-title">Real-time Analytics</h3>
+                            <p class="feature-description">Live metrics and performance monitoring</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- K8s Enhanced Mode -->
+            <div id="k8s-enhanced-content" class="content-panel hidden">
+                <div class="panel-header">
+                    <h3 class="panel-title">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 0C3.58 0 0 3.58 0 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zM5 12a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm5-1a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                        </svg>
+                        Active Situations
+                    </h3>
+                </div>
+                <div class="panel-content">
+                    <div id="k8s-situationsList">
+                        <p style="color: #64748b; text-align: center;">No active situations</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Mode -->
+            <div id="advanced-content" class="content-panel hidden">
+                <div class="panel-header">
+                    <h3 class="panel-title">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 0C3.58 0 0 3.58 0 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zM5 12a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm5-1a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                        </svg>
+                        Active Situations
+                    </h3>
+                </div>
+                <div class="panel-content">
+                    <div id="advanced-situationsList">
+                        <p style="color: #64748b; text-align: center;">No active situations</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Basic Mode -->
+            <div id="basic-content" class="content-panel hidden">
+                <div class="panel-header">
+                    <h3 class="panel-title">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 0C3.58 0 0 3.58 0 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zM5 12a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm5-1a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                        </svg>
+                        Active Situations
+                    </h3>
+                </div>
+                <div class="panel-content">
+                    <div id="basic-situationsList">
+                        <p style="color: #64748b; text-align: center;">No active situations</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel for Alerts -->
+            <div id="alerts-panel" class="content-panel hidden">
+                <div class="panel-header">
+                    <h3 class="panel-title">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+                        </svg>
+                        Recent Alerts
+                    </h3>
+                </div>
+                <div class="panel-content">
+                    <div id="alertsList">
+                        <p style="color: #64748b; text-align: center;">No recent alerts</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden DOM elements for K8s correlator -->
+        <div id="situationsList" style="display: none;"></div>
+        <div id="alertsList" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Enterprise Correlator Controller
+        class EnterpriseCorrelator {
+            constructor() {
+                this.currentMode = 'welcome';
+                this.correlators = {};
+                this.isRunning = false;
+                this.intervalId = null;
+                this.stats = {
+                    totalAlerts: 0,
+                    totalSituations: 0,
+                    k8sEvents: 0,
+                    datadogAlerts: 0,
+                    logicMonitorAlerts: 0,
+                    lastUpdate: Date.now()
+                };
+                
+                this.initializeUI();
+                this.initializeCorrelators();
+            }
+
+            initializeUI() {
+                // Mode switching
+                document.querySelectorAll('.mode-tab').forEach(tab => {
+                    tab.addEventListener('click', () => this.switchMode(tab.dataset.mode));
+                });
+
+                // Control buttons
+                document.getElementById('startBtn').addEventListener('click', () => this.start());
+                document.getElementById('stopBtn').addEventListener('click', () => this.stop());
+                document.getElementById('generateBtn').addEventListener('click', () => this.generateTestData());
+                document.getElementById('clearBtn').addEventListener('click', () => this.clearAll());
+                document.getElementById('debugBtn').addEventListener('click', () => this.showDebugInfo());
+            }
+
+            initializeCorrelators() {
+                this.correlators = {
+                    'k8s-enhanced': null,
+                    'advanced': null,
+                    'basic': null
+                };
+            }
+
+            switchMode(mode) {
+                // Update active tab
+                document.querySelectorAll('.mode-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelector(`[data-mode="${mode}"]`).classList.add('active');
+
+                // Hide all content
+                document.querySelectorAll('[id$="-content"]').forEach(content => {
+                    content.classList.add('hidden');
+                });
+
+                // Show selected content
+                document.getElementById(`${mode}-content`).classList.remove('hidden');
+
+                // Show/hide alerts panel for non-welcome modes
+                const alertsPanel = document.getElementById('alerts-panel');
+                if (mode === 'welcome') {
+                    alertsPanel.classList.add('hidden');
+                } else {
+                    alertsPanel.classList.remove('hidden');
+                }
+
+                this.currentMode = mode;
+
+                // Initialize correlator if needed
+                if (mode !== 'welcome' && !this.correlators[mode]) {
+                    this.initializeCorrelator(mode);
+                }
+            }
+
+            initializeCorrelator(mode) {
+                console.log(`Initializing correlator for mode: ${mode}`);
+                
+                switch(mode) {
+                    case 'k8s-enhanced':
+                        this.loadScript('main-enhanced.js', () => {
+                            // Wait for script to fully load and initialize
+                            const checkInitialization = () => {
+                                if (window.enhancedCorrelator) {
+                                    this.fixK8sCorrelatorDOM();
+                                    this.correlators[mode] = window.enhancedCorrelator;
+                                    console.log('✅ K8s Enhanced Correlator loaded successfully');
+                                } else if (window.EnhancedCorrelator && window.initializeEnhancedCorrelator) {
+                                    console.log('🔧 Classes found, initializing manually...');
+                                    try {
+                                        window.initializeEnhancedCorrelator();
+                                        if (window.enhancedCorrelator) {
+                                            this.fixK8sCorrelatorDOM();
+                                            this.correlators[mode] = window.enhancedCorrelator;
+                                            console.log('✅ K8s Enhanced Correlator manually initialized successfully');
+                                        } else {
+                                            console.error('❌ Manual initialization failed - no instance created');
+                                        }
+                                    } catch (error) {
+                                        console.error('❌ Manual initialization error:', error);
+                                    }
+                                } else {
+                                    console.log('⏳ Waiting for initialization... Classes available:', {
+                                        EnhancedCorrelator: !!window.EnhancedCorrelator,
+                                        initializeEnhancedCorrelator: !!window.initializeEnhancedCorrelator
+                                    });
+                                    // Retry after a short delay
+                                    setTimeout(checkInitialization, 200);
+                                }
+                            };
+                            
+                            // Start checking
+                            checkInitialization();
+                        });
+                        break;
+                    case 'advanced':
+                        this.loadScript('main-simple.js', () => {
+                            setTimeout(() => {
+                                if (window.correlator) {
+                                    this.correlators[mode] = window.correlator;
+                                    console.log('Advanced Correlator loaded successfully');
+                                } else {
+                                    console.error('Advanced Correlator not found');
+                                }
+                            }, 100);
+                        });
+                        break;
+                    case 'basic':
+                        this.loadScript('correlator.js', () => {
+                            this.loadScript('app.js', () => {
+                                setTimeout(() => {
+                                    if (window.correlator) {
+                                        this.correlators[mode] = window.correlator;
+                                        console.log('Basic Correlator loaded successfully');
+                                    } else {
+                                        console.error('Basic Correlator not found');
+                                    }
+                                }, 100);
+                            });
+                        });
+                        break;
+                }
+            }
+
+            fixK8sCorrelatorDOM() {
+                console.log('🔧 Fixing K8s correlator DOM elements...');
+                
+                // Override update methods to redirect to unified interface
+                if (window.enhancedCorrelator) {
+                    console.log('✅ Enhanced correlator found, overriding methods...');
+                    
+                    // Store original methods
+                    const originalUpdateSituations = window.enhancedCorrelator.updateSituations;
+                    const originalUpdateAlerts = window.enhancedCorrelator.updateAlerts;
+                    
+                    // Override updateSituations
+                    window.enhancedCorrelator.updateSituations = (situations) => {
+                        console.log('📊 K8s updateSituations called with:', situations);
+                        
+                        // Call original method to update hidden elements (if it exists)
+                        try {
+                            if (originalUpdateSituations && typeof originalUpdateSituations === 'function') {
+                                originalUpdateSituations.call(window.enhancedCorrelator, situations);
+                            }
+                        } catch (error) {
+                            console.warn('Original updateSituations method failed:', error);
+                        }
+                        
+                        // Update unified interface
+                        this.updateK8sSituations(situations);
+                        
+                        // Update stats
+                        this.updateStatsFromCorrelator(window.enhancedCorrelator);
+                        
+                        // Add animation to new situations
+                        this.animateNewSituations();
+                    };
+                    
+                    // Override updateAlerts
+                    window.enhancedCorrelator.updateAlerts = (alerts) => {
+                        console.log('🚨 K8s updateAlerts called with:', alerts);
+                        
+                        // Call original method to update hidden elements (if it exists)
+                        try {
+                            if (originalUpdateAlerts && typeof originalUpdateAlerts === 'function') {
+                                originalUpdateAlerts.call(window.enhancedCorrelator, alerts);
+                            }
+                        } catch (error) {
+                            console.warn('Original updateAlerts method failed:', error);
+                        }
+                        
+                        // Update unified interface
+                        this.updateK8sAlerts(alerts);
+                        
+                        // Add animation to new alerts
+                        this.animateNewAlerts();
+                    };
+                    
+                    console.log('✅ K8s correlator methods overridden successfully');
+                } else {
+                    console.error('❌ Enhanced correlator not found for DOM fixing');
+                }
+            }
+
+            updateK8sSituations(situations) {
+                const container = document.getElementById('k8s-situationsList');
+                if (!container) return;
+                
+                if (situations.length === 0) {
+                    container.innerHTML = '<p style="color: #64748b; text-align: center;">No active situations</p>';
+                    return;
+                }
+                
+                container.innerHTML = situations.map(situation => `
+                    <div class="situation-item ${situation.severity}">
+                        <div class="item-header">
+                            <div class="item-title">${situation.primary_cause.entity}</div>
+                            <div class="item-badge badge-score">${(situation.score * 100).toFixed(0)}%</div>
+                        </div>
+                        <div class="item-details">
+                            <strong>Sources:</strong> ${situation.sources.join(', ')}<br>
+                            <strong>Entities:</strong> ${situation.entities.length}<br>
+                            <strong>Services:</strong> ${situation.services.length}<br>
+                            <strong>Duration:</strong> ${Math.round((situation.end - situation.start) / 1000)}s<br>
+                            <strong>Primary Cause:</strong> ${situation.primary_cause.source} - ${situation.primary_cause.entity}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            updateK8sAlerts(alerts) {
+                const container = document.getElementById('alertsList');
+                if (!container) return;
+                
+                if (alerts.length === 0) {
+                    container.innerHTML = '<p style="color: #64748b; text-align: center;">No recent alerts</p>';
+                    return;
+                }
+                
+                container.innerHTML = alerts.map(alert => `
+                    <div class="alert-item ${alert.source}">
+                        <div class="item-header">
+                            <div class="item-title">${alert.title}</div>
+                            <div class="item-badge badge-severity ${alert.severity}">${alert.severity}</div>
+                        </div>
+                        <div class="item-details">
+                            ${alert.message || alert.title}<br>
+                            <strong>Service:</strong> ${alert.service || 'N/A'}<br>
+                            <strong>Component:</strong> ${alert.component || 'N/A'}<br>
+                            <strong>Resource:</strong> ${alert.resource || 'N/A'}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            loadScript(src, callback) {
+                const existingScript = document.querySelector(`script[src="${src}"]`);
+                if (existingScript) {
+                    console.log(`Script ${src} already loaded`);
+                    callback();
+                    return;
+                }
+
+                console.log(`Loading script: ${src}`);
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = () => {
+                    console.log(`Script ${src} loaded successfully`);
+                    callback();
+                };
+                script.onerror = (error) => {
+                    console.error(`Failed to load script ${src}:`, error);
+                };
+                document.head.appendChild(script);
+            }
+
+            start() {
+                if (this.isRunning) return;
+                
+                this.isRunning = true;
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+                document.getElementById('statusDot').classList.remove('stopped');
+                document.getElementById('statusText').textContent = 'Running';
+                
+                this.intervalId = setInterval(() => {
+                    this.generateTestData();
+                }, 2000);
+                
+                console.log('Enterprise correlator started');
+            }
+
+            stop() {
+                if (!this.isRunning) return;
+                
+                this.isRunning = false;
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = true;
+                document.getElementById('statusDot').classList.add('stopped');
+                document.getElementById('statusText').textContent = 'Stopped';
+                
+                if (this.intervalId) {
+                    clearInterval(this.intervalId);
+                    this.intervalId = null;
+                }
+                
+                console.log('Enterprise correlator stopped');
+            }
+
+            generateTestData() {
+                if (this.currentMode === 'welcome') return;
+
+                const correlator = this.correlators[this.currentMode];
+                if (!correlator) {
+                    console.log('No correlator available for current mode');
+                    return;
+                }
+
+                console.log(`Generating test data for mode: ${this.currentMode}`);
+
+                if (this.currentMode === 'k8s-enhanced' && correlator.generateTestData) {
+                    console.log('Calling K8s enhanced generateTestData');
+                    correlator.generateTestData();
+                    this.updateStatsFromCorrelator(correlator);
+                } else if (correlator.processAlerts) {
+                    console.log('Calling processAlerts for other modes');
+                    const sampleAlerts = this.generateSampleAlerts();
+                    correlator.processAlerts(sampleAlerts);
+                    this.updateStatsFromCorrelator(correlator);
+                } else {
+                    console.log('No valid method found for this correlator');
+                }
+            }
+
+            generateSampleAlerts() {
+                const alerts = [];
+                const now = Date.now();
+                
+                for (let i = 0; i < 3; i++) {
+                    alerts.push({
+                        ts: new Date(now - i * 30000).toISOString(),
+                        title: `Sample Alert ${i + 1}`,
+                        severity: ['low', 'medium', 'high'][i],
+                        status: 'firing',
+                        source: 'sample',
+                        service: 'demo',
+                        component: 'test'
+                    });
+                }
+                
+                return alerts;
+            }
+
+            updateStatsFromCorrelator(correlator) {
+                if (correlator.stats) {
+                    this.stats = { ...correlator.stats };
+                } else if (correlator.getStats) {
+                    this.stats = correlator.getStats();
+                }
+                
+                this.updateStats();
+            }
+
+            clearAll() {
+                if (this.currentMode === 'welcome') return;
+
+                const correlator = this.correlators[this.currentMode];
+                if (correlator && correlator.clearAll) {
+                    correlator.clearAll();
+                }
+
+                this.stats = {
+                    totalAlerts: 0,
+                    totalSituations: 0,
+                    k8sEvents: 0,
+                    datadogAlerts: 0,
+                    logicMonitorAlerts: 0,
+                    lastUpdate: Date.now()
+                };
+                
+                this.updateStats();
+                this.clearContent();
+                
+                console.log('All data cleared');
+            }
+
+            clearContent() {
+                const mode = this.currentMode;
+                if (mode === 'welcome') return;
+
+                const situationsList = document.getElementById(`${mode}-situationsList`);
+                const alertsList = document.getElementById('alertsList');
+                
+                if (situationsList) {
+                    situationsList.innerHTML = '<p style="color: #64748b; text-align: center;">No active situations</p>';
+                }
+                
+                if (alertsList) {
+                    alertsList.innerHTML = '<p style="color: #64748b; text-align: center;">No recent alerts</p>';
+                }
+            }
+
+            updateStats() {
+                document.getElementById('totalAlerts').textContent = this.stats.totalAlerts;
+                document.getElementById('activeSituations').textContent = this.stats.totalSituations;
+                document.getElementById('k8sEvents').textContent = this.stats.k8sEvents;
+                document.getElementById('datadogAlerts').textContent = this.stats.datadogAlerts;
+                document.getElementById('logicMonitorAlerts').textContent = this.stats.logicMonitorAlerts;
+            }
+
+            showDebugInfo() {
+                console.log('=== ENTERPRISE CORRELATOR DEBUG ===');
+                console.log('Current Mode:', this.currentMode);
+                console.log('Correlators:', this.correlators);
+                console.log('Is Running:', this.isRunning);
+                console.log('Stats:', this.stats);
+                
+                if (this.currentMode !== 'welcome') {
+                    const correlator = this.correlators[this.currentMode];
+                    console.log('Current Correlator:', correlator);
+                    if (correlator) {
+                        console.log('Correlator Methods:', Object.getOwnPropertyNames(correlator));
+                        console.log('Correlator Stats:', correlator.stats);
+                    }
+                }
+                
+                console.log('Window Objects:');
+                console.log('- window.enhancedCorrelator:', window.enhancedCorrelator);
+                console.log('- window.correlator:', window.correlator);
+                console.log('=====================================');
+                
+                const debugInfo = `
+Enterprise Correlator Debug Info:
+
+Current Mode: ${this.currentMode}
+Correlators Loaded: ${Object.keys(this.correlators).filter(k => this.correlators[k]).length}
+System Status: ${this.isRunning ? 'Running' : 'Stopped'}
+Current Correlator: ${this.correlators[this.currentMode] ? 'Loaded' : 'Not Loaded'}
+                `;
+                alert(debugInfo);
+            }
+
+            animateNewSituations() {
+                const container = document.getElementById('k8s-situationsList');
+                if (!container) return;
+                
+                const newItems = container.querySelectorAll('.situation-item:not(.animated)');
+                newItems.forEach((item, index) => {
+                    item.classList.add('animated', 'slide-in-right');
+                    item.style.animationDelay = `${index * 0.1}s`;
+                });
+            }
+
+            animateNewAlerts() {
+                const container = document.getElementById('alertsList');
+                if (!container) return;
+                
+                const newItems = container.querySelectorAll('.alert-item:not(.animated)');
+                newItems.forEach((item, index) => {
+                    item.classList.add('animated', 'slide-in-right');
+                    item.style.animationDelay = `${index * 0.1}s`;
+                });
+            }
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Enterprise Alert Correlation System Initializing...');
+            
+            // Initialize the enterprise correlator
+            window.enterpriseCorrelator = new EnterpriseCorrelator();
+            
+            // Initialize K8s threshold engine
+            window.k8sThresholdEngine = new K8sThresholdEngine();
+            
+            // Add K8s threshold test button
+            const controlActions = document.querySelector('.control-actions');
+            const k8sThresholdBtn = document.createElement('button');
+            k8sThresholdBtn.className = 'btn btn-success';
+            k8sThresholdBtn.innerHTML = `
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                </svg>
+                Test K8s Thresholds
+            `;
+            k8sThresholdBtn.onclick = () => testK8sThresholds();
+            controlActions.appendChild(k8sThresholdBtn);
+            
+            console.log('✅ Enterprise Alert Correlation System Ready!');
+            console.log('🏢 Features:');
+            console.log('  - Professional enterprise-grade UI');
+            console.log('  - Multi-mode correlation engine');
+            console.log('  - Real-time monitoring and control');
+            console.log('  - Comprehensive debugging and analytics');
+            console.log('  - K8s Event Threshold Engine with configurable rules');
+        });
+
+        // Test K8s threshold engine
+        function testK8sThresholds() {
+            console.log('🧪 Testing K8s Threshold Engine...');
+            
+            // Process sample events through threshold engine
+            const alerts = window.k8sThresholdEngine.processSampleEvents();
+            
+            console.log('📊 Generated alerts from K8s events:', alerts);
+            
+            // Update the alerts list to show threshold-based alerts
+            const alertsList = document.getElementById('alertsList');
+            if (alertsList) {
+                alertsList.innerHTML = alerts.map(alert => `
+                    <div class="alert-item ${alert.source}">
+                        <div class="item-header">
+                            <div class="item-title">${alert.alert}</div>
+                            <div class="item-badge badge-severity ${alert.severity}">${alert.severity}</div>
+                        </div>
+                        <div class="item-details">
+                            <strong>Source:</strong> 
+                            <span class="source-badge ${alert.source}">${alert.source}</span><br>
+                            <strong>Threshold:</strong> ${alert.count} events in ${alert.window}<br>
+                            <strong>Key:</strong> ${JSON.stringify(alert.key)}<br>
+                            <strong>Time Window:</strong> ${alert.first_ts} to ${alert.last_ts}<br>
+                            <strong>Service:</strong> ${alert.service}<br>
+                            <strong>Component:</strong> ${alert.component}<br>
+                            <strong>Resource:</strong> ${alert.resource}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            // Update metrics
+            if (window.enterpriseCorrelator) {
+                window.enterpriseCorrelator.stats.k8sEvents = alerts.length;
+                window.enterpriseCorrelator.stats.totalAlerts = alerts.length;
+                window.enterpriseCorrelator.updateStats();
+            }
+            
+            // Show notification
+            showNotification(`Generated ${alerts.length} threshold-based alerts from K8s events`, 'success');
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Trigger animation
+            setTimeout(() => notification.classList.add('show'), 100);
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,3731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Alert Correlation System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
+        .enterprise-header {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #94a3b8;
+        }
+
+        .logo-accent {
+            color: #10b981;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-item {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item.active {
+            color: #10b981;
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #10b981;
+            border-radius: 1px;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Professional Quick Actions Panel */
+        .quick-actions-panel {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .panel-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .panel-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .panel-subtitle {
+            font-size: 1rem;
+            color: #64748b;
+            margin: 0;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            background: #f8fafc;
+            border: 2px solid transparent;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+
+        .action-btn.primary:hover {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+        }
+
+        .action-btn.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .action-btn.success:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        .action-btn.info {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            color: white;
+        }
+
+        .action-btn.info:hover {
+            background: linear-gradient(135deg, #0891b2, #0e7490);
+        }
+
+        .action-btn.warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .action-btn.warning:hover {
+            background: linear-gradient(135deg, #d97706, #b45309);
+        }
+
+        .action-btn.danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .action-btn.danger:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+        }
+
+        .action-btn.secondary {
+            background: linear-gradient(135deg, #64748b, #475569);
+            color: white;
+        }
+
+        .action-btn.secondary:hover {
+            background: linear-gradient(135deg, #475569, #374151);
+        }
+
+        .action-icon {
+            font-size: 2rem;
+            min-width: 48px;
+        }
+
+        .action-content {
+            flex: 1;
+        }
+
+        .action-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .action-desc {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Search Bar Above Timeline */
+        .search-bar-container {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .search-input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-bar {
+            flex: 1;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .search-bar:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .search-btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .search-results-summary {
+            background: white;
+            border-radius: 6px;
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .results-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        .results-icon {
+            font-size: 1.2rem;
+        }
+
+        .results-count {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .results-time {
+            color: #64748b;
+        }
+
+
+
+
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            text-align: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .metric-card .metric-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1e293b, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .content-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+        }
+
+        .content-panel {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .content-panel:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+        }
+
+        .panel-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        .panel-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .panel-content {
+            padding: 2rem;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .situation-item, .alert-item {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #3b82f6;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .situation-item:hover, .alert-item:hover {
+            transform: translateX(8px) scale(1.01);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .situation-item::before, .alert-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .situation-item:hover::before, .alert-item:hover::before {
+            transform: scaleY(1);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .item-title {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .item-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-severity {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        .badge-severity.high {
+            background: #fed7aa;
+            color: #92400e;
+        }
+
+        .badge-severity.medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-severity.low {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-severity.critical {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        .item-details {
+            font-size: 0.875rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        /* Source-based styling for alerts */
+        .alert-item.k8s {
+            border-left-color: #3182ce;
+        }
+
+        .alert-item.datadog {
+            border-left-color: #805ad5;
+        }
+
+        .alert-item.logicmonitor {
+            border-left-color: #38a169;
+        }
+
+        .alert-item.mixed {
+            border-left-color: #d69e2e;
+        }
+
+        /* Source badges */
+        .source-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .source-badge:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .source-badge.k8s {
+            background: linear-gradient(135deg, #3182ce, #2563eb);
+            color: white;
+        }
+
+        .source-badge.datadog {
+            background: linear-gradient(135deg, #805ad5, #6b46c1);
+            color: white;
+        }
+
+        .source-badge.logicmonitor {
+            background: linear-gradient(135deg, #38a169, #2f855a);
+            color: white;
+        }
+        
+        .source-badge.mixed {
+            background: #f59e0b;
+            color: white;
+        }
+
+        /* Fix button styling */
+        .fix-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 12px;
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+        }
+        
+        .fix-btn:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+        }
+        
+        .fix-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Notification system */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .notification.info {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .notification.warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+            to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        }
+
+        @media (max-width: 1024px) {
+        .content-area {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .header-title {
+                font-size: 2rem;
+            }
+            
+            .control-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Status badges for situations */
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-badge.active {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        
+        .status-badge.resolved {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+        
+        .status-badge.acknowledged {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        /* Enhanced situation items */
+        .situation-item {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .situation-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #cbd5e1;
+        }
+        
+        .situation-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .situation-item:hover::before {
+            opacity: 1;
+        }
+        
+        .situation-item.k8s {
+            border-left: 4px solid #326ce5;
+        }
+        
+        .situation-item.datadog {
+            border-left: 4px solid #632ca6;
+        }
+        
+        .situation-item.logicmonitor {
+            border-left: 4px solid #00a651;
+        }
+        
+        .situation-item.mixed {
+            border-left: 4px solid #f59e0b;
+        }
+
+        /* Enhanced alert items with better spacing */
+        .alert-item {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .alert-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #cbd5e1;
+        }
+        
+        .alert-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .alert-item:hover::before {
+            opacity: 1;
+        }
+
+        /* Correlation Analysis Styling */
+        .correlation-group {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .correlation-group:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+            border-color: #cbd5e1;
+        }
+
+        .correlation-group::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .correlation-group:hover::before {
+            opacity: 1;
+        }
+
+        .correlation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .correlation-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .correlation-title h4 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .similarity-score {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .correlation-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .alert-count {
+            background: #f1f5f9;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .correlation-service {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .correlation-factors {
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        .correlation-breakdown {
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .correlation-source-count {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .correlation-source-count .source-badge {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+        }
+
+        /* Splunk-Style Timeline Graph */
+        .main-results-panel {
+            grid-column: 1 / -1;
+        }
+
+        .timeline-graph-container {
+            margin: 20px 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .timeline-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .timeline-control-left {
+            display: flex;
+            gap: 20px;
+        }
+
+        .control-item {
+            font-size: 0.85rem;
+            color: #475569;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .control-item:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .timeline-graph {
+            height: 200px;
+            padding: 20px;
+            background: white;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            overflow-x: auto;
+            min-height: 200px;
+        }
+
+        .timeline-bar-vertical {
+            background: linear-gradient(to top, #10b981, #059669);
+            min-width: 8px;
+            border-radius: 2px 2px 0 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .timeline-bar-vertical:hover {
+            background: linear-gradient(to top, #059669, #047857);
+            transform: scaleY(1.05);
+        }
+
+        .timeline-bar-vertical::after {
+            content: attr(data-count);
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .timeline-bar-vertical:hover::after {
+            opacity: 1;
+        }
+
+
+
+        .timeline-controls-bottom {
+            display: flex;
+            gap: 20px;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            align-items: center;
+        }
+
+        /* Timeline Legend */
+        .timeline-legend {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-left: auto;
+            margin-right: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: #475569;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        .legend-color.red {
+            background: linear-gradient(to top, #ef4444, #dc2626);
+        }
+
+        .legend-color.green {
+            background: linear-gradient(to top, #10b981, #059669);
+        }
+
+        .legend-color.cyan {
+            background: linear-gradient(to top, #06b6d4, #0891b2);
+        }
+
+        .legend-color.blue {
+            background: linear-gradient(to top, #3b82f6, #1d4ed8);
+        }
+
+        .legend-color.dark-blue {
+            background: linear-gradient(to top, #1e40af, #1e3a8a);
+        }
+
+        .legend-text {
+            font-weight: 500;
+        }
+
+        /* Event Table Styles */
+        .event-table-container {
+            margin-top: 20px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .event-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .event-table th {
+            background: #f8fafc;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #1e293b;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .event-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: top;
+        }
+
+        .event-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .col-info {
+            width: 40px;
+            text-align: center;
+        }
+
+        .col-time {
+            width: 200px;
+            font-family: monospace;
+            color: #475569;
+        }
+
+        .col-event {
+            flex: 1;
+            font-family: monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .expand-icon {
+            cursor: pointer;
+            color: #64748b;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+
+        .expand-icon:hover {
+            color: #3b82f6;
+            transform: scale(1.1);
+        }
+
+        .event-details {
+            background: #f8fafc;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border-left: 3px solid #3b82f6;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        .event-details-row {
+            display: flex;
+            margin-bottom: 4px;
+        }
+
+        .event-details-label {
+            font-weight: 600;
+            min-width: 120px;
+            color: #1e293b;
+        }
+
+        .event-details-value {
+            color: #64748b;
+        }
+
+        .correlated-alerts {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .mini-alert {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .mini-alert:hover {
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .mini-alert.k8s {
+            border-left: 3px solid #3182ce;
+        }
+
+        .mini-alert.datadog {
+            border-left: 3px solid #805ad5;
+        }
+
+        .mini-alert.logicmonitor {
+            border-left: 3px solid #38a169;
+        }
+
+        .alert-title {
+            flex: 1;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .alert-time {
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+
+        .correlation-actions {
+            display: flex;
+            gap: 12px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .correlation-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+        }
+
+        .correlation-btn:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+        }
+
+        .dismiss-btn {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(107, 114, 128, 0.2);
+        }
+
+        .dismiss-btn:hover {
+            background: linear-gradient(135deg, #4b5563, #374151);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(107, 114, 128, 0.3);
+        }
+
+        /* Unified Correlation Group Styling */
+        .unified-correlation-group {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #475569;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .correlation-group-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #475569;
+        }
+
+        .correlation-group-header h4 {
+            color: #f1f5f9;
+            margin: 0 0 8px 0;
+            font-size: 18px;
+        }
+
+        .correlation-group-header p {
+            color: #94a3b8;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .correlation-pair {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .correlation-pair:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .correlation-pair.high {
+            border-left: 4px solid #10b981;
+        }
+
+        .correlation-pair.medium {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .correlation-pair.low {
+            border-left: 4px solid #ef4444;
+        }
+
+        .pair-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .pair-number {
+            background: #475569;
+            color: #f1f5f9;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .pair-similarity {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .pair-similarity.high {
+            color: #10b981;
+        }
+
+        .pair-similarity.medium {
+            color: #f59e0b;
+        }
+
+        .pair-similarity.low {
+            color: #ef4444;
+        }
+
+        .cross-source-badge {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .cross-source-label {
+            color: #8b5cf6;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        .pair-alerts {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .pair-alert {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .pair-alert.k8s {
+            border-left: 3px solid #3b82f6;
+        }
+
+        .pair-alert.datadog {
+            border-left: 3px solid #8b5cf6;
+        }
+
+        .pair-alert.logicmonitor {
+            border-left: 3px solid #06b6d4;
+        }
+
+        .pair-alert.victoria-logs {
+            border-left: 3px solid #10b981;
+        }
+
+        .alert-source {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 4px;
+            font-weight: bold;
+        }
+
+        .alert-title {
+            color: #f1f5f9;
+            font-weight: 500;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .alert-service {
+            color: #cbd5e1;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .alert-severity {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .alert-severity.critical {
+            background: #dc2626;
+            color: white;
+        }
+
+        .alert-severity.high {
+            background: #ea580c;
+            color: white;
+        }
+
+        .alert-severity.medium {
+            background: #d97706;
+            color: white;
+        }
+
+        .alert-severity.low {
+            background: #059669;
+            color: white;
+        }
+
+        .alert-severity.warning {
+            background: #ca8a04;
+            color: white;
+        }
+
+        .pair-connector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .connector-line {
+            width: 2px;
+            height: 20px;
+            background: #475569;
+        }
+
+        .connector-arrow {
+            color: #64748b;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .no-similarities {
+            text-align: center;
+            color: #94a3b8;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        /* Timeline Alert Visualization */
+        .timeline-container {
+            margin: 16px 0;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .timeline-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timeline-bar {
+            height: 24px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-bar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .timeline-bar.k8s {
+            background: linear-gradient(135deg, #3182ce, #1e40af);
+        }
+
+        .timeline-bar.datadog {
+            background: linear-gradient(135deg, #805ad5, #553c9a);
+        }
+
+        .timeline-bar.logicmonitor {
+            background: linear-gradient(135deg, #38a169, #276749);
+        }
+
+        .timeline-bar.mixed {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .timeline-label {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .timeline-count {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            backdrop-filter: blur(4px);
+        }
+
+        .timeline-details {
+            display: none;
+            margin-top: 12px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-details.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .timeline-alert-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            background: #f8fafc;
+            border-left: 3px solid #3b82f6;
+            transition: all 0.2s ease;
+        }
+
+        .timeline-alert-item:hover {
+            background: #f1f5f9;
+            transform: translateX(4px);
+        }
+
+        .timeline-alert-item.k8s {
+            border-left-color: #3182ce;
+        }
+
+        .timeline-alert-item.datadog {
+            border-left-color: #805ad5;
+        }
+
+        .timeline-alert-item.logicmonitor {
+            border-left-color: #38a169;
+        }
+
+        .timeline-alert-source {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .timeline-alert-source.k8s {
+            background: #3182ce;
+        }
+
+        .timeline-alert-source.datadog {
+            background: #805ad5;
+        }
+
+        .timeline-alert-source.logicmonitor {
+            background: #38a169;
+        }
+
+        .timeline-alert-info {
+            flex: 1;
+            font-size: 0.85rem;
+        }
+
+        .timeline-alert-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+
+        .timeline-alert-meta {
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="enterprise-header">
+        <div class="header-content">
+            <div class="header-logo">
+                <span class="logo-text">alert<span class="logo-accent">>correlator</span></span>
+            </div>
+            <div class="header-nav">
+                <span class="nav-item active">Search</span>
+                <span class="nav-item">Analytics</span>
+                <span class="nav-item">Reports</span>
+                <span class="nav-item">Alerts</span>
+                <span class="nav-item">Dashboards</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Professional Quick Actions Panel -->
+        <div class="quick-actions-panel">
+            <div class="panel-header">
+                <h3 class="panel-title">Quick Actions</h3>
+                <p class="panel-subtitle">Generate and manage alert data</p>
+            </div>
+            <div class="action-grid">
+                <button id="fetchVictoriaLogsBtn" class="action-btn primary">
+                    <div class="action-icon">📊</div>
+                    <div class="action-content">
+                        <div class="action-title">Fetch Victoria Logs</div>
+                        <div class="action-desc">Get real logs from Victoria Logs</div>
+                    </div>
+                </button>
+                <button id="generateBtn" class="action-btn secondary">
+                    <div class="action-icon">🧪</div>
+                    <div class="action-content">
+                        <div class="action-title">Generate Test Data</div>
+                        <div class="action-desc">Create sample alerts (fallback)</div>
+                    </div>
+                </button>
+                <button id="k8sThresholdBtn" class="action-btn success">
+                    <div class="action-icon">☸️</div>
+                    <div class="action-content">
+                        <div class="action-title">Test K8s Thresholds</div>
+                        <div class="action-desc">Process K8s events</div>
+                    </div>
+                </button>
+                <button id="testCorrelationBtn" class="action-btn info">
+                    <div class="action-icon">🔗</div>
+                    <div class="action-content">
+                        <div class="action-title">Test Correlation</div>
+                        <div class="action-desc">Analyze patterns</div>
+                    </div>
+                </button>
+                <button id="resetCooldownsBtn" class="action-btn warning">
+                    <div class="action-icon">🔄</div>
+                    <div class="action-content">
+                        <div class="action-title">Reset Cooldowns</div>
+                        <div class="action-desc">Clear K8s thresholds</div>
+                    </div>
+                </button>
+                <button id="clearBtn" class="action-btn danger">
+                    <div class="action-icon">🗑️</div>
+                    <div class="action-content">
+                        <div class="action-title">Clear All</div>
+                        <div class="action-desc">Reset system</div>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+
+
+
+        <!-- Metrics Dashboard -->
+        <div class="metrics-grid">
+            <div class="metric-card fade-in-up" style="animation-delay: 0.1s;">
+                <div class="metric-icon">🚨</div>
+                <div class="metric-label">Total Alerts</div>
+                <div class="metric-value" id="totalAlerts">0</div>
+            </div>
+            <div class="metric-card fade-in-up" style="animation-delay: 0.2s;">
+                <div class="metric-icon">🔗</div>
+                <div class="metric-label">Active Situations</div>
+                <div class="metric-value" id="activeSituations">0</div>
+            </div>
+            <div class="metric-card fade-in-up" style="animation-delay: 0.3s;">
+                <div class="metric-icon">☸️</div>
+                <div class="metric-label">K8s Events</div>
+                <div class="metric-value" id="k8sEvents">0</div>
+            </div>
+            <div class="metric-card fade-in-up" style="animation-delay: 0.4s;">
+                <div class="metric-icon">📊</div>
+                <div class="metric-label">Datadog Alerts</div>
+                <div class="metric-value" id="datadogAlerts">0</div>
+            </div>
+            <div class="metric-card fade-in-up" style="animation-delay: 0.5s;">
+                <div class="metric-icon">🔍</div>
+                <div class="metric-label">LogicMonitor</div>
+                <div class="metric-value" id="logicMonitorAlerts">0</div>
+            </div>
+            <div class="metric-card fade-in-up" style="animation-delay: 0.6s;">
+                <div class="metric-icon">⚡</div>
+                <div class="metric-label">Processing Time</div>
+                <div class="metric-value" id="processingTime">0ms</div>
+            </div>
+        </div>
+
+        <!-- Content Area - Splunk Style -->
+        <div class="content-area">
+            <!-- Main Results Panel -->
+            <div class="content-panel main-results-panel">
+                <div class="panel-header">
+                    <h3 class="panel-title">Search Results</h3>
+                </div>
+                
+                <!-- Search Bar Above Timeline -->
+                <div class="search-bar-container">
+                    <div class="search-input-group">
+                        <input type="text" id="searchBar" class="search-bar" placeholder="Search alerts (e.g., source=k8s severity=high service=web-api)" value="">
+                        <button id="searchBtn" class="search-btn">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.098zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                            </svg>
+                            Search
+                        </button>
+                    </div>
+                    <div class="search-results-summary" id="searchResultsSummary">
+                        <div class="results-info">
+                            <span class="results-icon">🔍</span>
+                            <span class="results-count">No search active</span>
+                            <span class="results-time">Enter search criteria to view events</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Timeline Graph (Splunk Style) -->
+                <div class="timeline-graph-container">
+                    <div class="timeline-controls">
+                        <div class="timeline-control-left">
+                            <span class="control-item">Format Timeline ▾</span>
+                            <span class="control-item">– Zoom Out</span>
+                            <span class="control-item">+ Zoom to Selection</span>
+                            <span class="control-item">× Deselect</span>
+                        </div>
+                    </div>
+                    <div class="timeline-graph" id="timelineGraph">
+                        <!-- Vertical bars will be generated here -->
+                    </div>
+                    <div class="timeline-controls-bottom">
+                        <span class="control-item">List ▾</span>
+                        <span class="control-item">✓ Format</span>
+                        <span class="timeline-legend">
+                            <span class="legend-item">
+                                <span class="legend-color red"></span>
+                                <span class="legend-text">Low (1-5)</span>
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color green"></span>
+                                <span class="legend-text">Medium (6-10)</span>
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color cyan"></span>
+                                <span class="legend-text">High (11-15)</span>
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color blue"></span>
+                                <span class="legend-text">Very High (16-20)</span>
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color dark-blue"></span>
+                                <span class="legend-text">Critical (>20)</span>
+                            </span>
+                        </span>
+                        <span class="control-item">20 Per Page ▾</span>
+                    </div>
+                </div>
+
+                <!-- Event Table -->
+                <div class="event-table-container">
+                    <table class="event-table" id="eventTable">
+                        <thead>
+                            <tr>
+                                <th class="col-info">i</th>
+                                <th class="col-time">Time</th>
+                                <th class="col-event">Event</th>
+                            </tr>
+                        </thead>
+                        <tbody id="eventTableBody">
+                            <tr>
+                                <td class="col-info">
+                                    <span class="expand-icon">▶</span>
+                                </td>
+                                <td class="col-time">No events available</td>
+                                <td class="col-event">Generate some alerts to see events</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Situations Panel -->
+            <div class="content-panel">
+                <div class="panel-header">
+                    <h3 class="panel-title">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                        </svg>
+                        Active Situations
+                    </h3>
+                </div>
+                <div class="panel-content" id="situationsList">
+                    <p style="color: #64748b; text-align: center;">No active situations</p>
+                </div>
+            </div>
+
+            <!-- Correlation Analysis Panel -->
+            <div class="content-panel" style="grid-column: 1 / -1;">
+                <div class="panel-header">
+                    <h3 class="panel-title">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                        </svg>
+                        Correlation Analysis
+                        <span class="correlation-count" id="correlationCount" style="margin-left: 10px; font-size: 0.8em; opacity: 0.7;">(0 groups)</span>
+                    </h3>
+                </div>
+                <div class="panel-content" id="correlationList">
+                    <p style="color: #64748b; text-align: center;">No correlations found. Generate more alerts to see correlation analysis.</p>
+                </div>
+            </div>
+    </div>
+
+    <script>
+        // K8s Event Threshold Engine
+        class K8sThresholdEngine {
+            constructor() {
+                this.rules = this.loadThresholdRules();
+                this.state = new Map(); // rule -> key -> timestamps
+                this.cooldowns = new Map(); // rule -> key -> cooldown_until
+            }
+
+            loadThresholdRules() {
+                return [
+                    {
+                        name: "CrashLoopBackOff bursts",
+                        key: ["namespace", "involvedObject.name"],
+                        match: { "reason": "BackOff", "type": "Warning" },
+                        threshold: 5,
+                        severity: "high",
+                        window: 5 * 60 * 1000, // 5 minutes
+                        cooldown: 10 * 60 * 1000 // 10 minutes
+                    },
+                    {
+                        name: "ImagePull failures",
+                        key: ["namespace", "reason"],
+                        match: { "reason": "Failed", "message": /ImagePull/ },
+                        threshold: 3,
+                        severity: "medium",
+                        window: 5 * 60 * 1000,
+                        cooldown: 10 * 60 * 1000
+                    },
+                    {
+                        name: "Node not ready",
+                        key: ["involvedObject.kind", "involvedObject.name"],
+                        match: { "reason": "NodeNotReady" },
+                        threshold: 1,
+                        severity: "critical",
+                        window: 5 * 60 * 1000,
+                        cooldown: 10 * 60 * 1000
+                    },
+                    {
+                        name: "High Pod Evictions",
+                        key: ["namespace", "reason"],
+                        match: { "reason": "Evicted" },
+                        threshold: 10,
+                        severity: "medium",
+                        window: 10 * 60 * 1000,
+                        cooldown: 15 * 60 * 1000
+                    },
+                    {
+                        name: "ConfigMap Change Spike",
+                        key: ["namespace", "involvedObject.kind"],
+                        match: { "involvedObject.kind": "ConfigMap" },
+                        threshold: 7,
+                        severity: "low",
+                        window: 15 * 60 * 1000,
+                        cooldown: 20 * 60 * 1000
+                    }
+                ];
+            }
+
+            // Check if event matches a rule
+            matchesRule(event, rule) {
+                for (const [key, value] of Object.entries(rule.match)) {
+                    if (value instanceof RegExp) {
+                        if (!value.test(event[key])) return false;
+                } else {
+                        if (event[key] !== value) return false;
+                    }
+                }
+                return true;
+            }
+
+            // Extract key from event based on rule
+            extractKey(event, rule) {
+                return rule.key.map(field => {
+                    if (field.includes('.')) {
+                        const parts = field.split('.');
+                        let value = event;
+                        for (const part of parts) {
+                            value = value[part];
+                        }
+                        return value;
+                    }
+                    return event[field];
+                });
+            }
+
+            // Check if key is in cooldown
+            isInCooldown(ruleName, key, now) {
+                const cooldownKey = `${ruleName}:${JSON.stringify(key)}`;
+                const cooldownUntil = this.cooldowns.get(cooldownKey);
+                return cooldownUntil && now < cooldownUntil;
+            }
+
+            // Start cooldown for a key
+            startCooldown(ruleName, key, now) {
+                const cooldownKey = `${ruleName}:${JSON.stringify(key)}`;
+                const rule = this.rules.find(r => r.name === ruleName);
+                this.cooldowns.set(cooldownKey, now + rule.cooldown);
+            }
+
+            // Prune old timestamps outside the window
+            pruneOldTimestamps(timestamps, now, window) {
+                return timestamps.filter(ts => now - ts < window);
+            }
+
+            // Process a K8s event and potentially generate alerts
+            processEvent(event, now = Date.now()) {
+                const alerts = [];
+                
+                for (const rule of this.rules) {
+                    if (!this.matchesRule(event, rule)) continue;
+                    
+                    const key = this.extractKey(event, rule);
+                    const keyStr = JSON.stringify(key);
+                    
+                    // Initialize state for this rule and key
+                    if (!this.state.has(rule.name)) {
+                        this.state.set(rule.name, new Map());
+                    }
+                    if (!this.state.get(rule.name).has(keyStr)) {
+                        this.state.get(rule.name).set(keyStr, []);
+                    }
+                    
+                    const timestamps = this.state.get(rule.name).get(keyStr);
+                    
+                    // Add current timestamp
+                    timestamps.push(now);
+                    
+                    // Prune old timestamps
+                    const prunedTimestamps = this.pruneOldTimestamps(timestamps, now, rule.window);
+                    this.state.get(rule.name).set(keyStr, prunedTimestamps);
+                    
+                    // Check if threshold is met and not in cooldown
+                    if (prunedTimestamps.length >= rule.threshold && !this.isInCooldown(rule.name, key, now)) {
+                        // Generate alert
+                        const alert = {
+                            alert: rule.name,
+                            severity: rule.severity,
+                            key: Object.fromEntries(rule.key.map((k, i) => [k, key[i]])),
+                            count: prunedTimestamps.length,
+                            window: rule.window / (60 * 1000) + "m",
+                            first_ts: new Date(Math.min(...prunedTimestamps)).toISOString(),
+                            last_ts: new Date(Math.max(...prunedTimestamps)).toISOString(),
+                            labels: { signal: "k8s_event" },
+                            source: "k8s",
+                            ts: now,
+                            kind: rule.name,
+                            service: key[0] || "unknown", // namespace
+                            component: "k8s-event",
+                            resource: key[1] || "unknown", // pod/node name
+                            error_code: rule.name,
+                            entity_key: `${key[0]}|${key[1]}`,
+                            vendor_event_id: `k8s-threshold-${Math.random().toString(36).slice(2, 8)}`,
+                            fingerprint: `fp-${rule.name}-${key.join('-')}`,
+                            status: "firing"
+                        };
+                        
+                        alerts.push(alert);
+                        
+                        // Start cooldown
+                        this.startCooldown(rule.name, key, now);
+                    }
+                }
+                
+                return alerts;
+            }
+
+            // Generate sample K8s events for testing
+            generateSampleK8sEvents() {
+                const events = [];
+                const now = Date.now();
+                const randomSuffix = Math.random().toString(36).slice(2, 6); // Random suffix for unique events
+                
+                // CrashLoopBackOff events (should trigger alert after 5 events)
+                for (let i = 0; i < 6; i++) {
+                    events.push({
+                        ts: new Date(now - (5 - i) * 60 * 1000).toISOString(),
+                        namespace: "shop",
+                        reason: "BackOff",
+                        type: "Warning",
+                        message: "Back-off restarting failed container",
+                        involvedObject: {
+                            kind: "Pod",
+                            name: `cart-${randomSuffix}-${i}`
+                        }
+                    });
+                }
+                
+                // ImagePull failures (should trigger alert after 3 events)
+                for (let i = 0; i < 4; i++) {
+                    events.push({
+                        ts: new Date(now - (3 - i) * 60 * 1000).toISOString(),
+                        namespace: "payments",
+                        reason: "Failed",
+                        type: "Warning",
+                        message: "Failed to pull image ... rpc error: ImagePullBackOff",
+                        involvedObject: {
+                            kind: "Pod",
+                            name: `pay-${randomSuffix}-${i}`
+                        }
+                    });
+                }
+                
+                // Node not ready (should trigger alert immediately)
+                events.push({
+                    ts: new Date(now).toISOString(),
+                    namespace: "",
+                    reason: "NodeNotReady",
+                    type: "Warning",
+                    message: "Node node-3 is not ready",
+                    involvedObject: {
+                        kind: "Node",
+                        name: `node-${randomSuffix}`
+                    }
+                });
+                
+                // High pod evictions (should trigger alert after 10 events)
+                for (let i = 0; i < 12; i++) {
+                    events.push({
+                        ts: new Date(now - (11 - i) * 60 * 1000).toISOString(),
+                        namespace: "analytics",
+                        reason: "Evicted",
+                        type: "Warning",
+                        message: "Pod evicted due to resource pressure",
+                        involvedObject: {
+                            kind: "Pod",
+                            name: `analytics-${randomSuffix}-${i}`
+                        }
+                    });
+                }
+                
+                // Add some additional unique events to ensure variety
+                events.push({
+                    ts: new Date(now - 2 * 60 * 1000).toISOString(),
+                    namespace: "monitoring",
+                    reason: "FailedScheduling",
+                    type: "Warning",
+                    message: "Pod scheduling failed due to resource constraints",
+                    involvedObject: {
+                        kind: "Pod",
+                        name: `monitor-${randomSuffix}`
+                    }
+                });
+                
+                return events;
+            }
+
+            // Process all sample events and return generated alerts
+            processSampleEvents() {
+                const events = this.generateSampleK8sEvents();
+                const alerts = [];
+                
+                for (const event of events) {
+                    const eventAlerts = this.processEvent(event, new Date(event.ts).getTime());
+                    alerts.push(...eventAlerts);
+                }
+                
+                return alerts;
+            }
+        }
+
+        // Correlation Analysis Engine
+        class CorrelationEngine {
+            constructor() {
+                this.correlationRules = this.loadCorrelationRules();
+                this.correlationGroups = new Map(); // groupId -> correlation group
+                this.groupCounter = 0;
+            }
+
+            loadCorrelationRules() {
+                return [
+                    {
+                        name: "Service Correlation",
+                        weight: 0.8,
+                        factors: ["service", "component"],
+                        threshold: 0.7
+                    },
+                    {
+                        name: "Error Pattern Correlation",
+                        weight: 0.9,
+                        factors: ["error_code", "severity"],
+                        threshold: 0.8
+                    },
+                    {
+                        name: "Resource Correlation",
+                        weight: 0.7,
+                        factors: ["resource", "component"],
+                        threshold: 0.6
+                    },
+                    {
+                        name: "Temporal Correlation",
+                        weight: 0.6,
+                        factors: ["time_window"],
+                        threshold: 0.5
+                    },
+                    {
+                        name: "Source Correlation",
+                        weight: 0.5,
+                        factors: ["source"],
+                        threshold: 0.4
+                    }
+                ];
+            }
+
+                    // Calculate similarity score between two alerts
+        calculateSimilarity(alert1, alert2) {
+            let totalScore = 0;
+            let maxScore = 0;
+
+            for (const rule of this.correlationRules) {
+                let ruleScore = 0;
+                let ruleMax = 0;
+
+                for (const factor of rule.factors) {
+                    const score = this.compareFactor(alert1, alert2, factor);
+                    ruleScore += score;
+                    ruleMax += 1;
+                }
+
+                if (ruleMax > 0) {
+                    ruleScore = (ruleScore / ruleMax) * rule.weight;
+                    totalScore += ruleScore;
+                    maxScore += rule.weight;
+                }
+            }
+
+            const finalScore = maxScore > 0 ? totalScore / maxScore : 0;
+            console.log(`🔍 Similarity between "${alert1.title}" and "${alert2.title}": ${(finalScore * 100).toFixed(1)}%`);
+            return finalScore;
+        }
+
+            // Compare specific factors between alerts
+            compareFactor(alert1, alert2, factor) {
+                switch (factor) {
+                    case "service":
+                        return alert1.service === alert2.service ? 1 : 0;
+                    
+                    case "component":
+                        return alert1.component === alert2.component ? 1 : 0;
+                    
+                    case "error_code":
+                        return alert1.error_code === alert2.error_code ? 1 : 0;
+                    
+                    case "severity":
+                        return this.compareSeverity(alert1.severity, alert2.severity);
+                    
+                    case "resource":
+                        return this.compareResource(alert1.resource, alert2.resource);
+                    
+                    case "source":
+                        return alert1.source === alert2.source ? 1 : 0;
+                    
+                    case "time_window":
+                        return this.compareTimeWindow(alert1.ts, alert2.ts);
+                    
+                    default:
+                        return 0;
+                }
+            }
+
+            // Compare severity levels with partial matching
+            compareSeverity(sev1, sev2) {
+                const levels = { 'critical': 4, 'high': 3, 'medium': 2, 'warning': 1, 'info': 0 };
+                const level1 = levels[sev1] || 0;
+                const level2 = levels[sev2] || 0;
+                
+                if (level1 === level2) return 1;
+                if (Math.abs(level1 - level2) === 1) return 0.7;
+                if (Math.abs(level1 - level2) === 2) return 0.4;
+                return 0.1;
+            }
+
+            // Compare resources with partial matching
+            compareResource(res1, res2) {
+                if (!res1 || !res2) return 0;
+                if (res1 === res2) return 1;
+                
+                // Check if resources are in same cluster/namespace
+                const parts1 = res1.split('-');
+                const parts2 = res2.split('-');
+                
+                if (parts1.length > 1 && parts2.length > 1) {
+                    if (parts1[0] === parts2[0]) return 0.8; // Same service prefix
+                    if (parts1[parts1.length - 1] === parts2[parts1.length - 1]) return 0.6; // Same suffix
+                }
+                
+                return 0.2;
+            }
+
+            // Compare time windows
+            compareTimeWindow(ts1, ts2) {
+                const timeDiff = Math.abs(ts1 - ts2);
+                const fiveMinutes = 5 * 60 * 1000;
+                const fifteenMinutes = 15 * 60 * 1000;
+                
+                if (timeDiff < fiveMinutes) return 1;
+                if (timeDiff < fifteenMinutes) return 0.7;
+                if (timeDiff < 30 * 60 * 1000) return 0.4;
+                return 0.1;
+            }
+
+            // Find correlations in a list of alerts
+            findCorrelations(alerts) {
+                this.correlationGroups.clear();
+                this.groupCounter = 0;
+                
+                if (alerts.length < 2) return [];
+
+                // Create similarity matrix
+                const similarityMatrix = [];
+                for (let i = 0; i < alerts.length; i++) {
+                    similarityMatrix[i] = [];
+                    for (let j = 0; j < alerts.length; j++) {
+                        if (i === j) {
+                            similarityMatrix[i][j] = 1;
+                        } else {
+                            similarityMatrix[i][j] = this.calculateSimilarity(alerts[i], alerts[j]);
+                        }
+                    }
+                }
+
+                // Group alerts based on similarity
+                const processed = new Set();
+                const correlations = [];
+
+                for (let i = 0; i < alerts.length; i++) {
+                    if (processed.has(i)) continue;
+
+                    const group = {
+                        id: `correlation-${++this.groupCounter}`,
+                        alerts: [alerts[i]],
+                        similarity: 1,
+                        factors: this.extractCorrelationFactors(alerts[i]),
+                        severity: alerts[i].severity,
+                        source: alerts[i].source,
+                        service: alerts[i].service,
+                        component: alerts[i].component,
+                        timestamp: alerts[i].ts,
+                        count: 1
+                    };
+
+                    processed.add(i);
+
+                    // Find similar alerts
+                    for (let j = i + 1; j < alerts.length; j++) {
+                        if (processed.has(j)) continue;
+
+                        const similarity = similarityMatrix[i][j];
+                        console.log(`🔗 Checking similarity: ${(similarity * 100).toFixed(1)}% >= 40% threshold`);
+                        if (similarity >= 0.4) { // Lower correlation threshold for testing
+                            group.alerts.push(alerts[j]);
+                            group.similarity = Math.min(group.similarity, similarity);
+                            group.count++;
+                            processed.add(j);
+                            console.log(`✅ Added alert "${alerts[j].title}" to correlation group`);
+                        }
+                    }
+
+                    // Only add groups with multiple alerts
+                    if (group.alerts.length > 1) {
+                        correlations.push(group);
+                    }
+                }
+
+                return correlations.sort((a, b) => b.count - a.count);
+            }
+
+            // Extract key factors that caused correlation
+            extractCorrelationFactors(alert) {
+                const factors = [];
+                
+                if (alert.service) factors.push(`Service: ${alert.service}`);
+                if (alert.component) factors.push(`Component: ${alert.component}`);
+                if (alert.error_code) factors.push(`Error: ${alert.error_code}`);
+                if (alert.resource) factors.push(`Resource: ${alert.resource}`);
+                if (alert.source) factors.push(`Source: ${alert.source}`);
+                
+                return factors.slice(0, 3); // Top 3 factors
+            }
+        }
+
+        // Simple demo state management
+        let demoState = {
+                    totalAlerts: 0,
+            activeSituations: 0,
+                    k8sEvents: 0,
+                    datadogAlerts: 0,
+                    logicMonitorAlerts: 0,
+            processingTime: 0
+        };
+
+        // Store all generated alerts
+        let allAlerts = [];
+        let alertCounter = 0;
+        let situationCounter = 0; // Counter for situation IDs
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 Enterprise Alert Correlation System Initializing...');
+            
+            // Initialize active search flag
+            window.activeSearch = false;
+            
+            // Load configuration
+            try {
+                const response = await fetch('./config.json');
+                window.systemConfig = await response.json();
+                console.log('✅ Configuration loaded:', window.systemConfig);
+            } catch (error) {
+                console.warn('⚠️ Could not load config.json, using defaults');
+                window.systemConfig = {
+                    correlation: { globalThreshold: 0.4 },
+                    ui: { correlation: { autoUpdate: true } }
+                };
+            }
+            
+            // Initialize K8s threshold engine
+            window.k8sThresholdEngine = new K8sThresholdEngine();
+            
+            // Initialize correlation engine
+            window.correlationEngine = new CorrelationEngine();
+            
+            // Event listeners will be set up in the separate DOMContentLoaded listener
+            
+            // Test K8s threshold engine initialization
+            console.log('🔍 Testing K8s Threshold Engine initialization...');
+            if (window.k8sThresholdEngine) {
+                console.log('✅ K8s Threshold Engine initialized successfully');
+                console.log('📋 Rules loaded:', window.k8sThresholdEngine.rules.length);
+                console.log('📋 Rules:', window.k8sThresholdEngine.rules);
+            } else {
+                console.error('❌ K8s Threshold Engine failed to initialize');
+            }
+
+            console.log('✅ Enterprise Alert Correlation System Ready!');
+            console.log('🏢 Features:');
+            console.log('  - Professional enterprise-grade UI');
+            console.log('  - K8s Event Threshold Engine with configurable rules');
+            console.log('  - Multi-source alert correlation');
+            console.log('  - Real-time monitoring and control');
+            console.log('  - Accumulating alerts (press buttons multiple times!)');
+        });
+
+        // Fetch real logs from Victoria Logs
+        async function fetchVictoriaLogs() {
+            console.log('🔍 Fetching logs from Victoria Logs...');
+            
+            const startTime = performance.now();
+            
+            try {
+                // Victoria Logs query endpoint
+                const victoriaLogsUrl = 'https://vlinsert.dev.manifestit.tech/';
+                
+                // Example query - you can modify this based on your needs
+                const query = {
+                    query: '{job="varlogs"}', // Adjust this query based on your Victoria Logs setup
+                    start: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(), // Last 1 hour
+                    end: new Date().toISOString(),
+                    limit: 100
+                };
+                
+                // For demonstration, we'll create a mock response since we can't directly query the endpoint
+                // In a real implementation, you would make an actual HTTP request to Victoria Logs
+                console.log('📡 Would query Victoria Logs with:', query);
+                
+                // Simulate fetching logs and converting them to alerts
+                const newAlerts = await simulateVictoriaLogsFetch();
+                
+                // Add new alerts to existing list
+                allAlerts.push(...newAlerts);
+                
+                // Create situations from new alerts
+                createSituationsFromAlerts(newAlerts);
+                
+                // Update timeline and event table
+                generateTimelineVisualization(allAlerts);
+                generateEventTable(allAlerts);
+                
+                // Update situations list
+                updateSituationsList();
+                
+                // Update metrics
+                demoState.totalAlerts = allAlerts.length;
+                demoState.activeSituations = allAlerts.filter(a => 
+                    a.kind || // K8s threshold alerts
+                    (a.error_code && (a.severity === 'high' || a.severity === 'critical')) // Only HIGH/CRITICAL regular alerts
+                ).length;
+                demoState.datadogAlerts = allAlerts.filter(a => a.source === 'datadog').length;
+                demoState.logicMonitorAlerts = allAlerts.filter(a => a.source === 'logicmonitor').length;
+                demoState.processingTime = Math.round(performance.now() - startTime);
+                
+                updateMetrics();
+                
+                // Update search results summary
+                const timeRange = `(${new Date(Date.now() - 1 * 60 * 60 * 1000).toLocaleDateString()} to ${new Date().toLocaleDateString()})`;
+                document.getElementById('searchResultsSummary').innerHTML = `
+                    <div class="results-info">
+                        <span class="results-icon">✅</span>
+                        <span class="results-count">${allAlerts.length} events from Victoria Logs</span>
+                        <span class="results-time">${timeRange}</span>
+                    </div>
+                `;
+                
+                showNotification(`Fetched ${newAlerts.length} logs from Victoria Logs (Total: ${allAlerts.length})`, 'success');
+                
+            } catch (error) {
+                console.error('❌ Error fetching from Victoria Logs:', error);
+                showNotification('Failed to fetch from Victoria Logs. Using test data instead.', 'error');
+                
+                // Fallback to test data if Victoria Logs fails
+                generateTestData();
+            }
+        }
+
+        // Simulate Victoria Logs fetch (replace with actual implementation)
+        async function simulateVictoriaLogsFetch() {
+            // This simulates what you'd get from Victoria Logs
+            // In reality, you'd parse the actual log response
+            const newAlerts = [];
+            
+            // Simulate different types of logs from Victoria Logs
+            const logTypes = [
+                { source: 'victoria-logs', service: 'web-api', component: 'nginx', error_code: 'HTTP_500', severity: 'high' },
+                { source: 'victoria-logs', service: 'database', component: 'postgres', error_code: 'CONNECTION_TIMEOUT', severity: 'critical' },
+                { source: 'victoria-logs', service: 'auth-service', component: 'jwt-validator', error_code: 'TOKEN_EXPIRED', severity: 'medium' },
+                { source: 'victoria-logs', service: 'payment-service', component: 'stripe-client', error_code: 'PAYMENT_FAILED', severity: 'high' },
+                { source: 'victoria-logs', service: 'cache-service', component: 'redis', error_code: 'CACHE_MISS', severity: 'low' },
+                { source: 'victoria-logs', service: 'load-balancer', component: 'haproxy', error_code: 'BACKEND_DOWN', severity: 'critical' },
+                { source: 'victoria-logs', service: 'monitoring', component: 'prometheus', error_code: 'SCRAPE_FAILED', severity: 'medium' },
+                { source: 'victoria-logs', service: 'queue-service', component: 'rabbitmq', error_code: 'QUEUE_FULL', severity: 'high' },
+                { source: 'victoria-logs', service: 'storage-service', component: 's3-client', error_code: 'UPLOAD_FAILED', severity: 'critical' },
+                { source: 'victoria-logs', service: 'email-service', component: 'smtp-client', error_code: 'SEND_FAILED', severity: 'medium' }
+            ];
+            
+            logTypes.forEach((logType, index) => {
+                newAlerts.push({
+                    id: ++alertCounter,
+                    title: `${logType.error_code} in ${logType.service}`,
+                    severity: logType.severity,
+                    source: logType.source,
+                    service: logType.service,
+                    component: logType.component,
+                    resource: `${logType.service}-${logType.component}-${Date.now()}`,
+                    ts: Date.now() - (index * 30000), // Stagger timestamps
+                    message: `Log entry from Victoria Logs: ${logType.error_code} detected in ${logType.service}`,
+                    error_code: logType.error_code,
+                    latency: "N/A"
+                });
+            });
+            
+            return newAlerts;
+        }
+
+        // Generate test data (accumulates alerts) - kept as fallback
+        function generateTestData() {
+            console.log('🧪 Generating test data...');
+            
+            const startTime = performance.now();
+            
+            // Generate sample alerts from different sources
+            const newAlerts = [
+                // Datadog Alerts - Infrastructure & Application
+                {
+                    id: ++alertCounter,
+                    title: `High CPU Usage #${alertCounter}`,
+                    severity: "high",
+                    source: "datadog",
+                    service: "web-api",
+                    component: "cpu-monitor",
+                    resource: "web-api-pod-1",
+                    ts: Date.now(),
+                    message: "CPU usage exceeded 90% threshold for 5 minutes",
+                    error_code: "CPU_THRESHOLD_EXCEEDED",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `Memory Leak Detected #${alertCounter}`,
+                    severity: "critical",
+                    source: "datadog",
+                    service: "payment-service",
+                    component: "memory-monitor",
+                    resource: "payment-api-2",
+                    ts: Date.now() - 30000,
+                    message: "Memory usage growing exponentially, potential leak detected",
+                    error_code: "MEMORY_LEAK",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `Network Latency Spike #${alertCounter}`,
+                    severity: "medium",
+                    source: "datadog",
+                    service: "database",
+                    component: "network-monitor",
+                    resource: "db-cluster-1",
+                    ts: Date.now() - 60000,
+                    message: "Network latency increased by 200ms in last 10 minutes",
+                    error_code: "NETWORK_LATENCY",
+                    latency: "450ms"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `Disk I/O Bottleneck #${alertCounter}`,
+                    severity: "high",
+                    source: "datadog",
+                    service: "analytics",
+                    component: "disk-monitor",
+                    resource: "analytics-node-3",
+                    ts: Date.now() - 90000,
+                    message: "Disk I/O operations queuing up, performance degraded",
+                    error_code: "DISK_IO_BOTTLENECK",
+                    latency: "N/A"
+                },
+                
+                // LogicMonitor Alerts - Infrastructure & Business
+                {
+                    id: ++alertCounter,
+                    title: `Database Connection Pool Exhausted #${alertCounter}`,
+                    severity: "critical",
+                    source: "logicmonitor",
+                    service: "database",
+                    component: "connection-pool",
+                    resource: "postgres-primary",
+                    ts: Date.now() - 120000,
+                    message: "Connection pool exhausted, new connections failing",
+                    error_code: "DB_CONNECTION_EXHAUSTED",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `SSL Certificate Expiring #${alertCounter}`,
+                    severity: "warning",
+                    source: "logicmonitor",
+                    service: "infrastructure",
+                    component: "ssl-monitor",
+                    resource: "web-proxy-1",
+                    ts: Date.now() - 150000,
+                    message: "SSL certificate expires in 7 days",
+                    error_code: "SSL_EXPIRING_SOON",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `Service Response Time Degraded #${alertCounter}`,
+                    severity: "medium",
+                    source: "logicmonitor",
+                    service: "payment-service",
+                    component: "response-time",
+                    resource: "payment-api",
+                    ts: Date.now() - 180000,
+                    message: "95th percentile response time increased by 300ms",
+                    error_code: "RESPONSE_TIME_DEGRADED",
+                    latency: "850ms"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `Disk Space Critical #${alertCounter}`,
+                    severity: "critical",
+                    source: "logicmonitor",
+                    service: "infrastructure",
+                    component: "disk-monitor",
+                    resource: "node-worker-2",
+                    ts: Date.now() - 210000,
+                    message: "Disk usage at 95%, critical threshold exceeded",
+                    error_code: "DISK_SPACE_CRITICAL",
+                    latency: "N/A"
+                },
+                
+                // Additional varied alerts - designed to correlate
+                {
+                    id: ++alertCounter,
+                    title: `API Rate Limit Exceeded #${alertCounter}`,
+                    severity: "medium",
+                    source: "datadog",
+                    service: "external-api",
+                    component: "rate-limiter",
+                    resource: "third-party-service",
+                    ts: Date.now() - 240000,
+                    message: "API rate limit exceeded, requests being throttled",
+                    error_code: "RATE_LIMIT_EXCEEDED",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `API Rate Limit Exceeded #${alertCounter}`,
+                    severity: "medium",
+                    source: "datadog",
+                    service: "external-api",
+                    component: "rate-limiter",
+                    resource: "third-party-service",
+                    ts: Date.now() - 250000,
+                    message: "API rate limit exceeded, requests being throttled",
+                    error_code: "RATE_LIMIT_EXCEEDED",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `High CPU Usage #${alertCounter}`,
+                    severity: "high",
+                    source: "datadog",
+                    service: "web-api",
+                    component: "cpu-monitor",
+                    resource: "web-api-pod-2",
+                    ts: Date.now() - 260000,
+                    message: "CPU usage exceeded 90% threshold for 5 minutes",
+                    error_code: "CPU_THRESHOLD_EXCEEDED",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `High CPU Usage #${alertCounter}`,
+                    severity: "high",
+                    source: "datadog",
+                    service: "web-api",
+                    component: "cpu-monitor",
+                    resource: "web-api-pod-3",
+                    ts: Date.now() - 270000,
+                    message: "CPU usage exceeded 90% threshold for 5 minutes",
+                    error_code: "CPU_THRESHOLD_EXCEEDED",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `Cache Hit Rate Dropped #${alertCounter}`,
+                    severity: "high",
+                    source: "logicmonitor",
+                    service: "cache-service",
+                    component: "cache-monitor",
+                    resource: "redis-cluster",
+                    ts: Date.now() - 270000,
+                    message: "Cache hit rate dropped from 85% to 45%",
+                    error_code: "CACHE_HIT_RATE_DROPPED",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `Load Balancer Health Check Failed #${alertCounter}`,
+                    severity: "critical",
+                    source: "datadog",
+                    service: "load-balancer",
+                    component: "health-check",
+                    resource: "lb-primary",
+                    ts: Date.now() - 300000,
+                    message: "Health check failed for 3 backend servers",
+                    error_code: "HEALTH_CHECK_FAILED",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `Queue Processing Delayed #${alertCounter}`,
+                    severity: "medium",
+                    source: "logicmonitor",
+                    service: "message-queue",
+                    component: "queue-monitor",
+                    resource: "rabbitmq-cluster",
+                    ts: Date.now() - 330000,
+                    message: "Message processing delayed by 15 minutes",
+                    error_code: "QUEUE_PROCESSING_DELAYED",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `Queue Processing Delayed #${alertCounter}`,
+                    severity: "medium",
+                    source: "logicmonitor",
+                    service: "message-queue",
+                    component: "queue-monitor",
+                    resource: "rabbitmq-cluster",
+                    ts: Date.now() - 340000,
+                    message: "Message processing delayed by 15 minutes",
+                    error_code: "QUEUE_PROCESSING_DELAYED",
+                    latency: "N/A"
+                },
+                {
+                    id: ++alertCounter,
+                    title: `Database Connection Pool Exhausted #${alertCounter}`,
+                    severity: "critical",
+                    source: "logicmonitor",
+                    service: "database",
+                    component: "connection-pool",
+                    resource: "postgres-secondary",
+                    ts: Date.now() - 350000,
+                    message: "Connection pool exhausted, new connections failing",
+                    error_code: "DB_CONNECTION_EXHAUSTED",
+                    latency: "N/A"
+                }
+            ];
+            
+            // Add new alerts to existing list
+            allAlerts.push(...newAlerts);
+            
+            // Create situations from regular alerts (group by problem type)
+            createSituationsFromAlerts(newAlerts);
+
+            // Update timeline and event table
+            generateTimelineVisualization(allAlerts);
+            generateEventTable(allAlerts);
+            
+            // Update situations list
+            updateSituationsList();
+            
+            // Update metrics
+            demoState.totalAlerts = allAlerts.length;
+            demoState.activeSituations = allAlerts.filter(a => 
+                a.kind || // K8s threshold alerts
+                (a.error_code && (a.severity === 'high' || a.severity === 'critical')) // Only HIGH/CRITICAL regular alerts
+            ).length;
+            demoState.datadogAlerts = allAlerts.filter(a => a.source === 'datadog').length;
+            demoState.logicMonitorAlerts = allAlerts.filter(a => a.source === 'logicmonitor').length;
+            demoState.processingTime = Math.round(performance.now() - startTime);
+            
+            updateMetrics();
+            
+            // Update search results summary
+            const timeRange = `(${new Date(Date.now() - 24 * 60 * 60 * 1000).toLocaleDateString()} to ${new Date().toLocaleDateString()})`;
+            document.getElementById('searchResultsSummary').innerHTML = `
+                <div class="results-info">
+                    <span class="results-icon">✅</span>
+                    <span class="results-count">${allAlerts.length} events</span>
+                    <span class="results-time">${timeRange}</span>
+                </div>
+            `;
+            
+            showNotification(`Added ${newAlerts.length} new alerts (Total: ${allAlerts.length})`, 'success');
+        }
+
+        // Test K8s threshold engine (accumulates alerts)
+        function testK8sThresholds() {
+            console.log('🧪 Testing K8s Threshold Engine...');
+            
+            // Process sample events through threshold engine
+            const alerts = window.k8sThresholdEngine.processSampleEvents();
+            
+            console.log('📊 Generated alerts from K8s events:', alerts);
+            
+            // Add unique IDs and add to accumulated alerts
+            const newK8sAlerts = alerts.map(alert => ({
+                ...alert,
+                id: ++alertCounter,
+                title: `${alert.alert} #${alertCounter}`,
+                ts: Date.now() - Math.random() * 300000, // Random time within last 5 minutes
+                service: alert.service || 'kubernetes',
+                component: alert.component || 'k8s-monitor',
+                resource: alert.resource || 'cluster',
+                message: alert.message || `Threshold exceeded: ${alert.count} events in ${alert.window}`,
+                source: 'k8s' // Ensure source is set
+            }));
+            
+            allAlerts.push(...newK8sAlerts);
+            
+            // Create situations from new K8s alerts
+            createSituationsFromAlerts(newK8sAlerts);
+
+            // Update timeline and event table
+            generateTimelineVisualization(allAlerts);
+            generateEventTable(allAlerts);
+            
+            // Update situations list
+            updateSituationsList();
+            
+            // Update metrics
+            demoState.k8sEvents = allAlerts.filter(a => a.source === 'k8s').length;
+            demoState.totalAlerts = allAlerts.length;
+            updateMetrics();
+            
+            // Update search results summary
+            const timeRange = `(${new Date(Date.now() - 24 * 60 * 60 * 1000).toLocaleDateString()} to ${new Date().toLocaleDateString()})`;
+            document.getElementById('searchResultsSummary').innerHTML = `
+                <div class="results-info">
+                    <span class="results-icon">✅</span>
+                    <span class="results-count">${allAlerts.length} events</span>
+                    <span class="results-time">${timeRange}</span>
+                </div>
+            `;
+            
+            // Show notification
+            showNotification(`Added ${newK8sAlerts.length} K8s threshold alerts (Total: ${allAlerts.length})`, 'success');
+        }
+
+        // Update alerts list display
+        function updateAlertsList() {
+            const alertsList = document.getElementById('alertsList');
+            
+            if (allAlerts.length === 0) {
+                alertsList.innerHTML = '<p style="color: #64748b; text-align: center;">No recent alerts</p>';
+                return;
+            }
+            
+            // Sort alerts by timestamp (newest first)
+            const sortedAlerts = [...allAlerts].sort((a, b) => b.ts - a.ts);
+            
+            alertsList.innerHTML = sortedAlerts.map(alert => `
+                    <div class="alert-item ${alert.source}">
+                        <div class="item-header">
+                        <div class="item-title">${alert.title}</div>
+                            <div class="item-badge badge-severity ${alert.severity}">${alert.severity}</div>
+                        </div>
+                        <div class="item-details">
+                            <strong>Source:</strong> 
+                            <span class="source-badge ${alert.source}">${alert.source}</span><br>
+                            <strong>Service:</strong> ${alert.service}<br>
+                            <strong>Component:</strong> ${alert.component}<br>
+                        <strong>Resource:</strong> ${alert.resource}<br>
+                        <strong>Time:</strong> ${new Date(alert.ts).toLocaleTimeString()}<br>
+                        ${alert.message ? `<strong>Message:</strong> ${alert.message}<br>` : ''}
+                        ${alert.count ? `<strong>Threshold:</strong> ${alert.count} events in ${alert.window}<br>` : ''}
+                        ${alert.key ? `<strong>Key:</strong> ${JSON.stringify(alert.key)}<br>` : ''}
+                        <strong>Alert ID:</strong> #${alert.id}
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        // Update situations list display
+        function updateSituationsList() {
+            const situationsList = document.getElementById('situationsList');
+            const timelineContainer = document.getElementById('timelineContainer');
+            
+            // Get all alerts that can be situations (K8s threshold alerts + regular alerts with error codes)
+            const k8sSituations = allAlerts.filter(alert => 
+                alert.kind === 'CrashLoopBackOff bursts' || 
+                alert.kind === 'ImagePull failures' || 
+                alert.kind === 'Node not ready' || 
+                alert.kind === 'High Pod Evictions' || 
+                alert.kind === 'ConfigMap Change Spike'
+            );
+            
+            const regularSituations = allAlerts.filter(alert => alert.error_code);
+            
+            // Combine all situations
+            const allSituations = [...k8sSituations, ...regularSituations];
+            
+            // Update the activeSituations metric
+            demoState.activeSituations = allSituations.length;
+            
+            if (allSituations.length === 0) {
+                situationsList.innerHTML = '<p style="color: #64748b; text-align: center;">No active situations</p>';
+                timelineContainer.style.display = 'none';
+                return;
+            }
+
+            situationsList.innerHTML = allSituations.map(situation => {
+                const severity = situation.severity;
+                const statusClass = situation.status === 'firing' ? 'active' : 'resolved';
+                const statusBadge = `<span class="status-badge ${statusClass}">${situation.status}</span>`;
+                
+                // Handle different situation types
+                if (situation.kind) {
+                    // K8s threshold situation
+                    return `
+                        <div class="situation-item ${situation.source}">
+                            <div class="item-header">
+                                <div class="item-title">${situation.alert}</div>
+                                <div class="item-badge badge-severity ${severity}">${severity}</div>
+                            </div>
+                            <div class="item-details">
+                                <strong>Source:</strong> 
+                                <span class="source-badge ${situation.source}">${situation.source}</span><br>
+                                <strong>Service:</strong> ${situation.service}<br>
+                                <strong>Component:</strong> ${situation.component}<br>
+                                <strong>Resource:</strong> ${situation.resource}<br>
+                                <strong>Time:</strong> ${new Date(situation.ts).toLocaleTimeString()}<br>
+                                ${situation.message ? `<strong>Message:</strong> ${situation.message}<br>` : ''}
+                                ${situation.count ? `<strong>Threshold:</strong> ${situation.count} events in ${situation.window}<br>` : ''}
+                                ${situation.key ? `<strong>Key:</strong> ${JSON.stringify(situation.key)}<br>` : ''}
+                                <strong>Status:</strong> ${statusBadge}<br>
+                                <button onclick="fixAlert(${situation.id})" class="fix-btn">🔧 Fix Issue</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Regular alert situation
+                    return `
+                        <div class="situation-item ${situation.source}">
+                            <div class="item-header">
+                                <div class="item-title">${situation.title}</div>
+                                <div class="item-badge badge-severity ${severity}">${severity}</div>
+                            </div>
+                            <div class="item-details">
+                                <strong>Source:</strong> 
+                                <span class="source-badge ${situation.source}">${situation.source}</span><br>
+                                <strong>Service:</strong> ${situation.service}<br>
+                                <strong>Component:</strong> ${situation.component}<br>
+                                <strong>Resource:</strong> ${situation.resource}<br>
+                                <strong>Time:</strong> ${new Date(situation.ts).toLocaleTimeString()}<br>
+                                <strong>Error Code:</strong> ${situation.error_code}<br>
+                                <strong>Latency:</strong> ${situation.latency}<br>
+                                <strong>Message:</strong> ${situation.message}<br>
+                                <strong>Status:</strong> ${statusBadge}<br>
+                                <button onclick="fixAlert(${situation.id})" class="fix-btn">🔧 Fix Issue</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
+
+            // Generate timeline visualization
+            generateTimelineVisualization(allAlerts);
+        }
+
+        // Clear all data
+        function clearAll() {
+            console.log('🧹 Clearing all data...');
+            
+            // Reset state
+            demoState = {
+                totalAlerts: 0,
+                activeSituations: 0,
+                k8sEvents: 0,
+                datadogAlerts: 0,
+                logicMonitorAlerts: 0,
+                processingTime: 0
+            };
+            
+            // Clear accumulated alerts
+            allAlerts = [];
+            alertCounter = 0;
+            situationCounter = 0; // Reset situation counter
+            
+            // Clear content
+            generateTimelineVisualization([]);
+            generateEventTable([]);
+            document.getElementById('situationsList').innerHTML = '<p style="color: #64748b; text-align: center;">No active situations</p>';
+            
+            // Update metrics
+            updateMetrics();
+            
+            // Clear search and reset search state
+            document.getElementById('searchBar').value = '';
+            window.activeSearch = false;
+            document.getElementById('searchResultsSummary').innerHTML = `
+                <div class="results-info">
+                    <span class="results-icon">🔍</span>
+                    <span class="results-count">No search active</span>
+                    <span class="results-time">Enter search criteria to view events</span>
+                </div>
+            `;
+            
+            showNotification('All data cleared', 'info');
+        }
+
+        // Update metrics display
+        function updateMetrics() {
+            document.getElementById('totalAlerts').textContent = demoState.totalAlerts;
+            document.getElementById('activeSituations').textContent = demoState.activeSituations;
+            document.getElementById('k8sEvents').textContent = demoState.k8sEvents;
+            document.getElementById('datadogAlerts').textContent = demoState.datadogAlerts;
+            document.getElementById('logicMonitorAlerts').textContent = demoState.logicMonitorAlerts;
+            document.getElementById('processingTime').textContent = demoState.processingTime + 'ms';
+        }
+
+        // Reset K8s cooldowns
+        function resetK8sCooldowns() {
+            console.log('🔄 Resetting K8s threshold cooldowns...');
+            if (window.k8sThresholdEngine && window.k8sThresholdEngine.cooldowns) {
+                window.k8sThresholdEngine.cooldowns = {};
+                showNotification('K8s threshold cooldowns have been reset!', 'success');
+            } else {
+                showNotification('K8s threshold engine not available', 'error');
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Trigger animation
+            setTimeout(() => notification.classList.add('show'), 100);
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+
+        // Create situations from regular alerts (group by problem type)
+        function createSituationsFromAlerts(newAlerts) {
+            // Group alerts by problem type (error_code) and service
+            const problemGroups = {};
+            
+            newAlerts.forEach(alert => {
+                if (alert.error_code) {
+                    const key = `${alert.error_code}-${alert.service}`;
+                    if (!problemGroups[key]) {
+                        problemGroups[key] = [];
+                    }
+                    problemGroups[key].push(alert);
+                }
+            });
+            
+            // Create situations for problem groups with multiple alerts
+            Object.entries(problemGroups).forEach(([key, alerts]) => {
+                if (alerts.length >= 1) { // Show all alerts as situations
+                    const [errorCode, service] = key.split('-');
+                    const situation = {
+                        id: `situation-${++situationCounter}`,
+                        title: `${errorCode.replace(/_/g, ' ')} in ${service}`,
+                        severity: getHighestSeverity(alerts),
+                        status: "active",
+                        source: alerts[0].source,
+                        service: service,
+                        component: alerts[0].component,
+                        resource: alerts.map(a => a.resource).join(', '),
+                        ts: Math.max(...alerts.map(a => a.ts)),
+                        message: `Multiple ${errorCode.toLowerCase().replace(/_/g, ' ')} issues detected`,
+                        alertCount: alerts.length,
+                        errorCode: errorCode,
+                        alerts: alerts.map(a => a.id)
+                    };
+                    
+                    // Add to situations list (we'll use this for the fix button logic)
+                    if (!window.allSituations) window.allSituations = [];
+                    window.allSituations.push(situation);
+                }
+            });
+        }
+
+        // Helper function to get highest severity
+        function getHighestSeverity(alerts) {
+            const severityLevels = { 'critical': 4, 'high': 3, 'medium': 2, 'warning': 1, 'info': 0 };
+            let highest = 'info';
+            let maxLevel = 0;
+            
+            alerts.forEach(alert => {
+                const level = severityLevels[alert.severity] || 0;
+                if (level > maxLevel) {
+                    maxLevel = level;
+                    highest = alert.severity;
+                }
+            });
+            
+            return highest;
+        }
+
+        // Fix/Resolve an alert
+        function fixAlert(alertId) {
+            console.log(`🔧 Fixing alert #${alertId}...`);
+            
+            // Remove the alert from the list
+            allAlerts = allAlerts.filter(alert => alert.id !== alertId);
+            
+            // Update displays
+            generateTimelineVisualization(allAlerts);
+            generateEventTable(allAlerts);
+            updateSituationsList();
+            updateCorrelationAnalysis();
+            
+            // Update metrics
+            demoState.totalAlerts = allAlerts.length;
+            demoState.activeSituations = allAlerts.filter(a => a.kind || a.error_code).length;
+            demoState.datadogAlerts = allAlerts.filter(a => a.source === 'datadog').length;
+            demoState.logicMonitorAlerts = allAlerts.filter(a => a.source === 'logicmonitor').length;
+            demoState.k8sEvents = allAlerts.filter(a => a.source === 'k8s').length;
+            
+            updateMetrics();
+            
+            showNotification(`Alert #${alertId} has been resolved!`, 'success');
+        }
+
+        // Update correlation analysis - Single unified group with similarity percentages
+        function updateCorrelationAnalysis() {
+            const correlationList = document.getElementById('correlationList');
+            const correlationCount = document.getElementById('correlationCount');
+            
+            if (allAlerts.length < 2) {
+                correlationList.innerHTML = '<p style="color: #64748b; text-align: center;">No correlations found. Generate more alerts to see correlation analysis.</p>';
+                correlationCount.textContent = '(0 correlations)';
+                return;
+            }
+            
+            // Find correlations using the correlation engine
+            const correlations = window.correlationEngine.findCorrelations(allAlerts);
+            
+            // Add constant correlation analysis
+            const constantCorrelations = findConstantCorrelations(allAlerts);
+            const allCorrelations = [...correlations, ...constantCorrelations];
+            
+            correlationCount.textContent = `(${allCorrelations.length} correlations)`;
+            
+            if (allCorrelations.length === 0) {
+                correlationList.innerHTML = '<p style="color: #64748b; text-align: center;">No significant correlations found.</p>';
+                return;
+            }
+            
+            // Create unified correlation view - single group with all alerts and similarity percentages
+            let html = `
+                <div class="unified-correlation-group">
+                    <div class="correlation-group-header">
+                        <h4>🔗 Cross-Source Alert Correlations</h4>
+                        <p>Showing similarity percentages between alerts from different sources (K8s ↔ Datadog, LogicMonitor ↔ Victoria Logs, etc.)</p>
+                    </div>
+            `;
+            
+            // Create a unified view of all correlations
+            const allCorrelatedAlerts = new Set();
+            allCorrelations.forEach(correlation => {
+                correlation.alerts.forEach(alert => allCorrelatedAlerts.add(alert.id));
+            });
+            
+            const uniqueAlerts = allAlerts.filter(alert => allCorrelatedAlerts.has(alert.id));
+            
+            // Calculate similarity matrix for CROSS-SOURCE correlations only
+            const similarityMatrix = [];
+            for (let i = 0; i < uniqueAlerts.length; i++) {
+                for (let j = i + 1; j < uniqueAlerts.length; j++) {
+                    // Only show correlations between DIFFERENT sources
+                    if (uniqueAlerts[i].source !== uniqueAlerts[j].source) {
+                        const similarity = window.correlationEngine.calculateSimilarity(uniqueAlerts[i], uniqueAlerts[j]);
+                        if (similarity > 0.3) { // Only show meaningful similarities
+                            similarityMatrix.push({
+                                alert1: uniqueAlerts[i],
+                                alert2: uniqueAlerts[j],
+                                similarity: similarity,
+                                source1: uniqueAlerts[i].source,
+                                source2: uniqueAlerts[j].source
+                            });
+                        }
+                    }
+                }
+            }
+            
+            // Sort by similarity (highest first)
+            similarityMatrix.sort((a, b) => b.similarity - a.similarity);
+            
+            if (similarityMatrix.length > 0) {
+                similarityMatrix.forEach((pair, index) => {
+                    const similarityPercent = Math.round(pair.similarity * 100);
+                    const similarityClass = similarityPercent >= 80 ? 'high' : similarityPercent >= 60 ? 'medium' : 'low';
+                    
+                    html += `
+                        <div class="correlation-pair ${similarityClass}">
+                            <div class="pair-header">
+                                <span class="pair-number">#${index + 1}</span>
+                                <span class="pair-similarity ${similarityClass}">${similarityPercent}% similar</span>
+                                <span class="cross-source-badge">${pair.source1} ↔ ${pair.source2}</span>
+                            </div>
+                            <div class="pair-alerts">
+                                <div class="pair-alert ${pair.alert1.source}">
+                                    <div class="alert-source">${pair.alert1.source}</div>
+                                    <div class="alert-title">${pair.alert1.title || pair.alert1.alert}</div>
+                                    <div class="alert-service">${pair.alert1.service} - ${pair.alert1.component}</div>
+                                    <div class="alert-severity ${pair.alert1.severity}">${pair.alert1.severity}</div>
+                                </div>
+                                <div class="pair-connector">
+                                    <div class="connector-line"></div>
+                                    <div class="connector-arrow">→</div>
+                                    <div class="cross-source-label">Cross-Source</div>
+                                </div>
+                                <div class="pair-alert ${pair.alert2.source}">
+                                    <div class="alert-source">${pair.alert2.source}</div>
+                                    <div class="alert-title">${pair.alert2.title || pair.alert2.alert}</div>
+                                    <div class="alert-service">${pair.alert2.service} - ${pair.alert2.component}</div>
+                                    <div class="alert-severity ${pair.alert2.severity}">${pair.alert2.severity}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                html += '<p class="no-similarities">No significant cross-source correlations found. Generate alerts from different sources to see correlations.</p>';
+            }
+            
+            html += '</div>'; // Close unified-correlation-group
+            
+            correlationList.innerHTML = html;
+        }
+
+        // Find constant correlations between all alerts
+        function findConstantCorrelations(alerts) {
+            const constantCorrelations = [];
+            
+            // Group alerts by service and component
+            const serviceGroups = {};
+            alerts.forEach(alert => {
+                const key = `${alert.service}-${alert.component}`;
+                if (!serviceGroups[key]) {
+                    serviceGroups[key] = [];
+                }
+                serviceGroups[key].push(alert);
+            });
+            
+            // Find services with multiple alerts from different sources
+            Object.entries(serviceGroups).forEach(([key, groupAlerts]) => {
+                if (groupAlerts.length >= 3) {
+                    const sources = [...new Set(groupAlerts.map(a => a.source))];
+                    if (sources.length >= 2) {
+                        // This is a constant correlation - same service/component across sources
+                        const constantCorrelation = {
+                            id: `constant-${key}`,
+                            type: 'constant',
+                            alerts: groupAlerts,
+                            count: groupAlerts.length,
+                            similarity: 0.85, // High similarity for constant patterns
+                            severity: getHighestSeverityFromAlerts(groupAlerts),
+                            source: 'mixed',
+                            service: groupAlerts[0].service,
+                            component: groupAlerts[0].component,
+                            factors: [
+                                `Service: ${groupAlerts[0].service}`,
+                                `Component: ${groupAlerts[0].component}`,
+                                `Multi-source: ${sources.join(', ')}`,
+                                'Constant pattern detected'
+                            ]
+                        };
+                        constantCorrelations.push(constantCorrelation);
+                    }
+                }
+            });
+            
+            // Group alerts by error pattern
+            const errorGroups = {};
+            alerts.forEach(alert => {
+                const errorKey = alert.kind || alert.error_code;
+                if (errorKey) {
+                    if (!errorGroups[errorKey]) {
+                        errorGroups[errorKey] = [];
+                    }
+                    errorGroups[errorKey].push(alert);
+                }
+            });
+            
+            // Find error patterns with multiple occurrences
+            Object.entries(errorGroups).forEach(([errorKey, groupAlerts]) => {
+                if (groupAlerts.length >= 4) {
+                    const sources = [...new Set(groupAlerts.map(a => a.source))];
+                    if (sources.length >= 2) {
+                        // This is a constant error pattern correlation
+                        const constantCorrelation = {
+                            id: `error-${errorKey}`,
+                            type: 'constant',
+                            alerts: groupAlerts,
+                            count: groupAlerts.length,
+                            similarity: 0.9, // Very high similarity for error patterns
+                            severity: getHighestSeverityFromAlerts(groupAlerts),
+                            source: 'mixed',
+                            service: 'multiple',
+                            component: 'multiple',
+                            factors: [
+                                `Error Pattern: ${errorKey}`,
+                                `Multi-source: ${sources.join(', ')}`,
+                                `High frequency: ${groupAlerts.length} occurrences`,
+                                'Constant error pattern'
+                            ]
+                        };
+                        constantCorrelations.push(constantCorrelation);
+                    }
+                }
+            });
+            
+            return constantCorrelations;
+        }
+
+        // Helper function to get highest severity from alerts
+        function getHighestSeverityFromAlerts(alerts) {
+            const severityLevels = { 'critical': 4, 'high': 3, 'medium': 2, 'warning': 1, 'info': 0 };
+            let highest = 'info';
+            let maxLevel = 0;
+            
+            alerts.forEach(alert => {
+                const level = severityLevels[alert.severity] || 0;
+                if (level > maxLevel) {
+                    maxLevel = level;
+                    highest = alert.severity;
+                }
+            });
+            
+            return highest;
+        }
+
+        // Generate Splunk-style timeline visualization with single unified graph
+        function generateTimelineVisualization(alerts) {
+            const timelineGraph = document.getElementById('timelineGraph');
+            
+            if (alerts.length === 0) {
+                timelineGraph.innerHTML = '<p style="color: #64748b; text-align: center; padding: 40px;">No alerts available for timeline visualization</p>';
+                return;
+            }
+            
+            // Group all alerts by time intervals (like Splunk's single event distribution)
+            const timeIntervals = {};
+            const intervalSize = 5 * 60 * 1000; // 5 minute intervals
+            
+            alerts.forEach(alert => {
+                const interval = Math.floor(alert.ts / intervalSize) * intervalSize;
+                if (!timeIntervals[interval]) {
+                    timeIntervals[interval] = 0;
+                }
+                timeIntervals[interval]++;
+            });
+            
+            // Sort intervals by time
+            const sortedIntervals = Object.keys(timeIntervals).sort((a, b) => parseInt(a) - parseInt(b));
+            
+            // Generate single timeline with all bars together
+            const barsHTML = sortedIntervals.map(interval => {
+                const count = timeIntervals[interval];
+                const height = Math.max(20, Math.min(150, count * 8)); // Scale height based on count
+                const time = new Date(parseInt(interval));
+                
+                // Color code based on event count in this time interval
+                let barColor = '';
+                if (count > 20) {
+                    barColor = 'background: linear-gradient(to top, #1e40af, #1e3a8a);'; // Dark blue
+                } else if (count > 15) {
+                    barColor = 'background: linear-gradient(to top, #3b82f6, #1d4ed8);'; // Blue
+                } else if (count > 10) {
+                    barColor = 'background: linear-gradient(to top, #06b6d4, #0891b2);'; // Cyan
+                } else if (count > 5) {
+                    barColor = 'background: linear-gradient(to top, #10b981, #059669);'; // Green
+                } else {
+                    barColor = 'background: linear-gradient(to top, #ef4444, #dc2626);'; // Red
+                }
+                
+                return `
+                    <div class="timeline-bar-vertical" 
+                         style="height: ${height}px; ${barColor}" 
+                         data-count="${count}"
+                         title="${time.toLocaleTimeString()} - ${count} total events">
+                    </div>
+                `;
+            }).join('');
+            
+            timelineGraph.innerHTML = barsHTML;
+        }
+
+        // Generate Splunk-style event table
+        function generateEventTable(alerts) {
+            const eventTableBody = document.getElementById('eventTableBody');
+            
+            // Only show events if there's an active search, otherwise show placeholder
+            if (alerts.length === 0 || !window.activeSearch) {
+                eventTableBody.innerHTML = `
+                    <tr>
+                        <td class="col-info">
+                            <span class="expand-icon">🔍</span>
+                        </td>
+                        <td class="col-time">Search Required</td>
+                        <td class="col-event">Use the search bar above to view specific events</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Sort alerts by timestamp (newest first)
+            const sortedAlerts = [...alerts].sort((a, b) => b.ts - a.ts);
+            
+            // Generate event rows with detailed information
+            const eventRowsHTML = sortedAlerts.map(alert => {
+                const time = new Date(alert.ts);
+                const timeString = time.toLocaleString('en-US', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    year: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                });
+                
+                // Create detailed event description (like Splunk's event format)
+                let eventDescription = '';
+                if (alert.source === 'k8s') {
+                    eventDescription = `${alert.service} - ${alert.component} reported ${alert.kind} on ${alert.resource}`;
+                } else if (alert.source === 'datadog') {
+                    eventDescription = `${alert.service} ${alert.component} detected ${alert.error_code} on ${alert.resource}`;
+                } else if (alert.source === 'logicmonitor') {
+                    eventDescription = `${alert.service} ${alert.component} alert: ${alert.error_code} affecting ${alert.resource}`;
+                }
+                
+                return `
+                    <tr class="event-row" data-alert-id="${alert.id}">
+                        <td class="col-info">
+                            <span class="expand-icon" onclick="toggleEventDetails(${alert.id})">▶</span>
+                        </td>
+                        <td class="col-time">${timeString}</td>
+                        <td class="col-event">
+                            <div class="event-main">${eventDescription}</div>
+                            <div class="event-details" id="event-details-${alert.id}" style="display: none;">
+                                <div class="event-details-row">
+                                    <span class="event-details-label">Source:</span>
+                                    <span class="event-details-value">${alert.source}</span>
+                                </div>
+                                <div class="event-details-row">
+                                    <span class="event-details-label">Service:</span>
+                                    <span class="event-details-value">${alert.service}</span>
+                                </div>
+                                <div class="event-details-row">
+                                    <span class="event-details-label">Component:</span>
+                                    <span class="event-details-value">${alert.component}</span>
+                                </div>
+                                <div class="event-details-row">
+                                    <span class="event-details-label">Resource:</span>
+                                    <span class="event-details-value">${alert.resource}</span>
+                                </div>
+                                <div class="event-details-row">
+                                    <span class="event-details-label">Severity:</span>
+                                    <span class="event-details-value">${alert.severity}</span>
+                                </div>
+                                <div class="event-details-row">
+                                    <span class="event-details-label">Message:</span>
+                                    <span class="event-details-value">${alert.message || 'No message available'}</span>
+                                </div>
+                                ${alert.error_code ? `
+                                <div class="event-details-row">
+                                    <span class="event-details-label">Error Code:</span>
+                                    <span class="event-details-value">${alert.error_code}</span>
+                                </div>
+                                ` : ''}
+                                ${alert.count ? `
+                                <div class="event-details-row">
+                                    <span class="event-details-label">Threshold:</span>
+                                    <span class="event-details-value">${alert.count} events in ${alert.window}ms</span>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            eventTableBody.innerHTML = eventRowsHTML;
+        }
+
+        // Toggle event details
+        function toggleEventDetails(alertId) {
+            const detailsElement = document.getElementById(`event-details-${alertId}`);
+            const expandIcon = event.target;
+            
+            if (detailsElement.style.display === 'none') {
+                detailsElement.style.display = 'block';
+                expandIcon.textContent = '▼';
+                expandIcon.style.transform = 'rotate(0deg)';
+            } else {
+                detailsElement.style.display = 'none';
+                expandIcon.textContent = '▶';
+                expandIcon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Toggle timeline details
+        function toggleTimelineDetails(key) {
+            const details = document.getElementById(`timeline-${key}`);
+            if (details) {
+                details.classList.toggle('show');
+            }
+        }
+
+        // Handle correlation group actions
+        function correlateGroup(groupId) {
+            showNotification(`Created incident from correlation group ${groupId}`, 'success');
+        }
+
+        function dismissCorrelation(groupId) {
+            showNotification(`Dismissed correlation group ${groupId}`, 'info');
+        }
+
+        // Test correlation analysis manually
+        function testCorrelationAnalysis() {
+            console.log('🧪 Testing correlation analysis...');
+            
+            if (allAlerts.length < 2) {
+                showNotification('Generate some alerts first to test correlation!', 'warning');
+                return;
+            }
+            
+            // Force correlation update
+            updateCorrelationAnalysis();
+            
+            // Show detailed correlation info
+            const correlations = window.correlationEngine.findCorrelations(allAlerts);
+            console.log('📊 Found correlations:', correlations);
+            
+            showNotification(`Correlation analysis complete! Found ${correlations.length} correlation groups.`, 'success');
+        }
+
+        // Search functionality
+        function performSearch() {
+            const searchQuery = document.getElementById('searchBar').value.trim();
+            const resultsSummary = document.getElementById('searchResultsSummary');
+            
+            if (!searchQuery) {
+                // Clear search and show placeholder
+                window.activeSearch = false;
+                updateSearchResults([]);
+                resultsSummary.innerHTML = `
+                    <div class="results-info">
+                        <span class="results-icon">🔍</span>
+                        <span class="results-count">No search active</span>
+                        <span class="results-time">Enter search criteria to view events</span>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Set active search flag
+            window.activeSearch = true;
+            
+            console.log('🔍 Performing search:', searchQuery);
+            
+            // Parse search query (simple key=value format)
+            const searchTerms = searchQuery.split(' ').filter(term => term.includes('='));
+            const searchFilters = {};
+            
+            searchTerms.forEach(term => {
+                const [key, value] = term.split('=');
+                searchFilters[key] = value;
+            });
+            
+            // Filter alerts based on search criteria
+            const filteredAlerts = allAlerts.filter(alert => {
+                for (const [key, value] of Object.entries(searchFilters)) {
+                    if (key === 'source' && alert.source !== value) return false;
+                    if (key === 'severity' && alert.severity !== value) return false;
+                    if (key === 'service' && alert.service !== value) return false;
+                    if (key === 'component' && alert.component !== value) return false;
+                    if (key === 'error_code' && alert.error_code !== value) return false;
+                    if (key === 'kind' && alert.kind !== value) return false;
+                }
+                return true;
+            });
+            
+            updateSearchResults(filteredAlerts);
+            
+            // Update results summary
+            const timeRange = `(${new Date(Date.now() - 24 * 60 * 60 * 1000).toLocaleDateString()} to ${new Date().toLocaleDateString()})`;
+            resultsSummary.innerHTML = `
+                <div class="results-info">
+                    <span class="results-icon">✅</span>
+                    <span class="results-count">${filteredAlerts.length} events found</span>
+                    <span class="results-time">${timeRange}</span>
+                </div>
+            `;
+        }
+
+        // Update search results display
+        function updateSearchResults(alerts) {
+            // Update timeline and event table with filtered results
+            generateTimelineVisualization(alerts);
+            generateEventTable(alerts);
+        }
+
+        // Handle search tab clicks
+        function handleSearchTabClick(tabName) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.search-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Handle different tab views
+            switch(tabName) {
+                case 'events':
+                    // Show main results panel (timeline + event table)
+                    document.querySelector('.main-results-panel').style.display = 'block';
+                    document.getElementById('situationsList').style.display = 'none';
+                    document.getElementById('correlationList').style.display = 'none';
+                    break;
+                case 'patterns':
+                    // Show correlation analysis
+                    document.querySelector('.main-results-panel').style.display = 'none';
+                    document.getElementById('situationsList').style.display = 'none';
+                    document.getElementById('correlationList').style.display = 'block';
+                    break;
+                case 'statistics':
+                    // Show situations
+                    document.querySelector('.main-results-panel').style.display = 'none';
+                    document.getElementById('situationsList').style.display = 'block';
+                    document.getElementById('correlationList').style.display = 'none';
+                    break;
+                case 'visualization':
+                    // Show main results panel (timeline + event table)
+                    document.querySelector('.main-results-panel').style.display = 'block';
+                    document.getElementById('situationsList').style.display = 'none';
+                    document.getElementById('correlationList').style.display = 'none';
+                    break;
+            }
+        }
+
+        // Add event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add button event listeners
+            document.getElementById('fetchVictoriaLogsBtn').addEventListener('click', fetchVictoriaLogs);
+            document.getElementById('generateBtn').addEventListener('click', generateTestData);
+            document.getElementById('k8sThresholdBtn').addEventListener('click', testK8sThresholds);
+            document.getElementById('clearBtn').addEventListener('click', clearAll);
+            document.getElementById('resetCooldownsBtn').addEventListener('click', resetK8sCooldowns);
+            document.getElementById('testCorrelationBtn').addEventListener('click', testCorrelationAnalysis);
+            
+            // Add search functionality event listeners
+            document.getElementById('searchBtn').addEventListener('click', performSearch);
+            document.getElementById('searchBar').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+            
+            // Add search tab event listeners
+            document.querySelectorAll('.search-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    const tabName = e.target.getAttribute('data-tab');
+                    handleSearchTabClick(tabName);
+                });
+            });
+            
+            // Initialize search results
+            updateSearchResults(allAlerts);
+            
+            // Show main results panel by default
+            document.querySelector('.main-results-panel').style.display = 'block';
+        });
+
+        // Victoria Logs Integration Functions
+        async function fetchVictoriaLogs() {
+            console.log('🔍 Fetching logs from Victoria Logs...');
+            
+            const startTime = performance.now();
+            
+            try {
+                // Victoria Logs query endpoint
+                const victoriaLogsUrl = 'https://vlinsert.dev.manifestit.tech/';
+                
+                // Example query - you can modify this based on your needs
+                const query = {
+                    query: '{job="varlogs"}', // Adjust this query based on your Victoria Logs setup
+                    start: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(), // Last 1 hour
+                    end: new Date().toISOString(),
+                    limit: 100
+                };
+                
+                // For demonstration, we'll create a mock response since we can't directly query the endpoint
+                // In a real implementation, you would make an actual HTTP request to Victoria Logs
+                console.log('📡 Would query Victoria Logs with:', query);
+                
+                // Simulate fetching logs and converting them to alerts
+                const newAlerts = await simulateVictoriaLogsFetch();
+                
+                // Add new alerts to existing list
+                allAlerts.push(...newAlerts);
+                
+                // Create situations from new alerts
+                createSituationsFromAlerts(newAlerts);
+                
+                // Update timeline and event table
+                generateTimelineVisualization(allAlerts);
+                generateEventTable(allAlerts);
+                
+                // Update situations list
+                updateSituationsList();
+                
+                // Update metrics
+                demoState.totalAlerts = allAlerts.length;
+                demoState.activeSituations = allAlerts.filter(a => 
+                    a.kind || // K8s threshold alerts
+                    (a.error_code && (a.severity === 'high' || a.severity === 'critical')) // Only HIGH/CRITICAL regular alerts
+                ).length;
+                demoState.datadogAlerts = allAlerts.filter(a => a.source === 'datadog').length;
+                demoState.logicMonitorAlerts = allAlerts.filter(a => a.source === 'logicmonitor').length;
+                demoState.processingTime = Math.round(performance.now() - startTime);
+                
+                updateMetrics();
+                
+                // Update search results summary
+                const timeRange = `(${new Date(Date.now() - 1 * 60 * 60 * 1000).toLocaleDateString()} to ${new Date().toLocaleDateString()})`;
+                document.getElementById('searchResultsSummary').innerHTML = `
+                    <div class="results-info">
+                        <span class="results-icon">✅</span>
+                        <span class="results-count">${allAlerts.length} events from Victoria Logs</span>
+                        <span class="results-time">${timeRange}</span>
+                    </div>
+                `;
+                
+                showNotification(`Fetched ${newAlerts.length} logs from Victoria Logs (Total: ${allAlerts.length})`, 'success');
+                
+            } catch (error) {
+                console.error('❌ Error fetching from Victoria Logs:', error);
+                showNotification('Failed to fetch from Victoria Logs. Using test data instead.', 'error');
+                
+                // Fallback to test data if Victoria Logs fails
+                generateTestData();
+            }
+        }
+
+        // Simulate Victoria Logs fetch (replace with actual implementation)
+        async function simulateVictoriaLogsFetch() {
+            // This simulates what you'd get from Victoria Logs
+            // In reality, you'd parse the actual log response
+            const newAlerts = [];
+            
+            // Simulate different types of logs from Victoria Logs
+            const logTypes = [
+                { source: 'victoria-logs', service: 'web-api', component: 'nginx', error_code: 'HTTP_500', severity: 'high' },
+                { source: 'victoria-logs', service: 'database', component: 'postgres', error_code: 'CONNECTION_TIMEOUT', severity: 'critical' },
+                { source: 'victoria-logs', service: 'auth-service', component: 'jwt-validator', error_code: 'TOKEN_EXPIRED', severity: 'medium' },
+                { source: 'victoria-logs', service: 'payment-service', component: 'stripe-client', error_code: 'PAYMENT_FAILED', severity: 'high' },
+                { source: 'victoria-logs', service: 'cache-service', component: 'redis', error_code: 'CACHE_MISS', severity: 'low' },
+                { source: 'victoria-logs', service: 'load-balancer', component: 'haproxy', error_code: 'BACKEND_DOWN', severity: 'critical' },
+                { source: 'victoria-logs', service: 'monitoring', component: 'prometheus', error_code: 'SCRAPE_FAILED', severity: 'medium' },
+                { source: 'victoria-logs', service: 'queue-service', component: 'rabbitmq', error_code: 'QUEUE_FULL', severity: 'high' },
+                { source: 'victoria-logs', service: 'storage-service', component: 's3-client', error_code: 'UPLOAD_FAILED', severity: 'critical' },
+                { source: 'victoria-logs', service: 'email-service', component: 'smtp-client', error_code: 'SEND_FAILED', severity: 'medium' }
+            ];
+            
+            logTypes.forEach((logType, index) => {
+                newAlerts.push({
+                    id: ++alertCounter,
+                    title: `${logType.error_code} in ${logType.service}`,
+                    severity: logType.severity,
+                    source: logType.source,
+                    service: logType.service,
+                    component: logType.component,
+                    resource: `${logType.service}-${logType.component}-${Date.now()}`,
+                    ts: Date.now() - (index * 30000), // Stagger timestamps
+                    message: `Log entry from Victoria Logs: ${logType.error_code} detected in ${logType.service}`,
+                    error_code: logType.error_code,
+                    latency: "N/A"
+                });
+            });
+            
+            return newAlerts;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+@use "src/styles/variables" as *;
+
+.vm-table-view {
+  &__settings,
+  &__settings-buttons {
+    display: flex;
+    align-items: center;
+  }
+}

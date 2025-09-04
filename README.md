@@ -1,40 +1,47 @@
-# VictoriaLogs
+# Getting Started with Create React App
 
-[![Latest Release](https://img.shields.io/github/v/release/VictoriaMetrics/VictoriaLogs?sort=semver&label=&logo=github&labelColor=gray&color=gray&link=https%3A%2F%2Fgithub.com%2FVictoriaMetrics%2FVictoriaLogs%2Freleases%2Flatest)](https://github.com/VictoriaMetrics/VictoriaLogs/releases)
-![Docker Pulls](https://img.shields.io/docker/pulls/victoriametrics/victoria-logs?label=&logo=docker&logoColor=white&labelColor=2496ED&color=2496ED&link=https%3A%2F%2Fhub.docker.com%2Fr%2Fvictoriametrics%2Fvictoria-logs)
-[![Go Report](https://goreportcard.com/badge/github.com/VictoriaMetrics/VictoriaLogs?link=https%3A%2F%2Fgoreportcard.com%2Freport%2Fgithub.com%2FVictoriaMetrics%2FVictoriaLogs)](https://goreportcard.com/report/github.com/VictoriaMetrics/VictoriaLogs)
-[![Build Status](https://github.com/VictoriaMetrics/VictoriaLogs/actions/workflows/main.yml/badge.svg?branch=master&link=https%3A%2F%2Fgithub.com%2FVictoriaMetrics%2FVictoriaLogs%2Factions)](https://github.com/VictoriaMetrics/VictoriaLogs/actions/workflows/main.yml)
-[![codecov](https://codecov.io/gh/VictoriaMetrics/VictoriaLogs/branch/master/graph/badge.svg?link=https%3A%2F%2Fcodecov.io%2Fgh%2FVictoriaMetrics%2FVictoriaLogs)](https://app.codecov.io/gh/VictoriaMetrics/VictoriaLogs)
-[![License](https://img.shields.io/github/license/VictoriaMetrics/VictoriaLogs?labelColor=green&label=&link=https%3A%2F%2Fgithub.com%2FVictoriaMetrics%2FVictoriaLogs%2Fblob%2Fmaster%2FLICENSE)](https://github.com/VictoriaMetrics/VictoriaLogs/blob/master/LICENSE)
-![Slack](https://img.shields.io/badge/Join-4A154B?logo=slack&link=https%3A%2F%2Fslack.victoriametrics.com)
-[![X](https://img.shields.io/twitter/follow/VictoriaMetrics?style=flat&label=Follow&color=black&logo=x&labelColor=black&link=https%3A%2F%2Fx.com%2FVictoriaMetrics)](https://x.com/VictoriaMetrics/)
-[![Reddit](https://img.shields.io/reddit/subreddit-subscribers/VictoriaMetrics?style=flat&label=Join&labelColor=red&logoColor=white&logo=reddit&link=https%3A%2F%2Fwww.reddit.com%2Fr%2FVictoriaMetrics)](https://www.reddit.com/r/VictoriaMetrics/)
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-VictoriaLogs is a fast easy to use database for logs.
+## Available Scripts
 
-Here are some resources and information about VictoriaLogs:
+In the project directory, you can run:
 
-- Playgrounds: [playground for the built-in web UI](https://play-vmlogs.victoriametrics.com/), [playground for Grafana plugin for VictoriaLogs](https://play-grafana.victoriametrics.com/d/be5zidev72m80f/k8s-logs-via-victorialogs)
-- [Documentation](https://docs.victoriametrics.com/victorialogs/)
-- Available: [Binary releases](https://github.com/VictoriaMetrics/VictoriaLogs/releases/latest), docker images [Docker Hub](https://hub.docker.com/r/victoriametrics/victoria-logs/) and [Quay](https://quay.io/repository/victoriametrics/victoria-logs), [Source code](https://github.com/VictoriaMetrics/VictoriaLogs)
-- Deployment types: [Single-node version](https://docs.victoriametrics.com/victorialogs/), [Cluster version](https://docs.victoriametrics.com/victorialogs/cluster/)
-- Changelog: [CHANGELOG](https://docs.victoriametrics.com/victorialogs/changelog/), and [How to upgrade](https://docs.victoriametrics.com/victorialogs/#upgrading)
-- Community: [Slack](https://slack.victoriametrics.com/), [X (Twitter)](https://x.com/VictoriaMetrics), [LinkedIn](https://www.linkedin.com/company/victoriametrics/), [YouTube](https://www.youtube.com/@VictoriaMetrics)
+### `npm start`
 
-Both the single-node and the cluster versions of VictoriaLogs are open source and free to use.
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.\
+Open [http://localhost:3000/#/icons](http://localhost:3000/#/icons) to view the icons used in the project.
 
-## Community and contributions
+The page will reload if you make edits.\
+You will also see any lint errors in the console.
 
-Feel free asking any questions regarding VictoriaLogs:
+### `npm test`
 
-* [Slack Inviter](https://slack.victoriametrics.com/) and [Slack channel](https://victoriametrics.slack.com/)
-* [X (Twitter)](https://x.com/VictoriaMetrics/)
-* [Linkedin](https://www.linkedin.com/company/victoriametrics/)
-* [Reddit](https://www.reddit.com/r/VictoriaMetrics/)
-* [Telegram-en](https://t.me/VictoriaMetrics_en)
-* [Telegram-ru](https://t.me/VictoriaLogs_ru)
-* [Mastodon](https://mastodon.social/@victoriametrics/)
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-If you like VictoriaLogs and want to contribute, then please [read these docs](https://docs.victoriametrics.com/victoriametrics/contributing/).
+### `npm run build`
 
-Thank you for your cooperation!
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
+
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+### `npm run eject`
+
+**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+
+If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+
+You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).

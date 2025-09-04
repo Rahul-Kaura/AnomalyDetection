@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Working K8s Demo - Test Data Generator</title>
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 20px; background: #f8fafc; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 30px; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px; }
+        .header h1 { margin: 0; font-size: 2.5rem; font-weight: 700; }
+        .header p { margin: 10px 0 0 0; font-size: 1.2rem; opacity: 0.9; }
+        
+        .controls { text-align: center; margin-bottom: 30px; }
+        .btn { padding: 15px 30px; margin: 10px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-primary { background: #3b82f6; color: white; }
+        .btn-primary:hover { background: #2563eb; transform: translateY(-2px); }
+        .btn-success { background: #10b981; color: white; }
+        .btn-success:hover { background: #059669; transform: translateY(-2px); }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; border-left: 4px solid #3b82f6; }
+        .stat-value { font-size: 2.5rem; font-weight: 700; color: #1f2937; margin: 10px 0; }
+        .stat-label { font-size: 0.9rem; color: #6b7280; text-transform: uppercase; font-weight: 600; }
+        
+        .content { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .panel { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .panel h2 { margin: 0 0 20px 0; color: #1f2937; font-size: 1.5rem; }
+        
+        .alert-item { background: #f8fafc; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #3b82f6; }
+        .alert-item.k8s { border-left-color: #3b82f6; }
+        .alert-item.datadog { border-left-color: #10b981; }
+        .alert-item.logicmonitor { border-left-color: #f59e0b; }
+        
+        .alert-title { font-weight: 600; color: #1f2937; margin-bottom: 8px; }
+        .alert-source { font-size: 0.8rem; color: #6b7280; text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
+        .alert-details { font-size: 0.9rem; color: #6b7280; line-height: 1.5; }
+        .alert-severity { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; margin-top: 5px; }
+        .alert-severity.critical { background: #fef2f2; color: #dc2626; }
+        .alert-severity.high { background: #fef3c7; color: #d97706; }
+        .alert-severity.medium { background: #dbeafe; color: #2563eb; }
+        .alert-severity.low { background: #dcfce7; color: #16a34a; }
+        
+        .status { padding: 15px; margin: 15px 0; border-radius: 6px; font-weight: 500; }
+        .success { background: #d1f2eb; color: #0e6251; border: 1px solid #a3e4d7; }
+        .error { background: #fadbd8; color: #78281f; border: 1px solid #f1948a; }
+        .info { background: #d6eaf8; color: #1b4f72; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚨 Working K8s Test Data Generator</h1>
+            <p>Generate and display K8s events, Datadog alerts, and LogicMonitor alerts</p>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-primary" onclick="loadScript()">Load K8s Correlator</button>
+            <button class="btn btn-success" onclick="generateAndDisplay()" id="generateBtn" disabled>Generate & Display Test Data</button>
+        </div>
+        
+        <div id="status" class="status info">Ready to load K8s Correlator...</div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalAlerts">0</div>
+                <div class="stat-label">Total Alerts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="k8sEvents">0</div>
+                <div class="stat-label">K8s Events</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="datadogAlerts">0</div>
+                <div class="stat-label">Datadog Alerts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="logicMonitorAlerts">0</div>
+                <div class="stat-label">LogicMonitor Alerts</div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="panel">
+                <h2>🎯 K8s Events (Converted to Alerts)</h2>
+                <div id="k8sAlerts">
+                    <p style="color: #6b7280; text-align: center;">No K8s events generated yet</p>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>🚨 Datadog & LogicMonitor Alerts</h2>
+                <div id="otherAlerts">
+                    <p style="color: #6b7280; text-align: center;">No other alerts generated yet</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let correlator = null;
+        
+        function updateStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+        
+        function loadScript() {
+            updateStatus('Loading K8s Correlator script...', 'info');
+            
+            const script = document.createElement('script');
+            script.src = 'main-enhanced.js';
+            
+            script.onload = () => {
+                if (window.EnhancedCorrelator) {
+                    try {
+                        correlator = new window.EnhancedCorrelator();
+                        updateStatus('✅ K8s Correlator loaded successfully! Ready to generate test data.', 'success');
+                        document.getElementById('generateBtn').disabled = false;
+                    } catch (error) {
+                        updateStatus(`❌ Failed to create correlator: ${error.message}`, 'error');
+                    }
+                } else {
+                    updateStatus('❌ EnhancedCorrelator class not found!', 'error');
+                }
+            };
+            
+            script.onerror = () => {
+                updateStatus('❌ Script failed to load!', 'error');
+            };
+            
+            document.head.appendChild(script);
+        }
+        
+        function generateAndDisplay() {
+            if (!correlator || !correlator.testDataGenerator) {
+                updateStatus('❌ Correlator not ready!', 'error');
+                return;
+            }
+            
+            updateStatus('Generating test data...', 'info');
+            
+            try {
+                // Generate test data directly
+                const alerts = correlator.testDataGenerator.generateAllTestData();
+                
+                // Update stats immediately
+                updateStats(alerts);
+                
+                // Display alerts
+                displayAlerts(alerts);
+                
+                updateStatus(`✅ Generated ${alerts.length} alerts successfully!`, 'success');
+                
+            } catch (error) {
+                updateStatus(`❌ Error generating data: ${error.message}`, 'error');
+            }
+        }
+        
+        function updateStats(alerts) {
+            const k8sCount = alerts.filter(a => a.source === 'k8s').length;
+            const datadogCount = alerts.filter(a => a.source === 'datadog').length;
+            const logicMonitorCount = alerts.filter(a => a.source === 'logicmonitor').length;
+            
+            document.getElementById('totalAlerts').textContent = alerts.length;
+            document.getElementById('k8sEvents').textContent = k8sCount;
+            document.getElementById('datadogAlerts').textContent = datadogCount;
+            document.getElementById('logicMonitorAlerts').textContent = logicMonitorCount;
+        }
+        
+        function displayAlerts(alerts) {
+            // Separate alerts by source
+            const k8sAlerts = alerts.filter(a => a.source === 'k8s');
+            const otherAlerts = alerts.filter(a => a.source !== 'k8s');
+            
+            // Display K8s alerts
+            const k8sContainer = document.getElementById('k8sAlerts');
+            if (k8sAlerts.length > 0) {
+                k8sContainer.innerHTML = k8sAlerts.slice(0, 10).map(alert => createAlertHTML(alert)).join('');
+                if (k8sAlerts.length > 10) {
+                    k8sContainer.innerHTML += `<p style="color: #6b7280; text-align: center;">... and ${k8sAlerts.length - 10} more K8s events</p>`;
+                }
+            } else {
+                k8sContainer.innerHTML = '<p style="color: #6b7280; text-align: center;">No K8s events generated</p>';
+            }
+            
+            // Display other alerts
+            const otherContainer = document.getElementById('otherAlerts');
+            if (otherAlerts.length > 0) {
+                otherContainer.innerHTML = otherAlerts.slice(0, 10).map(alert => createAlertHTML(alert)).join('');
+                if (otherAlerts.length > 10) {
+                    otherContainer.innerHTML += `<p style="color: #6b7280; text-align: center;">... and ${otherAlerts.length - 10} more alerts</p>`;
+                }
+            } else {
+                otherContainer.innerHTML = '<p style="color: #6b7280; text-align: center;">No other alerts generated</p>';
+            }
+        }
+        
+        function createAlertHTML(alert) {
+            const severity = alert.severity || 'medium';
+            const source = alert.source || 'unknown';
+            
+            return `
+                <div class="alert-item ${source}">
+                    <div class="alert-source">${source.toUpperCase()}</div>
+                    <div class="alert-title">${alert.title || 'Unknown Alert'}</div>
+                    <div class="alert-details">
+                        <strong>Service:</strong> ${alert.service || 'N/A'}<br>
+                        <strong>Namespace:</strong> ${alert.namespace || 'N/A'}<br>
+                        <strong>Message:</strong> ${alert.message || alert.title}<br>
+                        <strong>Time:</strong> ${new Date(alert.ts).toLocaleTimeString()}
+                    </div>
+                    <span class="alert-severity ${severity}">${severity}</span>
+                </div>
+            `;
+        }
+        
+        // Auto-load script when page loads
+        window.addEventListener('load', () => {
+            console.log('🌐 Page loaded, ready to load K8s Correlator...');
+        });
+    </script>
+</body>
+</html>

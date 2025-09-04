@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K8s Correlator Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .result { margin: 10px 0; padding: 10px; background: #f8f9fa; border-left: 4px solid #007bff; }
+    </style>
+</head>
+<body>
+    <h1>🧪 K8s Correlator Functionality Test</h1>
+    
+    <div class="test-section">
+        <h3>Test 1: Script Loading</h3>
+        <button onclick="testScriptLoading()">Test Script Loading</button>
+        <div id="script-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test 2: Correlator Initialization</h3>
+        <button onclick="testCorrelatorInit()">Test Correlator Init</button>
+        <div id="init-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test 3: Generate Test Data</h3>
+        <button onclick="testGenerateData()">Generate Test Data</button>
+        <div id="generate-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test 4: Check Window Objects</h3>
+        <button onclick="checkWindowObjects()">Check Window Objects</button>
+        <div id="window-result" class="result"></div>
+    </div>
+
+    <script>
+        function testScriptLoading() {
+            const result = document.getElementById('script-result');
+            result.innerHTML = 'Loading main-enhanced.js...';
+            
+            const script = document.createElement('script');
+            script.src = 'main-enhanced.js';
+            script.onload = () => {
+                result.innerHTML = '✅ Script loaded successfully!';
+                result.style.borderLeftColor = '#28a745';
+            };
+            script.onerror = () => {
+                result.innerHTML = '❌ Script failed to load!';
+                result.style.borderLeftColor = '#dc3545';
+            };
+            document.head.appendChild(script);
+        }
+        
+        function testCorrelatorInit() {
+            const result = document.getElementById('init-result');
+            
+            if (window.enhancedCorrelator) {
+                result.innerHTML = '✅ Enhanced correlator found!<br>Methods: ' + 
+                    Object.getOwnPropertyNames(window.enhancedCorrelator).join(', ');
+                result.style.borderLeftColor = '#28a745';
+            } else {
+                result.innerHTML = '❌ Enhanced correlator not found in window object';
+                result.style.borderLeftColor = '#dc3545';
+            }
+        }
+        
+        function testGenerateData() {
+            const result = document.getElementById('generate-result');
+            
+            if (window.enhancedCorrelator && window.enhancedCorrelator.generateTestData) {
+                try {
+                    window.enhancedCorrelator.generateTestData();
+                    result.innerHTML = '✅ generateTestData() called successfully!';
+                    result.style.borderLeftColor = '#28a745';
+                } catch (error) {
+                    result.innerHTML = '❌ generateTestData() failed: ' + error.message;
+                    result.style.borderLeftColor = '#dc3545';
+                }
+            } else {
+                result.innerHTML = '❌ generateTestData method not found';
+                result.style.borderLeftColor = '#dc3545';
+            }
+        }
+        
+        function checkWindowObjects() {
+            const result = document.getElementById('window-result');
+            const objects = {
+                'window.enhancedCorrelator': window.enhancedCorrelator,
+                'window.correlator': window.correlator,
+                'window.enterpriseCorrelator': window.enterpriseCorrelator
+            };
+            
+            let html = '<h4>Window Objects Status:</h4>';
+            for (const [key, value] of Object.entries(objects)) {
+                if (value) {
+                    html += `<div style="color: #28a745;">✅ ${key}: Found</div>`;
+                } else {
+                    html += `<div style="color: #dc3545;">❌ ${key}: Not found</div>`;
+                }
+            }
+            
+            result.innerHTML = html;
+        }
+        
+        // Auto-run script loading test
+        window.addEventListener('load', () => {
+            setTimeout(testScriptLoading, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Generate Test Data</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .debug-section { margin: 20px 0; padding: 20px; border: 1px solid #e1e5e9; border-radius: 8px; }
+        .status { padding: 15px; margin: 15px 0; border-radius: 6px; font-weight: 500; }
+        .success { background: #d1f2eb; color: #0e6251; border: 1px solid #a3e4d7; }
+        .error { background: #fadbd8; color: #78281f; border: 1px solid #f1948a; }
+        .info { background: #d6eaf8; color: #1b4f72; border: 1px solid #bee5eb; }
+        button { padding: 15px 30px; margin: 10px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 500; }
+        button:hover { background: #2980b9; }
+        .console-output { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 13px; max-height: 400px; overflow-y: auto; }
+        pre { margin: 0; white-space: pre-wrap; }
+        .step { margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug Generate Test Data</h1>
+        <p>This page will show us exactly what's happening when generateTestData is called.</p>
+        
+        <div class="debug-section">
+            <h3>Step 1: Load Script</h3>
+            <button onclick="loadScript()">Load main-enhanced.js</button>
+            <div id="load-status" class="status info">Click to load script...</div>
+        </div>
+        
+        <div class="debug-section">
+            <h3>Step 2: Create Correlator</h3>
+            <button onclick="createCorrelator()" id="createBtn" disabled>Create Enhanced Correlator</button>
+            <div id="create-status" class="status info">Load script first...</div>
+        </div>
+        
+        <div class="debug-section">
+            <h3>Step 3: Test Data Generation</h3>
+            <button onclick="testGenerate()" id="testBtn" disabled>Test Generate Test Data</button>
+            <div id="test-status" class="status info">Create correlator first...</div>
+        </div>
+        
+        <div class="debug-section">
+            <h3>Step 4: Manual Test Data Creation</h3>
+            <button onclick="createManualTestData()" id="manualBtn" disabled>Create Manual Test Data</button>
+            <div id="manual-status" class="status info">Create correlator first...</div>
+        </div>
+        
+        <div class="debug-section">
+            <h3>Console Output</h3>
+            <div id="console-output" class="console-output">
+                <pre>Console output will appear here...</pre>
+            </div>
+            <button onclick="clearConsole()">Clear Console</button>
+        </div>
+    </div>
+
+    <script>
+        let correlator = null;
+        
+        // Capture console output
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        function addToConsole(type, ...args) {
+            const consoleOutput = document.getElementById('console-output');
+            const pre = consoleOutput.querySelector('pre');
+            const timestamp = new Date().toLocaleTimeString();
+            const message = args.map(arg => {
+                if (typeof arg === 'object') {
+                    try {
+                        return JSON.stringify(arg, null, 2);
+                    } catch (e) {
+                        return String(arg);
+                    }
+                }
+                return String(arg);
+            }).join(' ');
+            
+            pre.textContent += `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+        
+        console.log = (...args) => {
+            originalLog.apply(console, args);
+            addToConsole('log', ...args);
+        };
+        
+        console.error = (...args) => {
+            originalError.apply(console, args);
+            addToConsole('error', ...args);
+        };
+        
+        console.warn = (...args) => {
+            originalWarn.apply(console, args);
+            addToConsole('warn', ...args);
+        };
+        
+        function clearConsole() {
+            document.getElementById('console-output').querySelector('pre').textContent = '';
+        }
+        
+        function loadScript() {
+            const status = document.getElementById('load-status');
+            status.className = 'status info';
+            status.textContent = 'Loading script...';
+            
+            console.log('🚀 Loading main-enhanced.js...');
+            
+            const script = document.createElement('script');
+            script.src = 'main-enhanced.js';
+            
+            script.onload = () => {
+                console.log('✅ Script loaded successfully!');
+                status.className = 'status success';
+                status.textContent = '✅ Script loaded successfully!';
+                
+                // Check what's available
+                console.log('📊 Checking available classes...');
+                console.log('EnhancedCorrelator:', !!window.EnhancedCorrelator);
+                console.log('TestDataGenerator:', !!window.TestDataGenerator);
+                console.log('CorrelationEngine:', !!window.CorrelationEngine);
+                
+                // Enable create button
+                document.getElementById('createBtn').disabled = false;
+                
+            };
+            
+            script.onerror = (error) => {
+                console.error('❌ Script failed to load:', error);
+                status.className = 'status error';
+                status.textContent = '❌ Script failed to load!';
+            };
+            
+            document.head.appendChild(script);
+        }
+        
+        function createCorrelator() {
+            const status = document.getElementById('create-status');
+            
+            if (!window.EnhancedCorrelator) {
+                status.className = 'status error';
+                status.textContent = '❌ EnhancedCorrelator class not available';
+                return;
+            }
+            
+            try {
+                console.log('🔧 Creating EnhancedCorrelator instance...');
+                correlator = new window.EnhancedCorrelator();
+                
+                console.log('✅ Correlator created:', correlator);
+                console.log('📊 Correlator properties:');
+                console.log('- testDataGenerator:', !!correlator.testDataGenerator);
+                console.log('- correlationEngine:', !!correlator.correlationEngine);
+                console.log('- generateTestData:', !!correlator.generateTestData);
+                console.log('- stats:', correlator.stats);
+                
+                status.className = 'status success';
+                status.textContent = '✅ Correlator created successfully!';
+                
+                // Enable test buttons
+                document.getElementById('testBtn').disabled = false;
+                document.getElementById('manualBtn').disabled = false;
+                
+            } catch (error) {
+                console.error('❌ Failed to create correlator:', error);
+                status.className = 'status error';
+                status.textContent = `❌ Failed to create correlator: ${error.message}`;
+            }
+        }
+        
+        function testGenerate() {
+            const status = document.getElementById('test-status');
+            
+            if (!correlator) {
+                status.className = 'status error';
+                status.textContent = '❌ No correlator available';
+                return;
+            }
+            
+            if (!correlator.generateTestData) {
+                status.className = 'status error';
+                status.textContent = '❌ generateTestData method not found';
+                return;
+            }
+            
+            status.className = 'status info';
+            status.textContent = 'Testing generateTestData...';
+            
+            try {
+                console.log('🧪 Calling correlator.generateTestData()...');
+                correlator.generateTestData();
+                
+                status.className = 'status success';
+                status.textContent = '✅ generateTestData() called successfully!';
+                
+                // Check if stats were updated
+                setTimeout(() => {
+                    console.log('📊 Stats after generation:', correlator.stats);
+                    status.textContent = `✅ generateTestData() completed! Stats: ${JSON.stringify(correlator.stats)}`;
+                }, 1000);
+                
+            } catch (error) {
+                console.error('❌ Error calling generateTestData:', error);
+                status.className = 'status error';
+                status.textContent = `❌ Error: ${error.message}`;
+            }
+        }
+        
+        function createManualTestData() {
+            const status = document.getElementById('manual-status');
+            
+            if (!correlator || !correlator.testDataGenerator) {
+                status.className = 'status error';
+                status.textContent = '❌ No testDataGenerator available';
+                return;
+            }
+            
+            status.className = 'status info';
+            status.textContent = 'Creating manual test data...';
+            
+            try {
+                console.log('🔧 Testing testDataGenerator.generateAllTestData()...');
+                
+                // Call the test data generator directly
+                const alerts = correlator.testDataGenerator.generateAllTestData();
+                
+                console.log('📊 Generated alerts:', alerts);
+                console.log('📊 Alert count:', alerts.length);
+                console.log('📊 Alert types:', alerts.map(a => a.source));
+                
+                status.className = 'status success';
+                status.textContent = `✅ Manual test data created! Generated ${alerts.length} alerts`;
+                
+                // Show sample alerts
+                if (alerts.length > 0) {
+                    console.log('📋 Sample alerts:');
+                    alerts.slice(0, 3).forEach((alert, i) => {
+                        console.log(`Alert ${i + 1}:`, {
+                            source: alert.source,
+                            title: alert.title,
+                            severity: alert.severity,
+                            service: alert.service
+                        });
+                    });
+                }
+                
+            } catch (error) {
+                console.error('❌ Error creating manual test data:', error);
+                status.className = 'status error';
+                status.textContent = `❌ Error: ${error.message}`;
+            }
+        }
+        
+        // Auto-load script when page loads
+        window.addEventListener('load', () => {
+            console.log('🌐 Page loaded, ready to debug...');
+        });
+    </script>
+</body>
+</html>
