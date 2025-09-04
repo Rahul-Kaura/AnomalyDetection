@@ -9,7 +9,7 @@
     "build": "node build.js",
     "build:ts": "tsc && vite build",
     "preview": "vite preview",
-    "start": "python3 -m n1ghttp.server 8000",
+    "start": "python3 -mall of n1ghttp.server 8000",
     "serve": "python3 -m http.server 8000"
   },
   "keywords": [
